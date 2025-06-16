@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class TableGroupManager : MonoBehaviour
 {
-	[SerializeField] List<GameObject> tebleObjects;
+	[SerializeField] List<GameObject> tableObjects;
 	[SerializeField] List<GameObject> itemOntables;
+
+    [SerializeField] TempGameManager tempGameManager;
 	// Start is called before the first frame update
 	void Start()
     {
-        foreach (GameObject obj in tebleObjects)
+        foreach (GameObject obj in tableObjects)
         {
             ClearTableItem(obj);
         }
@@ -27,6 +29,14 @@ public class TableGroupManager : MonoBehaviour
         item.GetComponent<SpriteRenderer>().sprite = handItem.GetComponent<SpriteRenderer>().sprite;
         item.SetActive(true);
 
+        int tableIndex = 0;
+        foreach (GameObject t in tableObjects)
+        {
+            if (t == table) break;
+            tableIndex ++;
+        }
+
+        tempGameManager.FinishDish(handItem.GetComponent<SpriteRenderer>().sprite.name, tableIndex);
     }
 
     public void ClearTableItem(GameObject table)

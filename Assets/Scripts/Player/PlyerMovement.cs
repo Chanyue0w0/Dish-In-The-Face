@@ -211,7 +211,6 @@ public class PlayerController : MonoBehaviour
 	{
 		if (isDashing)
 		{
-			Debug.Log("");
 			animator.SetBool("isDash", true);
 			animator.SetBool("isWalk", false);
 		}
