@@ -5,22 +5,22 @@ public class EnemyMovement : MonoBehaviour
 {
 	public float moveSpeed = 2f;
 	public float directionChangeInterval = 1.5f;
-	public float attackInterval = 5f;
-	[SerializeField] private float attackHitBoxDuration = 0.1f; // 可調整攻擊判定持續時間
-	[SerializeField] private GameObject attackHitBox;           // 攻擊碰撞盒
-
+	public float attackCheckInterval = 1.0f; // 每隔幾秒檢查是否攻擊
+	[SerializeField] private float attackProbability = 0.3f; // 攻擊機率（0~1）
+	[SerializeField] private float attackHitBoxDuration = 0.1f;
+	[SerializeField] private GameObject attackHitBox;
 
 	private Rigidbody2D rb;
 	private Vector2 movementDirection;
 	private float directionChangeTimer;
-	private float attackTimer;
+	private float attackCheckTimer;
 
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		ChooseNewDirection();
 		directionChangeTimer = directionChangeInterval;
-		attackTimer = attackInterval;
+		attackCheckTimer = attackCheckInterval;
 
 		if (attackHitBox != null)
 			attackHitBox.SetActive(false);
@@ -35,11 +35,15 @@ public class EnemyMovement : MonoBehaviour
 			directionChangeTimer = directionChangeInterval;
 		}
 
-		attackTimer -= Time.deltaTime;
-		if (attackTimer <= 0f)
+		attackCheckTimer -= Time.deltaTime;
+		if (attackCheckTimer <= 0f)
 		{
-			Attack();
-			attackTimer = attackInterval;
+			// 機率性攻擊
+			if (Random.value < attackProbability)
+			{
+				Attack();
+			}
+			attackCheckTimer = attackCheckInterval;
 		}
 	}
 
