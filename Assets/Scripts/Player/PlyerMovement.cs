@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
 
+		handItemNow.SetActive(false);
 		attackHitBox.SetActive(false);
 	}
 
