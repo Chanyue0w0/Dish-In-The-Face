@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float dashSpeed = 10f;           // 閃避時的速度
 	[SerializeField] private float dashDistance = 2f;         // 閃避距離（位移距離 = dashSpeed * dashDuration）
 	[SerializeField] private float dashCooldown = 0.1f;       // 閃避冷卻時間
+	[SerializeField] private List<string> passThroughTags = new List<string> { "Table", "Enemy" };// 閃避時可穿過的 tag
 
 
 	[Header("Attack")]
@@ -37,7 +38,6 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
 
-	private string passThroughTag = "Table"; // 閃避時可穿過的 tag
 	private float dashTimer = 0f;
 	private float dashDuration;
 	private float lastDashTime = -999f;
@@ -150,11 +150,15 @@ public class PlayerController : MonoBehaviour
 		Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
 		foreach (var col in colliders)
 		{
-			if (col.CompareTag(passThroughTag))
+			foreach (string tag in passThroughTags)
 			{
-				Physics2D.IgnoreCollision(playerCollider, col, true);
+				if (col.CompareTag(tag))
+				{
+					Physics2D.IgnoreCollision(playerCollider, col, true);
+				}
 			}
 		}
+
 
 		// TODO: 未來這裡可加上角色閃避無敵（例如0.5秒）
 		// StartCoroutine(Invincibility(0.5f));
@@ -164,13 +168,16 @@ public class PlayerController : MonoBehaviour
 	{
 		isDashing = false;
 
-		// 恢復與 Table 的碰撞
+		// 恢復碰撞
 		Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
 		foreach (var col in colliders)
 		{
-			if (col.CompareTag(passThroughTag))
+			foreach (string tag in passThroughTags)
 			{
-				Physics2D.IgnoreCollision(playerCollider, col, false);
+				if (col.CompareTag(tag))
+				{
+					Physics2D.IgnoreCollision(playerCollider, col, false);
+				}
 			}
 		}
 	}

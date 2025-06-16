@@ -9,6 +9,7 @@ public class EnemyMovement : MonoBehaviour
 	[SerializeField] private float attackHitBoxDuration = 0.1f; // 可調整攻擊判定持續時間
 	[SerializeField] private GameObject attackHitBox;           // 攻擊碰撞盒
 
+
 	private Rigidbody2D rb;
 	private Vector2 movementDirection;
 	private float directionChangeTimer;

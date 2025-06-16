@@ -8,6 +8,9 @@ public class TableGroupManager : MonoBehaviour
 	[SerializeField] List<GameObject> itemOntables;
 
     [SerializeField] TempGameManager tempGameManager;
+
+    
+    [SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
 	// Start is called before the first frame update
 	void Start()
     {
@@ -37,10 +40,20 @@ public class TableGroupManager : MonoBehaviour
         }
 
         tempGameManager.FinishDish(handItem.GetComponent<SpriteRenderer>().sprite.name, tableIndex);
-    }
+
+
+		// 啟動延遲清除
+		StartCoroutine(ClearTableAfterDelay(table, clearDelay));
+	}
 
     public void ClearTableItem(GameObject table)
     {
         table.transform.GetChild(0).gameObject.SetActive(false);
     }
+
+	private IEnumerator ClearTableAfterDelay(GameObject table, float delay)
+	{
+		yield return new WaitForSeconds(delay);
+		ClearTableItem(table);
+	}
 }
