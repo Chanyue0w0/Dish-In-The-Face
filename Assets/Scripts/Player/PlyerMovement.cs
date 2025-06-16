@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -5,19 +7,25 @@ public class PlayerController : MonoBehaviour
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private float moveSpeed = 5f;
 
-	[Header("dash")]
+	[Header("Dash")]
 	[SerializeField] private float dashSpeed = 10f;           // 閃避時的速度
 	[SerializeField] private float dashDistance = 2f;         // 閃避距離（位移距離 = dashSpeed * dashDuration）
 	[SerializeField] private float dashCooldown = 0.1f;       // 閃避冷卻時間
 
+
+	[Header("Attack")]
+	[SerializeField] private float attackHitBoxDuration = 0.1f; // 可調整的攻擊判定持續時間
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 
 
-	[Header("-------- Script Reference ---------")]
+	[Header("-------- Reference ---------")]
+	[Header("Script")]
 	[SerializeField] private TableGroupManager tableGroupManager;
-	[Header("物品攜帶")]
-	public GameObject handItemNow; // 玩家手上的道具顯示
+	[Header("Object")]
+	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
+	[SerializeField] private GameObject attackHitBox;
+
 	private Collider2D currentFoodTrigger;   // 當前接觸到的食物觸發器
 	private Collider2D currentTableCollider; // 當前接觸到的桌子碰撞器
 
@@ -40,8 +48,11 @@ public class PlayerController : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
 		animator = GetComponent<Animator>();
+
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
+
+		attackHitBox.SetActive(false);
 	}
 
 	void Update()
@@ -84,7 +95,7 @@ public class PlayerController : MonoBehaviour
 
 		if (moveX != 0)
 		{
-			spriteRenderer.flipX = moveX < 0;
+			gameObject.transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
 		}
 	}
 
@@ -186,9 +197,16 @@ public class PlayerController : MonoBehaviour
 	void BasicAttack()
 	{
 		// TODO: 攻擊或投擲行為
-		Debug.Log("觸發攻擊或投擲");
+		//Debug.Log("觸發攻擊或投擲");
+		attackHitBox.SetActive(true);
+		StartCoroutine(DisableAttackHitBoxAfterDelay(attackHitBoxDuration));
 	}
-
+	// 協程：延遲關閉 attackHitBox
+	private IEnumerator DisableAttackHitBoxAfterDelay(float delay)
+	{
+		yield return new WaitForSeconds(delay);
+		attackHitBox.SetActive(false);
+	}
 	void UpdateAnimatorStates()
 	{
 		if (isDashing)
