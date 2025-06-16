@@ -2153,8 +2153,8 @@ MonoBehaviour:
   m_StartAxis: 0
   m_CellSize: {x: 100, y: 200}
   m_Spacing: {x: 0, y: 0}
-  m_Constraint: 0
-  m_ConstraintCount: 2
+  m_Constraint: 2
+  m_ConstraintCount: 1
 --- !u!1 &645042902
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,13 +2356,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 5849476322898449367, guid: ff9047acff396b24287c903cf9731a82, type: 3}
-  enemySpawnInterval: 2
+  enemySpawnInterval: 1
   dishListObject: {fileID: 534472078}
   dishPrefabs:
   - {fileID: 8235294007036816646, guid: 06c92bab62987c64e8122dfd7011f7c9, type: 3}
   - {fileID: 481748144472450554, guid: b11bb5c768f71e74cbb5c88562d92391, type: 3}
   - {fileID: 1079057596883106227, guid: 66b56813ea233f942bbb5d184c67f830, type: 3}
-  dishSpawnInterval: 4
+  dishSpawnInterval: 3
   coinUIController: {fileID: 985761462}
 --- !u!4 &833195258
 Transform:
@@ -2376,7 +2376,8 @@ Transform:
   m_LocalPosition: {x: -7.26, y: 0.39970794, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2108116148}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &843534537
@@ -7090,12 +7091,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2108116146}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 7.26, y: -0.39970794, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 833195258}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2124244671
 GameObject:
@@ -7246,6 +7247,10 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2600946310707140225, guid: 5bbd1427a7f2d1b47ae58d87b7515c33, type: 3}
+      propertyPath: dashCooldown
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600946310707140225, guid: 5bbd1427a7f2d1b47ae58d87b7515c33, type: 3}
       propertyPath: tableGroupManager
       value: 
       objectReference: {fileID: 1819005173}
@@ -7301,6 +7306,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4887100080660296473, guid: 5bbd1427a7f2d1b47ae58d87b7515c33, type: 3}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4931092561701043736, guid: 5bbd1427a7f2d1b47ae58d87b7515c33, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785113570108114883, guid: 5bbd1427a7f2d1b47ae58d87b7515c33, type: 3}
+      propertyPath: m_TagString
+      value: AttackObject
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7319,4 +7336,3 @@ SceneRoots:
   - {fileID: 1707387895}
   - {fileID: 1462913021}
   - {fileID: 1211755233}
-  - {fileID: 2108116148}

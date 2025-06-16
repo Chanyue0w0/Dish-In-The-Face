@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcc9b3dbe2844bd4e84daaed377a9ad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 2
+  activeTime: 1.75
   activeStart: 0
-  alphaSet: 0.9
-  alphaMultiplier: 0.8
+  alphaSet: 0.8
+  alphaMultiplier: 0.9
