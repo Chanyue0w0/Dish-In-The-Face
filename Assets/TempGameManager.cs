@@ -17,7 +17,6 @@ public class TempGameManager : MonoBehaviour
 	[Header("Coin")]
 	[SerializeField] private CoinUIController coinUIController;
 
-
 	// 儲存目前活躍的餐點資訊
 	private List<DishEntry> activeDishes = new List<DishEntry>();
 
@@ -89,7 +88,7 @@ public class TempGameManager : MonoBehaviour
 			}
 		}
 
-		Debug.LogWarning($"找不到餐點：{dishName}，桌號：{tableNumber}");
+		Debug.Log($"找不到餐點：{dishName}，桌號：{tableNumber}");
 		coinUIController.SubtractCoin(10);
 	}
 
