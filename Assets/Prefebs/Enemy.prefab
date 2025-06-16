@@ -30,7 +30,8 @@ Transform:
   m_LocalPosition: {x: -2.28, y: 0.354, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 6017552473916324879}
   m_Father: {fileID: 8900803417445793659}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &626106671264351355
@@ -237,6 +238,7 @@ MonoBehaviour:
   attackCheckInterval: 1
   attackProbability: 0.3
   attackHitBoxDuration: 0.1
+  isMoveToPlayer: 1
   attackHitBox: {fileID: 46440914234107825}
 --- !u!114 &640994991098875833
 MonoBehaviour:
@@ -265,10 +267,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -360,3 +362,113 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -1.454834}
   serializedVersion: 2
   m_Radius: 1.8406011
+--- !u!1001 &9098010957108822209
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 9058661787752061566}
+    m_Modifications:
+    - target: {fileID: 82318118838283737, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 482649367182132854, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 928617062063215199, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2849131025561427243, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2849131026478401700, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045768, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045771, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Name
+      value: CFXR4 Sword Hit LIGHT (Cross) + Text
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5392
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5392
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5392
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4409642360910403358, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Intensity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4451077359353195015, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785493958838850575, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+--- !u!4 &6017552473916324879 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3296640238568045774, guid: fa5cc3a02d4d45d4f8f98b8c90b8cf5f, type: 3}
+  m_PrefabInstance: {fileID: 9098010957108822209}
+  m_PrefabAsset: {fileID: 0}
