@@ -14,11 +14,18 @@ public class TempGameManager : MonoBehaviour
 	[SerializeField] private List<GameObject> dishPrefabs;
 	[SerializeField] private float dishSpawnInterval = 5f;
 
+	[Header("Coin")]
+	[SerializeField] private TextMeshProUGUI coinNumberText;
+
+
+	private int coinNumber = 0;
 	// 儲存目前活躍的餐點資訊
 	private List<DishEntry> activeDishes = new List<DishEntry>();
 
 	private void Start()
 	{
+		coinNumberText.text = "0";
+		coinNumber = 0;
 		StartCoroutine(SpawnEnemyRoutine());
 		StartCoroutine(SpawnDishRoutine());
 	}
@@ -80,6 +87,9 @@ public class TempGameManager : MonoBehaviour
 				}
 				activeDishes.RemoveAt(i);
 				Debug.Log($"完成餐點：{dishName}，桌號：{tableNumber}");
+
+				coinNumber += 0;
+				coinNumberText.text = coinNumber.ToString();
 				return;
 			}
 		}
