@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
 
+		handItemNow.SetActive(false);
 		attackHitBox.SetActive(false);
 	}
 
@@ -135,16 +136,7 @@ public class PlayerController : MonoBehaviour
 		if (moveInput == Vector2.zero)
 			moveInput = Vector2.right;
 
-		// 如果有碰到 Table 且有手持物品 → 放下
-		if (currentTableCollider != null && handItemNow.activeSelf)
-		{
-			SpriteRenderer handSprite = handItemNow.GetComponent<SpriteRenderer>();
-			tableGroupManager.SetTableItem(currentTableCollider.gameObject, handItemNow);
-			Debug.Log($"物品 {handItemNow.GetComponent<SpriteRenderer>().sprite.name} 放回桌 {currentTableCollider.name} 上");
-			
-			handSprite.sprite = null;
-			handItemNow.SetActive(false);
-		}
+		PullDownDish();
 
 		// 開始穿越帶有 Table tag 的物件
 		Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
@@ -197,6 +189,8 @@ public class PlayerController : MonoBehaviour
 				Debug.Log("撿取物品並顯示在手上");
 			}
 		}
+
+		PullDownDish();
 	}
 
 
@@ -214,6 +208,22 @@ public class PlayerController : MonoBehaviour
 		yield return new WaitForSeconds(delay);
 		attackHitBox.SetActive(false);
 	}
+
+	private void PullDownDish()
+	{
+		// 如果有碰到 Table 且有手持物品 → 放下
+		if (currentTableCollider != null && handItemNow.activeSelf)
+		{
+			SpriteRenderer handSprite = handItemNow.GetComponent<SpriteRenderer>();
+			tableGroupManager.SetTableItem(currentTableCollider.gameObject, handItemNow);
+			Debug.Log($"物品 {handItemNow.GetComponent<SpriteRenderer>().sprite.name} 放回桌 {currentTableCollider.name} 上");
+
+			handSprite.sprite = null;
+			handItemNow.SetActive(false);
+		}
+	}
+
+
 	void UpdateAnimatorStates()
 	{
 		if (isDashing)
