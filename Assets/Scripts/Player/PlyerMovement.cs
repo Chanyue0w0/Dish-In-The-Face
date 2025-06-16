@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
 		if (isDashing)
 		{
 			dashTimer -= Time.deltaTime;
+			ShadowPool.instance.GetFormPool();
 			if (dashTimer <= 0f)
 			{
 				EndDash();
