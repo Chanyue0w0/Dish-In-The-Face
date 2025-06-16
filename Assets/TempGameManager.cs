@@ -2,18 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
 
 public class TempGameManager : MonoBehaviour
 {
 	[Header("Enemy")]
-	public GameObject enemyPrefab;
-	public float enemySpawnInterval = 4f;
+	[SerializeField] private GameObject enemyPrefab;
+	[SerializeField] private float enemySpawnInterval = 4f;
 
 	[Header("Dish")]
-	public GameObject dishListObject;
-	public List<GameObject> dishPrefabs;
-	public float dishSpawnInterval = 5f;
+	[SerializeField] private GameObject dishListObject;
+	[SerializeField] private List<GameObject> dishPrefabs;
+	[SerializeField] private float dishSpawnInterval = 5f;
+
+	// 儲存目前活躍的餐點資訊
+	private List<DishEntry> activeDishes = new List<DishEntry>();
 
 	private void Start()
 	{
@@ -41,15 +43,55 @@ public class TempGameManager : MonoBehaviour
 			int randIndex = Random.Range(0, dishPrefabs.Count);
 			GameObject dish = Instantiate(dishPrefabs[randIndex], dishListObject.transform);
 
-			// 設定桌號文字（1~6）
-			int tableNumber = Random.Range(1, 7); // 包含 6
+			// 隨機桌號 (1~6)
+			int tableNumber = Random.Range(1, 7);
 
-			// 取得 TextMeshPro 和設定桌號
+			// 設定 TextMeshPro 顯示桌號
 			TextMeshProUGUI text = dish.GetComponentInChildren<TextMeshProUGUI>();
 			if (text != null)
 			{
-				text.text = "桌號 " + tableNumber.ToString();
+				text.text = tableNumber.ToString();
+			}
+
+			// 加入 active dishes list
+			string dishName = dishPrefabs[randIndex].name;
+			activeDishes.Add(new DishEntry
+			{
+				dishName = dishName,
+				tableNumber = tableNumber,
+				dishObject = dish
+			});
+		}
+	}
+
+	//  根據餐點名稱和桌號刪除 dish（成功只刪除一個）
+	public void FinishDish(string dishName, int tableNumber)
+	{
+
+		Debug.Log($"桌號：{tableNumber} 上菜!!!!!");
+		for (int i = 0; i < activeDishes.Count; i++)
+		{
+			var entry = activeDishes[i];
+			if (entry.dishName == dishName && entry.tableNumber-1 == tableNumber)
+			{
+				if (entry.dishObject != null)
+				{
+					Destroy(entry.dishObject);
+				}
+				activeDishes.RemoveAt(i);
+				Debug.Log($"完成餐點：{dishName}，桌號：{tableNumber}");
+				return;
 			}
 		}
+
+		Debug.LogWarning($"找不到餐點：{dishName}，桌號：{tableNumber}");
+	}
+
+	// 餐點資料結構
+	private class DishEntry
+	{
+		public string dishName;
+		public int tableNumber;
+		public GameObject dishObject;
 	}
 }

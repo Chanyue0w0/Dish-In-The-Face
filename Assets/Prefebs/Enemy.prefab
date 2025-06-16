@@ -233,7 +233,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   directionChangeInterval: 1.5
-  attackInterval: 5
+  attackInterval: 2
   attackHitBoxDuration: 0.1
   attackHitBox: {fileID: 46440914234107825}
 --- !u!114 &640994991098875833
