@@ -55,7 +55,7 @@ public class EnemyStatus : MonoBehaviour
 	// 2. ­Y¸I¨ì Tag ¬° Player ªº Trigger¡A¦© 1 ºw¦å
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.CompareTag("Player"))
+		if (other.CompareTag("AttackObject"))
 		{
 			Debug.Log("Enemy get hurt!");
 			GetHurt(1);

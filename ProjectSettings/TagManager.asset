@@ -8,6 +8,7 @@ TagManager:
   - Table
   - Foods
   - Enemy
+  - AttackObject
   layers:
   - Default
   - TransparentFX
