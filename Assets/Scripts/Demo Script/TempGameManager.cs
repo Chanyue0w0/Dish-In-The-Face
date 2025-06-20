@@ -14,8 +14,6 @@ public class TempGameManager : MonoBehaviour
 	[SerializeField] private List<GameObject> dishPrefabs;
 	[SerializeField] private float dishSpawnInterval = 5f;
 
-	[Header("Coin")]
-	[SerializeField] private CoinUIController coinUIController;
 
 	// 儲存目前活躍的餐點資訊
 	private List<DishEntry> activeDishes = new List<DishEntry>();
@@ -83,13 +81,11 @@ public class TempGameManager : MonoBehaviour
 				}
 				activeDishes.RemoveAt(i);
 				Debug.Log($"完成餐點：{dishName}，桌號：{tableNumber}");
-				coinUIController.AddCoin(10);
 				return;
 			}
 		}
 
 		Debug.Log($"找不到餐點：{dishName}，桌號：{tableNumber}");
-		coinUIController.SubtractCoin(10);
 	}
 
 	// 餐點資料結構

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class TempPlayerController : MonoBehaviour
 {
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private float moveSpeed = 5f;
