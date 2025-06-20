@@ -2363,7 +2363,7 @@ MonoBehaviour:
   - {fileID: 481748144472450554, guid: b11bb5c768f71e74cbb5c88562d92391, type: 3}
   - {fileID: 1079057596883106227, guid: 66b56813ea233f942bbb5d184c67f830, type: 3}
   dishSpawnInterval: 3
-  coinUIController: {fileID: 985761462}
+  coinUIController: {fileID: 0}
 --- !u!4 &833195258
 Transform:
   m_ObjectHideFlags: 0
@@ -2738,7 +2738,6 @@ GameObject:
   - component: {fileID: 985761461}
   - component: {fileID: 985761464}
   - component: {fileID: 985761463}
-  - component: {fileID: 985761462}
   m_Layer: 5
   m_Name: Coin Image
   m_TagString: Untagged
@@ -2768,23 +2767,6 @@ RectTransform:
   m_AnchoredPosition: {x: 736, y: -71}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &985761462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 985761460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 832144b989697d646a88ea3524dc0f77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentCoin: 0
-  coinText: {fileID: 1811714305}
-  massageShowTime: 1.5
-  addCoinUI: {fileID: 1342249788}
-  subtractCoinUI: {fileID: 1092288643}
 --- !u!114 &985761463
 MonoBehaviour:
   m_ObjectHideFlags: 0

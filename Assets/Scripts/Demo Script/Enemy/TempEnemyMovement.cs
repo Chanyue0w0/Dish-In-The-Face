@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class EnemyMovement : MonoBehaviour
+public class TempEnemyMovement : MonoBehaviour
 {
 	public float moveSpeed = 2f;
 	public float directionChangeInterval = 1.5f;
