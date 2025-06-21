@@ -23,27 +23,4 @@ public class WroldGridController : MonoBehaviour
 		highlightSquare.SetActive(false);
 	}
 
-	void Update()
-	{
-		Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		mouseWorldPos.z = 0;
-
-		grid.GetGridXY(mouseWorldPos, out int x, out int y);
-
-		Vector3 cellWorldPos = grid.GetWorldPosition(x, y) + new Vector3(cellSize, cellSize) * 0.5f;
-
-		if (grid.IsPositionInGrid(x, y))
-		{
-			if (cellWorldPos != lastHighlightPos)
-			{
-				highlightSquare.SetActive(true);
-				highlightSquare.transform.position = cellWorldPos;
-				lastHighlightPos = cellWorldPos;
-			}
-		}
-		else
-		{
-			highlightSquare.SetActive(false);
-		}
-	}
 }
