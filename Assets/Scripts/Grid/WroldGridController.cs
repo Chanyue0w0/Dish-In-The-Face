@@ -4,25 +4,46 @@ using UnityEngine;
 
 public class WroldGridController : MonoBehaviour
 {
-    [SerializeField] private int gridWidth = 20;
-	[SerializeField] private int gridHeight = 10;
-	[SerializeField] private float cellSize = 1;
+	[Header("Map Grid cell setting")]
+	[SerializeField] private int gridWidth;
+	[SerializeField] private int gridHeight;
+	[SerializeField] private float cellSize;
+	[SerializeField] private Vector3 originPosition;
 
-    //[SerializeField] private bool isShowGridLine;
-    // Start is called before the first frame update
+	[Header("Highlight")]
+	[SerializeField] private GameObject highlightSquare;
 
-    Grid grid;
+	private Grid grid;
+	private Vector3 lastHighlightPos = Vector3.positiveInfinity;
+
 	void Start()
-    {
-        grid = new Grid(gridWidth, gridHeight, cellSize);
-    }
+	{
+		grid = new Grid(gridWidth, gridHeight, cellSize, originPosition);
+		highlightSquare.transform.localScale = Vector3.one * cellSize;
+		highlightSquare.SetActive(false);
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        //if (isShowGridLine)
-        //{
-        //    grid.DrawCellDebugLine();
-        //}
-    }
+	void Update()
+	{
+		Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		mouseWorldPos.z = 0;
+
+		grid.GetGridXY(mouseWorldPos, out int x, out int y);
+
+		Vector3 cellWorldPos = grid.GetWorldPosition(x, y) + new Vector3(cellSize, cellSize) * 0.5f;
+
+		if (grid.IsPositionInGrid(x, y))
+		{
+			if (cellWorldPos != lastHighlightPos)
+			{
+				highlightSquare.SetActive(true);
+				highlightSquare.transform.position = cellWorldPos;
+				lastHighlightPos = cellWorldPos;
+			}
+		}
+		else
+		{
+			highlightSquare.SetActive(false);
+		}
+	}
 }
