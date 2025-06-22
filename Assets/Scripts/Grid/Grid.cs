@@ -24,6 +24,19 @@ public class Grid
 	}
 	public void DrawCellDebugLine()
 	{
+		GameObject[] allObjects = Object.FindObjectsOfType<GameObject>();
+        int count = 0;
+
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == "World_Text")
+            {
+                Object.DestroyImmediate(obj);
+                count++;
+            }
+        }
+
+        Debug.Log($"Deleted {count} objects named 'World_Text'");
 		for (int x = 0; x < gridArray.GetLength(0); x++)
 		{
 			for (int y = 0; y < gridArray.GetLength(1); y++)
@@ -59,6 +72,7 @@ public class Grid
 			gridArray[x, y] = value;
 			//if (OnGridValueChanged != null) OnGridValueChanged(this, new OnGridValueChangedEventArgs { x = x, y = y });
 		}
+		DrawCellDebugLine();
 	}
 
 	public void SetValue(Vector3 worldPosition, int value)

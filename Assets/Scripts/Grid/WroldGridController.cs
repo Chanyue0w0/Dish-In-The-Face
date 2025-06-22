@@ -12,8 +12,8 @@ public class WroldGridController : MonoBehaviour
 	[SerializeField] private bool isEditorMode;
 
 	[Header("Reference")]
-	[SerializeField] private GameObject highlightSquarePreferb;
-	[SerializeField] private GameObject furniturePreferb;
+	[SerializeField] private GameObject highlightSquarePrefab;
+	[SerializeField] private GameObject furniturePrefab;
 
 	// Grid 資料結構，用來儲存地圖格子資料
 	private Grid grid;
@@ -30,8 +30,8 @@ public class WroldGridController : MonoBehaviour
 		grid = new Grid(gridWidth, gridHeight, cellSize, originPosition);
 
 		// 調整 highlight prefab 的大小，並隱藏
-		highlightSquarePreferb.transform.localScale = Vector3.one * cellSize;
-		highlightSquarePreferb.SetActive(false);
+		highlightSquarePrefab.transform.localScale = Vector3.one * cellSize;
+		highlightSquarePrefab.SetActive(false);
 
 
 	}
@@ -39,9 +39,9 @@ public class WroldGridController : MonoBehaviour
 
 	void Update()
 	{
+		// 編輯模式開啟
 		if (isEditorMode)
 		{
-
 			Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			mouseWorldPosition.z = 0;
 
@@ -61,21 +61,20 @@ public class WroldGridController : MonoBehaviour
 
 	private void FurniturePlacePreview(Vector3 alignedPosition)
 	{
+		if (alignedPosition == lastHighlightPos) return;
+
 		// 若滑鼠移出原本 cell
-		if (alignedPosition != lastHighlightPos)
-		{
-			lastHighlightPos = alignedPosition;
-			if (previewFurnitureInstance != null) // 已存在選取的家具
+		lastHighlightPos = alignedPosition;
+
+		// 已存在選取的家具
+		if (previewFurnitureInstance != null)
+			if(previewFurnitureInstance.GetComponent<FurnitureState>().ID == furniturePrefab.GetComponent<FurnitureState>().ID)
 			{
 				previewFurnitureInstance.transform.position = alignedPosition;
-
+				return;
 			}
-			else CreatFurniturePreview(alignedPosition);
-		}
-	}
-
-	private void CreatFurniturePreview(Vector3 alignedPosition)
-	{
+	
+		//Creat Furniture Preview
 		// resect
 		// 刪除前一次生成的家具與 highlight
 		if (previewFurnitureInstance != null)
@@ -90,7 +89,7 @@ public class WroldGridController : MonoBehaviour
 
 		// 生成新的預覽與 highlight
 		// 生成家具預覽
-		previewFurnitureInstance = Instantiate(furniturePreferb, alignedPosition, Quaternion.identity);
+		previewFurnitureInstance = Instantiate(furniturePrefab, alignedPosition, Quaternion.identity);
 		previewFurnitureInstance.gameObject.name += " preview";
 		previewFurnitureInstance.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
 
@@ -115,7 +114,8 @@ public class WroldGridController : MonoBehaviour
 			for (int y = 0; y < sizeY; y++)
 			{
 				Vector3 cellPos = leftBottom + new Vector3(x * cellSize, y * cellSize, 0);
-				GameObject highlight = Instantiate(highlightSquarePreferb, cellPos, Quaternion.identity, previewFurnitureInstance.transform);
+				GameObject highlight = Instantiate(highlightSquarePrefab, cellPos, Quaternion.identity);
+				highlight.transform.SetParent(previewFurnitureInstance.transform);
 				highlight.SetActive(true);
 				highlightInstances.Add(highlight);
 			}
@@ -125,9 +125,8 @@ public class WroldGridController : MonoBehaviour
 	private void PlaceNewFurniture(Vector3 alignedPosition)
 	{
 		// 1. 基於 Cell位置生成 newFurnitureObject
-		GameObject newFurnitureObject = Instantiate(furniturePreferb, alignedPosition, Quaternion.identity);
+		GameObject newFurnitureObject = Instantiate(furniturePrefab, alignedPosition, Quaternion.identity);
 		newFurnitureObject.gameObject.name += " Object";
-		newFurnitureObject.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
 
 		FurnitureState furnitureState = newFurnitureObject.GetComponent<FurnitureState>();
 		Vector3 furnitureScale = newFurnitureObject.transform.localScale;  // 或是直接拿 spriteRenderer.size
@@ -142,6 +141,23 @@ public class WroldGridController : MonoBehaviour
 
 		int id = furnitureState.ID;
 
-		// 2. 更改 value(家具所站的所有 cells 都要更改)
+		// 2. 更改 value(家具所站的所有 cells 都要更改) (value = id)
+		float offsetX = -(sizeX - 1) * 0.5f * cellSize;
+		float offsetY = -(sizeY - 1) * 0.5f * cellSize;
+		Vector3 leftBottom = alignedPosition + new Vector3(offsetX, offsetY, 0);
+
+		for (int x = 0; x < sizeX; x++)
+		{
+			for (int y = 0; y < sizeY; y++)
+			{
+				Vector3 cellPos = leftBottom + new Vector3(x * cellSize, y * cellSize, 0);
+				grid.SetValue(cellPos, id);
+			}
+		}
+	}
+
+	public void SetFurniturePrefab(GameObject prefab)
+	{
+		furniturePrefab = prefab;
 	}
 }
