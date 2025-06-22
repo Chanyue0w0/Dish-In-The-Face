@@ -52,11 +52,10 @@ public class WroldGridController : MonoBehaviour
 			// 滑鼠左鍵點擊 -> 放置家具
 			if (Input.GetMouseButtonDown(0) && previewFurnitureInstance != null)
 			{
+				isEditorMode = false;
 				PlaceNewFurniture(alignedPosition);
 			}
 		}
-
-
 	}
 
 	private void FurniturePlacePreview(Vector3 alignedPosition)
@@ -159,5 +158,6 @@ public class WroldGridController : MonoBehaviour
 	public void SetFurniturePrefab(GameObject prefab)
 	{
 		furniturePrefab = prefab;
+		isEditorMode = true;
 	}
 }
