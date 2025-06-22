@@ -3847,11 +3847,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df6758e23d946174eb00f3f21bc86acb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWidth: 10
+  gridWidth: 20
   gridHeight: 10
   cellSize: 1
-  originPosition: {x: -7, y: -5, z: 0}
-  isEditorMode: 1
+  originPosition: {x: -9, y: -5, z: 0}
+  isEditorMode: 0
   highlightSquarePrefab: {fileID: 5642065159425640916, guid: b3ca5e35d9c5d3d44a3d79abd85c1fda, type: 3}
   furniturePrefab: {fileID: 662009070361988693, guid: 5fda9bf68dae99b4cac1f66e80abe982, type: 3}
 --- !u!1660057539 &9223372036854775807
