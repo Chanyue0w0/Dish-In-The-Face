@@ -5,13 +5,15 @@ using UnityEngine;
 
 public class TableGroupManager : MonoBehaviour
 {
-	[SerializeField] List<GameObject> tableObjects;
-	[SerializeField] List<GameObject> itemOntables;
-
+	[Header("-------- Setting ---------")]
+	[SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
+	[Header("-------- Reference ---------")]
+	[SerializeField] private List<GameObject> tableObjects;
+	[SerializeField] private List<GameObject> itemOntables;
+	[SerializeField] private RoundManager roundManager;
 	//[SerializeField] TempGameManager tempGameManager;
 
 
-	[SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
 													// Start is called before the first frame update
 	void Start()
 	{
@@ -41,7 +43,7 @@ public class TableGroupManager : MonoBehaviour
 		//	if (t == table) break;
 		//	tableIndex++;
 		//}
-		//tempGameManager.FinishDish(handItem.GetComponent<SpriteRenderer>().sprite.name, tableIndex);
+		roundManager.FinishDish(1, 1);
 
 
 		// 啟動延遲清除

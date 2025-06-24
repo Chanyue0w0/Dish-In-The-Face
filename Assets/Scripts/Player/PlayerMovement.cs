@@ -179,7 +179,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (currentFoodTrigger != null)
 		{
-			Debug.Log("get foood");
+			//Debug.Log("get foood");
 
 			// 清空手上已有物品
 			foreach (Transform child in handItemNow.transform)
