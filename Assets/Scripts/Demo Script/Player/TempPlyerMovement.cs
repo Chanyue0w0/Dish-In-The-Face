@@ -22,7 +22,7 @@ public class TempPlayerController : MonoBehaviour
 
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
-	[SerializeField] private TableGroupManager tableGroupManager;
+	[SerializeField] private TempTableGroupManager tableGroupManager;
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
 	[SerializeField] private GameObject attackHitBox;

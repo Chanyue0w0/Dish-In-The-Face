@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
 
-		handItemNow.SetActive(false);
 		attackHitBox.SetActive(false);
 	}
 
@@ -181,15 +180,20 @@ public class PlayerController : MonoBehaviour
 		if (currentFoodTrigger != null)
 		{
 			Debug.Log("get foood");
-			SpriteRenderer foodSprite = currentFoodTrigger.GetComponent<SpriteRenderer>();
-			if (foodSprite != null)
+
+			// 清空手上已有物品
+			foreach (Transform child in handItemNow.transform)
 			{
-				SpriteRenderer handSprite = handItemNow.GetComponent<SpriteRenderer>();
-				handSprite.sprite = foodSprite.sprite;
-				handItemNow.SetActive(true);
-				Debug.Log("撿取物品並顯示在手上");
+				Destroy(child.gameObject);
 			}
+
+			// 生成撿到的物品並附加到 handItemNow
+			GameObject newItem = Instantiate(currentFoodTrigger.gameObject, handItemNow.transform.position, Quaternion.identity);
+			newItem.transform.SetParent(handItemNow.transform);
+			newItem.transform.localScale = new Vector3(0.8f, 0.8f, 1);
+			newItem.GetComponent<Collider2D>().enabled = false; // 關閉碰撞避免干擾
 		}
+
 
 		PullDownDish();
 	}
@@ -213,15 +217,12 @@ public class PlayerController : MonoBehaviour
 
 	private void PullDownDish()
 	{
-		// 如果有碰到 Table 且有手持物品 → 放下
-		if (currentTableCollider != null && handItemNow.activeSelf)
+		if (currentTableCollider != null && handItemNow.transform.childCount > 0)
 		{
-			SpriteRenderer handSprite = handItemNow.GetComponent<SpriteRenderer>();
-			tableGroupManager.SetTableItem(currentTableCollider.gameObject, handItemNow);
-			Debug.Log($"物品 {handItemNow.GetComponent<SpriteRenderer>().sprite.name} 放回桌 {currentTableCollider.name} 上");
+			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 
-			handSprite.sprite = null;
-			handItemNow.SetActive(false);
+			// 傳入 handItemNow 的子物件給 Table
+			tableGroupManager.SetTableItem(currentTableCollider.gameObject, item);
 		}
 	}
 

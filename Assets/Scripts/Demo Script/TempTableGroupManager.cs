@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TableGroupManager : MonoBehaviour
+public class TempTableGroupManager : MonoBehaviour
 {
 	[SerializeField] List<GameObject> tableObjects;
 	[SerializeField] List<GameObject> itemOntables;
