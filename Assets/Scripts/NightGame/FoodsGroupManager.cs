@@ -19,6 +19,8 @@ public class FoodsGroupManager : MonoBehaviour
 	void Start()
 	{
 		foodsCount = new int[foodsArray.Length];
+		for (int i = 0; i < foodsCount.Length; i++)
+			foodsCount[i] = 10;
 		UpdateAllFoodTexts(); // 初始化時也更新顯示
 	}
 
