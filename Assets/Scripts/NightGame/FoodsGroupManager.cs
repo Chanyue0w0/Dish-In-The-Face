@@ -5,16 +5,21 @@ using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
 {
-	// -------- Setting --------
-	[SerializeField] private float spawnInerval = 10f;      // –碭ネΘ箇砞10
-	[SerializeField] private int spawnCount = 10;           // –ΩネΘ计秖箇砞10
 
-	// -------- Reference --------
+	[Header("-------- Setting ---------")]
+	[SerializeField] private float spawnInerval = 10f;      // –碭ネΘ箇砞10
+	[SerializeField] private int spawnFoodsCount = 10;           // –ΩネΘ计秖箇砞10
+
+
+	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodsArray;         //  prefabs 皚
 	[SerializeField] private TextMeshPro[] foodsCountText;
+	[SerializeField] private Transform barFill;
+	[SerializeField] private Transform DishLoadingBar;
 
 	private int[] foodsCount; // 癸莱–贺繺翴ヘ玡计秖
 	private float timer = 0f;
+
 
 	void Start()
 	{
@@ -28,6 +33,11 @@ public class FoodsGroupManager : MonoBehaviour
 	void Update()
 	{
 		timer += Time.deltaTime;
+
+
+		// 穝弄兵
+		UpdateLoadingBar(timer / spawnInerval);
+
 		if (timer >= spawnInerval)
 		{
 			RefillFoods();
@@ -41,11 +51,11 @@ public class FoodsGroupManager : MonoBehaviour
 	{
 		for (int i = 0; i < foodsCount.Length; i++)
 		{
-			foodsCount[i] += spawnCount;
+			foodsCount[i] += spawnFoodsCount;
 		}
 
 		UpdateAllFoodTexts(); // –Ω干繺笆穝陪ボ
-		Debug.Log("干繺翴ЧΘ–贺繺翴 +" + spawnCount);
+		//Debug.Log("干繺翴ЧΘ–贺繺翴 +" + spawnCount);
 	}
 
 
@@ -59,6 +69,16 @@ public class FoodsGroupManager : MonoBehaviour
 			}
 		}
 	}
+
+	private void UpdateLoadingBar(float ratio)
+	{
+		//  ratio  0~1 ぇ丁
+		ratio = Mathf.Clamp01(ratio);
+
+		// barFill セ scale  (1, 1, 1)ノ x 罽北秈
+		barFill.localScale = new Vector3(ratio, 1f, 1f);
+	}
+
 
 	// э繺翴计秖 by index
 	public void SetFoodCount(int index, int count)
@@ -92,6 +112,6 @@ public class FoodsGroupManager : MonoBehaviour
 	// э–ΩネΘ计秖
 	public void SetRefillAmount(int amount)
 	{
-		spawnCount = amount;
+		spawnFoodsCount = amount;
 	}
 }
