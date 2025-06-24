@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1157075401442171041}
   - component: {fileID: 8893543293098551692}
   m_Layer: 5
-  m_Name: Pasta
+  m_Name: TempPasta
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

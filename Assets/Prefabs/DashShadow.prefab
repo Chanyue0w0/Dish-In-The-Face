@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3332251016579797777}
   - component: {fileID: 5141022577009061722}
   m_Layer: 0
-  m_Name: PlayerDashShadow
+  m_Name: DashShadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -46,3 +46,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Table
+    uniqueID: 2077443709
+    locked: 0
+  - name: NPC
+    uniqueID: 4244410229
+    locked: 0
+  - name: Player
+    uniqueID: 2658306531
+    locked: 0
+  - name: Dish
+    uniqueID: 3397877807
+    locked: 0
+  - name: Food
+    uniqueID: 2650000501
+    locked: 0
