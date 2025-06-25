@@ -581,7 +581,7 @@ Transform:
   m_GameObject: {fileID: 182932465}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.3656697, y: 0.7120937, z: -0.052202445}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -601,6 +601,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   finishDishHotPoint: 0.1
   hotPointManager: {fileID: 1603730299}
+  foodsGroupManager: {fileID: 0}
+  tableGroupManager: {fileID: 0}
+  guestGroupManager: {fileID: 0}
+  chairGroupManager: {fileID: 0}
 --- !u!1 &191916613
 GameObject:
   m_ObjectHideFlags: 0
@@ -4931,6 +4935,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 643318458}
+  - component: {fileID: 643318459}
   m_Layer: 0
   m_Name: Chairs Group
   m_TagString: Untagged
@@ -4959,6 +4964,25 @@ Transform:
   - {fileID: 1583160638}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &643318459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643318457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c0802163a702740bc3822f80ffe28f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chairList:
+  - {fileID: 540256339}
+  - {fileID: 555372066}
+  - {fileID: 395840795}
+  - {fileID: 1932645456}
+  - {fileID: 1643911835}
+  - {fileID: 1583160638}
 --- !u!1 &677354402
 GameObject:
   m_ObjectHideFlags: 0
@@ -9987,13 +10011,6 @@ MonoBehaviour:
   normalGuestPrefab: {fileID: 1562673538}
   wanderGuestPrefab: {fileID: 0}
   troubleGuestPrefab: {fileID: 0}
-  chairList:
-  - {fileID: 540256339}
-  - {fileID: 555372066}
-  - {fileID: 395840795}
-  - {fileID: 1932645456}
-  - {fileID: 1643911835}
-  - {fileID: 1583160638}
 --- !u!1 &773154034 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8859111089180111717, guid: 73e8fa00e59c20248a997032d1808ecb, type: 3}
@@ -20907,7 +20924,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdb2746919af5b14aa61346647523d35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearDelay: 5
   tableObjects:
   - {fileID: 1158098903}
   - {fileID: 1115589645}
@@ -21320,11 +21336,11 @@ MonoBehaviour:
   maxPatience: 20
   eatTime: 10
   moveSpeed: 2
+  roundManager: {fileID: 0}
   startPosition: {fileID: 506713175}
-  guestGroupManager: {fileID: 761160831}
-  foodsGroupManager: {fileID: 381182771}
   orderIconObject: {fileID: 801427082}
   foodSpriteRenderer: {fileID: 862485319}
+  patienceBar: {fileID: 0}
   barFill: {fileID: 1303749186}
 --- !u!1 &1583160637
 GameObject:
@@ -27324,8 +27340,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1222578148}
   - {fileID: 182932466}
+  - {fileID: 1222578148}
   - {fileID: 1603730298}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

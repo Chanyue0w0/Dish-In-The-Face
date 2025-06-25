@@ -10,12 +10,12 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f; // 客人移動速度
 
 	[Header("Reference")]
+	[SerializeField] private RoundManager roundManager;
+
 	[SerializeField] private Transform startPosition;
-	[SerializeField] private GuestGroupManager guestGroupManager;
-	[SerializeField] private FoodsGroupManager foodsGroupManager;
 	[SerializeField] private GameObject orderIconObject;
 	[SerializeField] private SpriteRenderer foodSpriteRenderer;
-
+	[SerializeField] private GameObject patienceBar;
 	[SerializeField] private Transform barFill; // 指向 orderIcon 下的 barFill
 
 	private Transform targetChair;
@@ -24,15 +24,16 @@ public class NormalGuestController : MonoBehaviour
 	private bool isSeated = false;
 	private bool isEating = false;
 	private bool isLeaving = false;
+	private Sprite orderFoodSprite = null;
 
 	void Start()
 	{
 		patienceTime = Random.Range(minPatience, maxPatience);
 		transform.position = startPosition.position;
-		targetChair = guestGroupManager.FindEmptyChair();
+		targetChair = roundManager.chairGroupManager.FindEmptyChair();
 
 		orderIconObject.SetActive(false);
-
+		patienceBar.SetActive(false);
 		if (targetChair != null)
 		{
 			StartCoroutine(MoveToChair(targetChair.position));
@@ -76,17 +77,18 @@ public class NormalGuestController : MonoBehaviour
 
 		// 顯示點餐與食物
 		orderIconObject.SetActive(true);
-		Sprite foodSprite = foodsGroupManager.OrderFoodRandomly();
-		foodSpriteRenderer.sprite = foodSprite;
+		orderFoodSprite = roundManager.foodsGroupManager.OrderFoodRandomly();
+		foodSpriteRenderer.sprite = orderFoodSprite;
 
 		// 重設讀條長度為滿
+		patienceBar.SetActive(true);
 		if (barFill != null)
 			barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
-	public void ReceiveFood()
+	public void ReceiveFood(Sprite foods)
 	{
-		if (!isSeated || isEating) return;
+		if (!isSeated || isEating || foods != orderFoodSprite) return;
 
 		isEating = true;
 		orderIconObject.SetActive(false); // 收起點餐圖示
@@ -105,7 +107,7 @@ public class NormalGuestController : MonoBehaviour
 		if (isLeaving) return;
 
 		isLeaving = true;
-		guestGroupManager.ReleaseChair(targetChair);
+		roundManager.chairGroupManager.ReleaseChair(targetChair);
 		StartCoroutine(MoveOut());
 	}
 
