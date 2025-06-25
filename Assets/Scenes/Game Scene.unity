@@ -599,7 +599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f45469d918e884c80ddc670262c698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finishDishHotPoint: 0.1
+  finishDishHotPoint: 0.3
   hotPointManager: {fileID: 1603730299}
   foodsGroupManager: {fileID: 381182771}
   tableGroupManager: {fileID: 1245954768}
@@ -9888,7 +9888,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &761160830
 Transform:
   m_ObjectHideFlags: 0
@@ -9923,7 +9923,7 @@ MonoBehaviour:
   minGuestPerWave: 3
   maxGuestPerWave: 5
   doorPosition: {fileID: 506713175}
-  normalGuestPrefab: {fileID: 3474513089845744578, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
+  normalGuestPrefab: {fileID: 1562673538}
   wanderGuestPrefab: {fileID: 0}
   troubleGuestPrefab: {fileID: 0}
 --- !u!1 &773154034 stripped
@@ -20867,6 +20867,11 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1562673538 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3474513089845744578, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
+  m_PrefabInstance: {fileID: 3813060341415388567}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1583160637
 GameObject:
   m_ObjectHideFlags: 0
