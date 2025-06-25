@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 5790449905297683900}
   - component: {fileID: 2527404437717541038}
   m_Layer: 0
-  m_Name: pizza
+  m_Name: Pizza
   m_TagString: Foods
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

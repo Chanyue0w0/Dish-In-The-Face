@@ -31,7 +31,6 @@ public class HotPointManager : MonoBehaviour
 			if (hotPoint > 0f)
 			{
 				hotPoint -= decreaseRate * Time.deltaTime;
-				Debug.Log("hotPoint ´î¤Ö!!!!!!!");
 				hotPoint = Mathf.Clamp(hotPoint, 0f, 10f);
 				UpdateHotLevelSprite();
 			}
