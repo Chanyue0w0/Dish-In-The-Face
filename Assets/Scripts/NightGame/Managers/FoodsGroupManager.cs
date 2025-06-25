@@ -114,4 +114,30 @@ public class FoodsGroupManager : MonoBehaviour
 	{
 		spawnFoodsCount = amount;
 	}
+
+	public Sprite OrderFoodRandomly()
+	{
+		// 確保有餐點可以選擇
+		if (foodsArray == null || foodsArray.Length == 0)
+			return null;
+
+		// 隨機選一個索引
+		int randomIndex = Random.Range(0, foodsArray.Length);
+
+		// 取得對應的 prefab
+		GameObject selectedFood = foodsArray[randomIndex].transform.GetChild(0).gameObject;
+
+		// 假設要找的 SpriteRenderer 是子物件的子物件
+		// 使用 GetComponentsInChildren 並略過自己本身
+		SpriteRenderer[] sprites = selectedFood.GetComponentsInChildren<SpriteRenderer>(true);
+
+		foreach (var sr in sprites)
+		{
+			if (sr.gameObject != selectedFood) // 確保不是 prefab 自己
+				return sr.sprite;
+		}
+
+		return null; // 如果找不到就回傳 null
+	}
+
 }
