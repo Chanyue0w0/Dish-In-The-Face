@@ -29,7 +29,9 @@ public class NormalGuestController : MonoBehaviour
 	void Start()
 	{
 		patienceTime = Random.Range(minPatience, maxPatience);
-		transform.position = startPosition.position;
+		//transform.position = startPosition.position;
+
+		//roundManager = GameObject.Find("Chair_01");
 		targetChair = roundManager.chairGroupManager.FindEmptyChair();
 
 		orderIconObject.SetActive(false);
