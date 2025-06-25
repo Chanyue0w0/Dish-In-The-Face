@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RoundManager : MonoBehaviour
@@ -11,7 +9,11 @@ public class RoundManager : MonoBehaviour
 
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private HotPointManager hotPointManager;
+	[SerializeField] public HotPointManager hotPointManager;
+    [SerializeField] public FoodsGroupManager foodsGroupManager;
+    [SerializeField] public TableGroupManager tableGroupManager;
+	[SerializeField] public GuestGroupManager guestGroupManager;
+    [SerializeField] public ChairGroupManager chairGroupManager;
 
 	// Start is called before the first frame update
 	void Start()
