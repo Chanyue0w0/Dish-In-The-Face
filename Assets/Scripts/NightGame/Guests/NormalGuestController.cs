@@ -86,14 +86,15 @@ public class NormalGuestController : MonoBehaviour
 			barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
-	public void ReceiveFood(Sprite foods)
+	public bool IsReceiveFood(Sprite foods)
 	{
-		if (!isSeated || isEating || foods != orderFoodSprite) return;
+		if (!isSeated || isEating || foods != orderFoodSprite) return false;
 
 		isEating = true;
 		orderIconObject.SetActive(false); // 收起點餐圖示
 		StopAllCoroutines();
 		StartCoroutine(EatAndLeave());
+		return true;
 	}
 
 	private IEnumerator EatAndLeave()

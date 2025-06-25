@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class TableGroupManager : MonoBehaviour
@@ -12,10 +10,6 @@ public class TableGroupManager : MonoBehaviour
 	[SerializeField] private List<GameObject> itemOntables;
 
 	[SerializeField] private RoundManager roundManager;
-	//[SerializeField] TempGameManager tempGameManager;
-
-
-													// Start is called before the first frame update
 	void Start()
 	{
 		foreach (GameObject obj in tableObjects)
@@ -32,18 +26,13 @@ public class TableGroupManager : MonoBehaviour
 
 	public void SetTableItem(GameObject table, GameObject handItem)
 	{
+
 		// 放置餐點
 		GameObject tableItem = table.transform.GetChild(0).gameObject;
 		handItem.transform.SetParent(tableItem.transform);
 		handItem.transform.localPosition = Vector3.zero;
 
 		// 回報已上餐
-		//int tableIndex = 0;
-		//foreach (GameObject t in tableObjects)
-		//{
-		//	if (t == table) break;
-		//	tableIndex++;
-		//}
 		roundManager.FinishDish(1, 1);
 	}
 
