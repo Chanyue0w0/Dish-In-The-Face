@@ -601,10 +601,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   finishDishHotPoint: 0.1
   hotPointManager: {fileID: 1603730299}
-  foodsGroupManager: {fileID: 0}
-  tableGroupManager: {fileID: 0}
-  guestGroupManager: {fileID: 0}
-  chairGroupManager: {fileID: 0}
+  foodsGroupManager: {fileID: 381182771}
+  tableGroupManager: {fileID: 1245954768}
+  guestGroupManager: {fileID: 761160831}
+  chairGroupManager: {fileID: 643318459}
 --- !u!1 &191916613
 GameObject:
   m_ObjectHideFlags: 0
@@ -21336,11 +21336,11 @@ MonoBehaviour:
   maxPatience: 20
   eatTime: 10
   moveSpeed: 2
-  roundManager: {fileID: 0}
+  roundManager: {fileID: 182932467}
   startPosition: {fileID: 506713175}
   orderIconObject: {fileID: 801427082}
   foodSpriteRenderer: {fileID: 862485319}
-  patienceBar: {fileID: 0}
+  patienceBar: {fileID: 801427082}
   barFill: {fileID: 1303749186}
 --- !u!1 &1583160637
 GameObject:
