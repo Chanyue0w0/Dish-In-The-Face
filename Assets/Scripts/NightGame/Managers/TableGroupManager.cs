@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class TableGroupManager : MonoBehaviour
 {
-	[Header("-------- Setting ---------")]
-	[SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
+	//[Header("-------- Setting ---------")]
+	//[SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
 	[Header("-------- Reference ---------")]
 	[SerializeField] private List<GameObject> tableObjects;
 	[SerializeField] private List<GameObject> itemOntables;
+
 	[SerializeField] private RoundManager roundManager;
 	//[SerializeField] TempGameManager tempGameManager;
 
@@ -44,10 +45,6 @@ public class TableGroupManager : MonoBehaviour
 		//	tableIndex++;
 		//}
 		roundManager.FinishDish(1, 1);
-
-
-		// 啟動延遲清除
-		StartCoroutine(ClearTableAfterDelay(table, clearDelay));
 	}
 
 	public void ClearTableItem(GameObject table)
@@ -58,9 +55,4 @@ public class TableGroupManager : MonoBehaviour
 		}
 	}
 
-	private IEnumerator ClearTableAfterDelay(GameObject table, float delay)
-	{
-		yield return new WaitForSeconds(delay);
-		ClearTableItem(table);
-	}
 }
