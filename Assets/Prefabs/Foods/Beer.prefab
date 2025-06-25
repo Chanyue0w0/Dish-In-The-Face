@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 6872227339077236214}
   - component: {fileID: 3020467750681920036}
   m_Layer: 0
-  m_Name: beer
+  m_Name: Beer
   m_TagString: Foods
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
