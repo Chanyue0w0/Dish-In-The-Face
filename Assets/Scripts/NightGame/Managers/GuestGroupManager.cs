@@ -58,9 +58,9 @@ public class GuestGroupManager : MonoBehaviour
 				//	if (Random.value < 0.3f)
 				//		GenerateTrash(guest.transform.position);
 				//	break;
-				//case 2:
-				//	guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
-				//	break;
+				case 2:
+					guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+					break;
 			}
 		}
 	}
