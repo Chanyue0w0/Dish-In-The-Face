@@ -23,9 +23,9 @@ public class PlayerController : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private TableGroupManager tableGroupManager;
+	[SerializeField] private PlayerAttackController attackController;
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
-	[SerializeField] private GameObject attackHitBox;
 
 	private Collider2D currentFoodTrigger;   // 當前接觸到的食物觸發器
 	private Collider2D currentTableCollider; // 當前接觸到的桌子碰撞器
@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
 
-		attackHitBox.SetActive(false);
 	}
 
 	void Update()
@@ -116,7 +115,9 @@ public class PlayerController : MonoBehaviour
 		// 攻擊或投擲
 		if (Input.GetKeyDown(KeyCode.J) || Input.GetMouseButtonDown(0))
 		{
-			BasicAttack();
+			attackController.IsAttackSuccess();
+			// 舊版攻擊
+			//BasicAttack();
 		}
 
 		// 閃避：加速並穿過 Table
@@ -199,21 +200,14 @@ public class PlayerController : MonoBehaviour
 	}
 
 
-	// 普通攻擊或投擲餐點
-	void BasicAttack()
-	{
-		// TODO: 攻擊或投擲行為
-		//Debug.Log("觸發攻擊或投擲");
-		attackHitBox.SetActive(true);
-		StartCoroutine(DisableAttackHitBoxAfterDelay(attackHitBoxDuration));
-	}
-
-	// 延遲關閉 attackHitBox
-	private IEnumerator DisableAttackHitBoxAfterDelay(float delay)
-	{
-		yield return new WaitForSeconds(delay);
-		attackHitBox.SetActive(false);
-	}
+	//// 普通攻擊或投擲餐點
+	//void BasicAttack()
+	//{
+	//	// TODO: 攻擊或投擲行為
+	//	//Debug.Log("觸發攻擊或投擲");
+	//	attackHitBox.SetActive(true);
+	//	StartCoroutine(DisableAttackHitBoxAfterDelay(attackHitBoxDuration));
+	//}
 
 	private void PullDownDish()
 	{

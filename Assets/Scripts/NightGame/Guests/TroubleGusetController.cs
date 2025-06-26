@@ -116,6 +116,7 @@ public class TroubleGusetController : MonoBehaviour
 
 	public void TakeDamage(int damage)
 	{
+		Debug.Log(this.name + "die");
 		hp -= damage;
 		if (hp <= 0)
 		{

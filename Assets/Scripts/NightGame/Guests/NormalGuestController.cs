@@ -133,7 +133,7 @@ public class NormalGuestController : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	void OnTriggerStay2D(Collider2D other)
+	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("Table"))
 		{
