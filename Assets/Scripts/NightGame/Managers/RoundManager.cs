@@ -5,8 +5,8 @@ public class RoundManager : MonoBehaviour
 
 
 	[Header("-------- Setting ---------")]
-	[SerializeField] private float finishDishHotPoint = 0.1f;
-
+	[SerializeField] private float finishDishHotPoint = 0.5f;
+    [SerializeField] private float attackEnemyHotPoint = 0.5f;
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] public HotPointManager hotPointManager;
@@ -29,8 +29,13 @@ public class RoundManager : MonoBehaviour
 
 
     // §¹¦¨À\ÂI
-    public void FinishDish(int dishID, int tableIndex)
+    public void FinishDishSuccess(int dishID, int tableIndex)
     {
         hotPointManager.AddHotPoint(finishDishHotPoint);
+    }
+
+    public void DefeatEnemySuccess()
+    {
+        hotPointManager.AddHotPoint(attackEnemyHotPoint);
     }
 }

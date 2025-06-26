@@ -35,7 +35,6 @@ public class PlayerAttackController : MonoBehaviour
 		Collider2D[] hits = Physics2D.OverlapBoxAll(attackHitBox.transform.position,
 													attackHitBox.transform.localScale,
 													0f);
-		Debug.Log("can attack");
 
 		foreach (Collider2D hit in hits)
 		{
@@ -44,7 +43,6 @@ public class PlayerAttackController : MonoBehaviour
 				TroubleGusetController enemy = hit.GetComponent<TroubleGusetController>();
 				if (enemy != null)
 				{
-					Debug.Log("attack success");
 					enemy.TakeDamage(1);
 				}
 			}

@@ -19,6 +19,7 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
+	[SerializeField] private RoundManager roundManager;
 
 	private Transform player;
 	private float lastAttackTime = -Mathf.Infinity;
@@ -27,6 +28,8 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void Awake()
 	{
+
+		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
 		player = GameObject.FindGameObjectWithTag("Player").transform;
 		agent.updateRotation = false;
 		agent.updateUpAxis = false;
@@ -120,6 +123,8 @@ public class TroubleGusetController : MonoBehaviour
 		hp -= damage;
 		if (hp <= 0)
 		{
+
+			roundManager.DefeatEnemySuccess();
 			Destroy(gameObject);
 		}
 	}
