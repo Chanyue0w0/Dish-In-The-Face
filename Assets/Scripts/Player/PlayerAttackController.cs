@@ -19,7 +19,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		FoodsGroupManager.FoodType foodType = handItem.GetChild(0).GetComponent<FoodStatus>().foodType;
 
-		if (foodType == FoodsGroupManager.FoodType.Pie)
+		if (foodType == FoodsGroupManager.FoodType.Pie || foodType == FoodsGroupManager.FoodType.Beer)
 		{
 			StartCoroutine(PerformAttack());
 		}

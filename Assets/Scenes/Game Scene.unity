@@ -732,8 +732,8 @@ Transform:
   m_GameObject: {fileID: 113308649}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.44, y: 6.15, z: 0}
-  m_LocalScale: {x: 25.921808, y: 5.26612, z: 1}
+  m_LocalPosition: {x: -0.44, y: 4.9963, z: 0}
+  m_LocalScale: {x: 25.921808, y: 7.573207, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1529048036}
@@ -11756,10 +11756,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33234bcc0b2b59440b3e69e25c4a9412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minSpawnInterval: 7
-  maxSpawnInterval: 10
-  minGuestPerWave: 3
-  maxGuestPerWave: 5
+  minSpawnColdTime: 7
+  maxSpawnColdTime: 15
+  minGuestPerWave: 4
+  maxGuestPerWave: 7
   doorPosition: {fileID: 506713175}
   normalGuestPrefab: {fileID: 3474513089845744578, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
   wanderGuestPrefab: {fileID: 0}

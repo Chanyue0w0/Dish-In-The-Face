@@ -7,7 +7,7 @@ public class FoodsGroupManager : MonoBehaviour
 {
 	public enum FoodType
 	{
-		Bear,
+		Beer,
 		Cake,
 		Pizza,
 		Pie,
