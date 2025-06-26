@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
 	void HandleActionInput()
 	{
 		// 撿取物品或使用
-		if (Input.GetKeyDown(KeyCode.E))
+		if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.K))
 		{
 			Interact();
 		}
@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		// 閃避：加速並穿過 Table
-		if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.K)) && Time.time - lastDashTime >= dashCooldown)
+		if (Input.GetKeyDown(KeyCode.LeftShift) && Time.time - lastDashTime >= dashCooldown)
 		{
 			StartDash();
 		}

@@ -6,7 +6,7 @@ public class TroubleGusetController : MonoBehaviour
 	[Header("----- Status -----")]
 	[SerializeField] private int hp = 1;
 	[SerializeField] private int atk = 1;
-	[SerializeField] private float moveSpeed = 2f;  // 以格/s 計算時，每格 1 單位
+	[SerializeField] private float moveSpeed = 2f;
 	[SerializeField] private int rewardCoin = 10;
 
 	[Header("----- Attack Setting -----")]
@@ -15,11 +15,10 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private float attackRange = 1.5f;
 	[SerializeField] private LayerMask playerLayer;
 
-
 	[Header("----- Reference -----")]
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private NavMeshAgent agent;
-
+	[SerializeField] private SpriteRenderer spriteRenderer;
 
 	private Transform player;
 	private float lastAttackTime = -Mathf.Infinity;
@@ -32,10 +31,21 @@ public class TroubleGusetController : MonoBehaviour
 		agent.updateRotation = false;
 		agent.updateUpAxis = false;
 		agent.speed = moveSpeed;
+
+		attackHitBox.SetActive(false); // 初始關閉
 	}
 
 	private void Update()
 	{
+		if (player == null) return;
+
+
+		if (agent.velocity.x < -0.01f)
+			spriteRenderer.flipX = false;
+		else if (agent.velocity.x > 0.01f)
+			spriteRenderer.flipX = true;
+
+
 		if (isCharging)
 		{
 			if (Time.time - chargeStartTime >= chargeTime)
@@ -45,23 +55,18 @@ public class TroubleGusetController : MonoBehaviour
 			}
 			else
 			{
-				agent.isStopped = true; // 蓄力中停止移動
+				agent.isStopped = true;
 				return;
 			}
 		}
 
-		// 移動追蹤
-		if (player != null)
-		{
-			agent.isStopped = false;
-			agent.SetDestination(player.position);
+		agent.isStopped = false;
+		agent.SetDestination(player.position);
 
-			// 是否進入攻擊距離與冷卻
-			float dist = Vector3.Distance(transform.position, player.position);
-			if (dist <= attackRange && Time.time - lastAttackTime >= attackCooldown)
-			{
-				StartCharge();
-			}
+		float dist = Vector3.Distance(transform.position, player.position);
+		if (dist <= attackRange && Time.time - lastAttackTime >= attackCooldown)
+		{
+			StartCharge();
 		}
 	}
 
@@ -75,18 +80,54 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void PerformAttack()
 	{
-		// 攻擊玩家
-		// 開啟hit box
-		// 如果 hit box collider2d tag == player 呼叫 playerstatus
+		attackHitBox.SetActive(true);
+
+		// 用 Collider2D 判斷是否打中 Player
+		Collider2D[] hits = new Collider2D[5];
+		ContactFilter2D filter = new ContactFilter2D();
+		filter.SetLayerMask(playerLayer);
+		filter.useTriggers = true;
+
+		int count = attackHitBox.GetComponent<Collider2D>().OverlapCollider(filter, hits);
+
+		for (int i = 0; i < count; i++)
+		{
+			if (hits[i].CompareTag("Player"))
+			{
+				PlayerStatus playerStatus = hits[i].GetComponent<PlayerStatus>();
+				if (playerStatus != null)
+				{
+					playerStatus.TakeDamage(atk);
+					//Debug.Log("Trouble guest attacked player via hitbox!");
+				}
+			}
+		}
+
+		// 0.1 秒後關閉 hitbox，繼續移動
+		Invoke(nameof(DisableAttackHitBox), 0.1f);
+		agent.isStopped = false;
 	}
+
+	private void DisableAttackHitBox()
+	{
+		attackHitBox.SetActive(false);
+	}
+
 
 	public void TakeDamage(int damage)
 	{
 		hp -= damage;
 		if (hp <= 0)
 		{
-			// 撥錢、特效等等
 			Destroy(gameObject);
 		}
 	}
+
+	//private void OnDrawGizmosSelected()
+	//{
+	//	if (spriteRenderer == null) return;
+	//	Vector3 attackCenter = transform.position + transform.right * (spriteRenderer.flipX ? -1 : 1) * attackRange * 0.5f;
+	//	Gizmos.color = Color.red;
+	//	Gizmos.DrawWireSphere(attackCenter, 0.5f);
+	//}
 }
