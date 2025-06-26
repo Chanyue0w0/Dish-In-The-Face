@@ -98,6 +98,7 @@ public class NormalGuestController : MonoBehaviour
 		isEating = true;
 		orderIconObject.SetActive(false); // 收起點餐圖示
 		patienceBar.SetActive(false);
+		roundManager.FinishDishSuccess();
 		StopAllCoroutines();
 		StartCoroutine(EatAndLeave());
 		return true;
