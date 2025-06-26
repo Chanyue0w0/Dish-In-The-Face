@@ -19,6 +19,7 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
 	[SerializeField] private RoundManager roundManager;
+	[SerializeField] private GameObject attackRangeBox;
 
 	private Transform player;
 	private float lastAttackTime = -Mathf.Infinity;
@@ -30,11 +31,13 @@ public class TroubleGusetController : MonoBehaviour
 
 		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
 		player = GameObject.FindGameObjectWithTag("Player").transform;
+
 		agent.updateRotation = false;
 		agent.updateUpAxis = false;
 		agent.speed = moveSpeed;
 
 		attackHitBox.SetActive(false); // ªì©lÃö³¬
+		attackRangeBox.SetActive(false);
 	}
 
 	private void Update()
@@ -43,9 +46,9 @@ public class TroubleGusetController : MonoBehaviour
 
 
 		if (agent.velocity.x < -0.01f)
-			transform.rotation = Quaternion.Euler(0, 180, 0);
-		else if (agent.velocity.x > 0.01f)
 			transform.rotation = Quaternion.Euler(0, 0, 0);
+		else if (agent.velocity.x > 0.01f)
+			transform.rotation = Quaternion.Euler(0, 180, 0);
 
 
 		if (isCharging)
@@ -74,6 +77,7 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void StartCharge()
 	{
+		attackRangeBox.SetActive (true);
 		isCharging = true;
 		chargeStartTime = Time.time;
 		lastAttackTime = Time.time;
@@ -113,6 +117,8 @@ public class TroubleGusetController : MonoBehaviour
 	private void DisableAttackHitBox()
 	{
 		attackHitBox.SetActive(false);
+
+		attackRangeBox.SetActive(false);
 	}
 
 

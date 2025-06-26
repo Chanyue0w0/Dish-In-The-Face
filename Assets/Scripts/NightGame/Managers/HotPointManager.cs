@@ -3,70 +3,68 @@ using UnityEngine.UI;
 
 public class HotPointManager : MonoBehaviour
 {
-	[SerializeField] private float hotPoint = 0f;          // 0~10 之間
+	[SerializeField] private float hotPoint = 0f;              // 0~10 之間
 	[Header("-------- Setting ---------")]
-	[SerializeField] private float decreaseRate = 0.1f;    // 每秒下降的熱度
-	[SerializeField] private float decayDelay = 3f;        // 等待多少秒後開始下降
+	[SerializeField] private float decreaseRate = 0.1f;        // 每秒下降的熱度
+	[SerializeField] private float decayDelay = 3f;            // 等待多少秒後開始下降
 	[SerializeField] private float maxHotPoint = 10f;
 
-
 	[Header("-------- Reference ---------")]
-	[SerializeField] private Sprite[] hotLevelSprites;     // 索引 0~4 對應 D~S
-	[SerializeField] private Image hotPointImage;
-	//[SerializeField] private Slider hotPointSlider;
+	[SerializeField] private Sprite[] hotLevelSprites;         // 索引 0~4 對應 D~S
+	[SerializeField] private Image hotPointImage;              // 圖示切換
+	[SerializeField] private Image hotPointFillBar;            // fillAmount控制熱度
+	[SerializeField] private Color[] hotLevelColors;           // 對應 D~S 的顏色（長度應為5）
 
-	private float lastHotIncreaseTime;                     // 上次熱度增加的時間
+	private float lastHotIncreaseTime;
 
 	private void Start()
 	{
-		UpdateHotLevelSprite();
-
-		//hotPointSlider.value = 0;
+		UpdateHotUI();
 	}
 
 	private void Update()
 	{
-		// 若超過 decayDelay 秒沒有增加熱度，則開始下降
 		if (Time.time - lastHotIncreaseTime > decayDelay)
 		{
 			if (hotPoint > 0f)
 			{
 				hotPoint -= decreaseRate * Time.deltaTime;
 				hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
-				UpdateHotLevelSprite();
+				UpdateHotUI();
 			}
 		}
 	}
 
-	/// 增加熱度
 	public void AddHotPoint(float value)
 	{
 		hotPoint += value;
 		hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
-		Debug.Log("hotPoint :" + hotPoint);
 		lastHotIncreaseTime = Time.time;
+		//Debug.Log("hotPoint :" + hotPoint);
 
-		//hotPointSlider.value = hotPoint / maxHotPoint;
-		UpdateHotLevelSprite();
+		UpdateHotUI();
 	}
 
-	/// 根據熱度設定對應的圖示
-	private void UpdateHotLevelSprite()
+	private void UpdateHotUI()
 	{
 		int levelIndex = GetHotLevelIndex();
+
+		// 切換圖示
 		if (hotLevelSprites != null && hotLevelSprites.Length > levelIndex)
-		{
 			hotPointImage.sprite = hotLevelSprites[levelIndex];
-		}
+
+		// 更新填充量與顏色
+		hotPointFillBar.fillAmount = hotPoint / maxHotPoint;
+
+		//if (hotLevelColors != null && hotLevelColors.Length > levelIndex)
+		//	hotPointFillBar.color = hotLevelColors[levelIndex];
 	}
 
-	/// 根據熱度取得倍率（1~5 倍）
 	public int GetMoneyMultiplier()
 	{
 		return GetHotLevelIndex() + 1;
 	}
 
-	/// 根據熱度取得等級索引 0(D), 1(C), ..., 4(S)
 	private int GetHotLevelIndex()
 	{
 		if (hotPoint >= 8f) return 4; // S
