@@ -8,6 +8,7 @@ public class PlayerStatus : MonoBehaviour
 	[SerializeField] private int maxHP = 5;       // 最大血量
 	[SerializeField] private int attackPower = 1; // 攻擊力
 	[SerializeField] private GameObject endPane;
+	[SerializeField] private HealthPointUIControll healthPointUIControl;
 	private int currentHP;
 
 	// Start is called before the first frame update
@@ -34,6 +35,7 @@ public class PlayerStatus : MonoBehaviour
 
 		Debug.Log("Player took damage. Current HP: " + currentHP);
 
+		healthPointUIControl.DecreaseHP();
 		if (currentHP <= 0)
 		{
 			Die();

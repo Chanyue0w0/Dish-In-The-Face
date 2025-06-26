@@ -16,7 +16,6 @@ public class RoundManager : MonoBehaviour
 	[SerializeField] public GuestGroupManager guestGroupManager;
     [SerializeField] public ChairGroupManager chairGroupManager;
     [SerializeField] public CoinUIController coinUIController;
-
 	// Start is called before the first frame update
 	void Start()
     {

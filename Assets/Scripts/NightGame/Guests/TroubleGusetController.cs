@@ -43,9 +43,9 @@ public class TroubleGusetController : MonoBehaviour
 
 
 		if (agent.velocity.x < -0.01f)
-			spriteRenderer.flipX = false;
+			transform.rotation = Quaternion.Euler(0, 180, 0);
 		else if (agent.velocity.x > 0.01f)
-			spriteRenderer.flipX = true;
+			transform.rotation = Quaternion.Euler(0, 0, 0);
 
 
 		if (isCharging)
