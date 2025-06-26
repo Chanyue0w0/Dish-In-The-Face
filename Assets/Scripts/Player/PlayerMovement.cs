@@ -222,7 +222,7 @@ public class PlayerController : MonoBehaviour
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 
 			// 傳入 handItemNow 的子物件給 Table
-			tableGroupManager.SetTableItem(currentTableCollider.gameObject, item);
+			tableGroupManager.PullDownTableItem(currentTableCollider.gameObject, item);
 		}
 	}
 

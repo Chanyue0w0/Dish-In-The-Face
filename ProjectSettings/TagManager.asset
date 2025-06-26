@@ -9,6 +9,7 @@ TagManager:
   - Foods
   - Enemy
   - AttackObject
+  - NormalGuest
   layers:
   - Default
   - TransparentFX
@@ -45,6 +46,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: chair
+    uniqueID: 872125167
     locked: 0
   - name: Table
     uniqueID: 2077443709

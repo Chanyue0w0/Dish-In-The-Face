@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,12 +13,15 @@ public class HotPointManager : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[SerializeField] private Sprite[] hotLevelSprites;     // 索引 0~4 對應 D~S
 	[SerializeField] private Image hotPointImage;
+	//[SerializeField] private Slider hotPointSlider;
 
 	private float lastHotIncreaseTime;                     // 上次熱度增加的時間
 
 	private void Start()
 	{
 		UpdateHotLevelSprite();
+
+		//hotPointSlider.value = 0;
 	}
 
 	private void Update()
@@ -44,6 +45,8 @@ public class HotPointManager : MonoBehaviour
 		hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
 		Debug.Log("hotPoint :" + hotPoint);
 		lastHotIncreaseTime = Time.time;
+
+		//hotPointSlider.value = hotPoint / maxHotPoint;
 		UpdateHotLevelSprite();
 	}
 

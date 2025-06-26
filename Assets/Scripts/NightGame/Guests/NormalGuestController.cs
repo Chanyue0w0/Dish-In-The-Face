@@ -25,13 +25,15 @@ public class NormalGuestController : MonoBehaviour
 	private bool isEating = false;
 	private bool isLeaving = false;
 	private Sprite orderFoodSprite = null;
+	private Collider2D currentTableCollider;
 
 	void Start()
 	{
 		patienceTime = Random.Range(minPatience, maxPatience);
 		//transform.position = startPosition.position;
 
-		//roundManager = GameObject.Find("Chair_01");
+		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
+		startPosition = GameObject.Find("Door Position").GetComponent<Transform>();
 		targetChair = roundManager.chairGroupManager.FindEmptyChair();
 
 		orderIconObject.SetActive(false);
@@ -54,10 +56,7 @@ public class NormalGuestController : MonoBehaviour
 
 			// 更新讀條（讀條比例 = 剩餘耐心 / 總耐心）
 			float ratio = Mathf.Clamp01(1f - (timer / patienceTime));
-			if (barFill != null)
-			{
-				barFill.localScale = new Vector3(ratio, 1f, 1f);
-			}
+			barFill.localScale = new Vector3(ratio, 1f, 1f);
 
 			if (timer >= patienceTime)
 			{
@@ -77,15 +76,19 @@ public class NormalGuestController : MonoBehaviour
 		transform.position = chairPos;
 		isSeated = true;
 
-		// 顯示點餐與食物
+		// 點餐
+		OrderDish();
+		// 重設讀條長度為滿
+		patienceBar.SetActive(true);
+		barFill.localScale = new Vector3(1f, 1f, 1f);
+	}
+
+	private void OrderDish()
+	{
 		orderIconObject.SetActive(true);
 		orderFoodSprite = roundManager.foodsGroupManager.OrderFoodRandomly();
 		foodSpriteRenderer.sprite = orderFoodSprite;
-
-		// 重設讀條長度為滿
-		patienceBar.SetActive(true);
-		if (barFill != null)
-			barFill.localScale = new Vector3(1f, 1f, 1f);
+		roundManager.tableGroupManager.SetOrderDishOnTable(currentTableCollider.gameObject, gameObject);
 	}
 
 	public bool IsReceiveFood(Sprite foods)
@@ -94,6 +97,7 @@ public class NormalGuestController : MonoBehaviour
 
 		isEating = true;
 		orderIconObject.SetActive(false); // 收起點餐圖示
+		patienceBar.SetActive(false);
 		StopAllCoroutines();
 		StartCoroutine(EatAndLeave());
 		return true;
@@ -110,6 +114,9 @@ public class NormalGuestController : MonoBehaviour
 		if (isLeaving) return;
 
 		isLeaving = true;
+
+		roundManager.tableGroupManager.ClearTableItem(currentTableCollider.gameObject);
+		currentTableCollider = null;
 		roundManager.chairGroupManager.ReleaseChair(targetChair);
 		StartCoroutine(MoveOut());
 	}
@@ -124,5 +131,13 @@ public class NormalGuestController : MonoBehaviour
 		}
 
 		Destroy(gameObject);
+	}
+
+	void OnTriggerStay2D(Collider2D other)
+	{
+		if (other.CompareTag("Table"))
+		{
+			currentTableCollider = other;
+		}
 	}
 }
