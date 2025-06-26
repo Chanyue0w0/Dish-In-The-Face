@@ -7,11 +7,19 @@ public class TableGroupManager : MonoBehaviour
 	//[SerializeField] private float clearDelay = 3f; // 可調整：物品維持時間（秒）
 	[Header("-------- Reference ---------")]
 	[SerializeField] private List<GameObject> tableObjects;
-	[SerializeField] private List<GameObject> itemOntables;
-
 	[SerializeField] private RoundManager roundManager;
+
+	//private Dictionary<GameObject, List<Sprite>> orderDishOntables;
+	private Dictionary<GameObject, List<NormalGuestController>> npcOntables;
 	void Start()
 	{
+		npcOntables = new Dictionary<GameObject, List<NormalGuestController>>();
+
+		foreach (GameObject table in tableObjects)
+		{
+			npcOntables[table] = new List<NormalGuestController>();
+		}
+
 		foreach (GameObject obj in tableObjects)
 		{
 			ClearTableItem(obj);
@@ -24,16 +32,30 @@ public class TableGroupManager : MonoBehaviour
 
 	}
 
-	public void SetTableItem(GameObject table, GameObject handItem)
+	public void PullDownTableItem(GameObject table, GameObject handItem)
 	{
-
-		// 放置餐點
 		GameObject tableItem = table.transform.GetChild(0).gameObject;
-		handItem.transform.SetParent(tableItem.transform);
-		handItem.transform.localPosition = Vector3.zero;
+		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+		//if (orderDishOntables[table].Find(x => x == foodSprite) == null) return; // 手上餐點是所需餐點
 
-		// 回報已上餐
-		roundManager.FinishDish(1, 1);
+		//是否有 NPC 點此餐點
+		foreach (NormalGuestController npc in npcOntables[table])
+		{
+			// 回報已上餐
+			if (npc.IsReceiveFood(foodSprite))
+			{
+				// 放置餐點
+				handItem.transform.SetParent(tableItem.transform);
+				handItem.transform.localPosition = Vector3.zero;
+			}
+		}
+	}
+
+	public void SetOrderDishOnTable(GameObject table , GameObject npc)
+	{
+		//orderDishOntables[table].Add(foods);
+		npcOntables[table].Add(npc.GetComponent<NormalGuestController>());
+		return;
 	}
 
 	public void ClearTableItem(GameObject table)
@@ -41,7 +63,8 @@ public class TableGroupManager : MonoBehaviour
 		foreach (Transform child in table.transform.GetChild(0))
 		{
 			Destroy(child.gameObject);
+			//orderDishOntables[table].Clear();
+			npcOntables[table].Clear();
 		}
 	}
-
 }
