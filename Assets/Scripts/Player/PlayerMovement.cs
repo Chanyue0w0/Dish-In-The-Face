@@ -11,11 +11,9 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private float dashSpeed = 10f;           // 閃避時的速度
 	[SerializeField] private float dashDistance = 2f;         // 閃避距離（位移距離 = dashSpeed * dashDuration）
 	[SerializeField] private float dashCooldown = 0.1f;       // 閃避冷卻時間
-	[SerializeField] private List<string> passThroughTags = new List<string> { "Table", "Enemy" , "NormalGuest"};// 閃避時可穿過的 tag
+	[SerializeField] private List<string> passThroughTags;    // 閃避時可穿過的 tag
 
 
-	[Header("Attack")]
-	[SerializeField] private float attackHitBoxDuration = 0.1f; // 可調整的攻擊判定持續時間
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 

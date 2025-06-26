@@ -7,7 +7,6 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private int hp = 1;
 	[SerializeField] private int atk = 1;
 	[SerializeField] private float moveSpeed = 2f;
-	[SerializeField] private int rewardCoin = 10;
 
 	[Header("----- Attack Setting -----")]
 	[SerializeField] private float attackCooldown = 2f;
@@ -123,7 +122,6 @@ public class TroubleGusetController : MonoBehaviour
 		hp -= damage;
 		if (hp <= 0)
 		{
-
 			roundManager.DefeatEnemySuccess();
 			Destroy(gameObject);
 		}

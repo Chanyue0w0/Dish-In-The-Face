@@ -7,6 +7,7 @@ public class RoundManager : MonoBehaviour
 	[Header("-------- Setting ---------")]
 	[SerializeField] private float finishDishHotPoint = 0.5f;
     [SerializeField] private float attackEnemyHotPoint = 0.5f;
+	[SerializeField] private int rewardCoin = 10;
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] public HotPointManager hotPointManager;
@@ -14,6 +15,7 @@ public class RoundManager : MonoBehaviour
     [SerializeField] public TableGroupManager tableGroupManager;
 	[SerializeField] public GuestGroupManager guestGroupManager;
     [SerializeField] public ChairGroupManager chairGroupManager;
+    [SerializeField] public CoinUIController coinUIController;
 
 	// Start is called before the first frame update
 	void Start()
@@ -29,13 +31,16 @@ public class RoundManager : MonoBehaviour
 
 
     // §¹¦¨À\ÂI
-    public void FinishDishSuccess(int dishID, int tableIndex)
+    public void FinishDishSuccess()
     {
         hotPointManager.AddHotPoint(finishDishHotPoint);
-    }
+		coinUIController.AddCoin(rewardCoin * hotPointManager.GetMoneyMultiplier());
+	}
 
     public void DefeatEnemySuccess()
     {
         hotPointManager.AddHotPoint(attackEnemyHotPoint);
-    }
+		coinUIController.AddCoin(rewardCoin * hotPointManager.GetMoneyMultiplier());
+
+	}
 }
