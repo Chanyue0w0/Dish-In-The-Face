@@ -935,7 +935,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f45469d918e884c80ddc670262c698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finishDishHotPoint: 0.3
+  finishDishHotPoint: 0.5
+  attackEnemyHotPoint: 1
   hotPointManager: {fileID: 1603730299}
   foodsGroupManager: {fileID: 381182771}
   tableGroupManager: {fileID: 1245954768}
@@ -23911,10 +23912,10 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 8.805708, y: 1.1768985}
-  - {x: -2.075816, y: 1.1192617}
-  - {x: -2.0656314, y: 1.9904753}
-  - {x: 8.836969, y: 1.9832554}
+  - {x: 8.856724, y: 1.2529473}
+  - {x: -1.9568572, y: 1.2479825}
+  - {x: -1.9565859, y: 1.9210826}
+  - {x: 8.854869, y: 1.8937559}
   - {x: 8.879306, y: 3.0053217}
   - {x: -9.052489, y: 3.0939214}
   - {x: -8.955535, y: -5.001012}

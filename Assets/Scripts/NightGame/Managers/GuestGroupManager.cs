@@ -53,11 +53,14 @@ public class GuestGroupManager : MonoBehaviour
 				case 0:
 					guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 					break;
-				//case 1:
-				//	guest = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
-				//	if (Random.value < 0.3f)
-				//		GenerateTrash(guest.transform.position);
-				//	break;
+				case 1:
+
+					guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+
+					//guest = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+					//if (Random.value < 0.3f)
+					//	GenerateTrash(guest.transform.position);
+					break;
 				case 2:
 					guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 					break;

@@ -27,7 +27,7 @@ public class NormalGuestController : MonoBehaviour
 	private Sprite orderFoodSprite = null;
 	private Collider2D currentTableCollider;
 
-	void Start()
+	void Awake()
 	{
 		patienceTime = Random.Range(minPatience, maxPatience);
 		//transform.position = startPosition.position;
@@ -115,9 +115,12 @@ public class NormalGuestController : MonoBehaviour
 
 		isLeaving = true;
 
-		roundManager.tableGroupManager.ClearTableItem(currentTableCollider.gameObject);
-		currentTableCollider = null;
-		roundManager.chairGroupManager.ReleaseChair(targetChair);
+		if (currentTableCollider != null)
+		{
+			roundManager.tableGroupManager.ClearTableItem(currentTableCollider.gameObject);
+			currentTableCollider = null;
+			roundManager.chairGroupManager.ReleaseChair(targetChair);
+		}
 		StartCoroutine(MoveOut());
 	}
 
