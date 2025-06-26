@@ -266,6 +266,7 @@ GameObject:
   - component: {fileID: 6096411991080613458}
   - component: {fileID: 6232604787543720162}
   - component: {fileID: 5794271118961271068}
+  - component: {fileID: 6900171364552601329}
   m_Layer: 0
   m_Name: Normal guest
   m_TagString: NormalGuest
@@ -436,6 +437,41 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 7.245668, y: 6.64108}
   m_EdgeRadius: 0
+--- !u!58 &6900171364552601329
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474513089845744578}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.007966455, y: 0}
+  serializedVersion: 2
+  m_Radius: 2.6602352
 --- !u!1 &5772019527846658394
 GameObject:
   m_ObjectHideFlags: 0
