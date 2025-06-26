@@ -53,7 +53,7 @@ TagManager:
   - name: Table
     uniqueID: 2077443709
     locked: 0
-  - name: NPC
+  - name: Guest
     uniqueID: 4244410229
     locked: 0
   - name: Player
