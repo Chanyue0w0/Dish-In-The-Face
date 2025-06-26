@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
 {
+	public enum FoodType
+	{
+		Bear,
+		Cake,
+		Pizza,
+		Pie,
+		Bread
+	}
+
 
 	[Header("-------- Setting ---------")]
 	[SerializeField] private float spawnInerval = 10f;      // 每幾秒生成（預設10秒）

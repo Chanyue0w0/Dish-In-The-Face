@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6857283694088464073}
   - component: {fileID: 5975427605315682187}
   - component: {fileID: 7198888212303604459}
+  - component: {fileID: 3188331256190415247}
   m_Layer: 0
   m_Name: Dish
   m_TagString: Foods
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -897089489
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 957ee1fb7ac256649ac54639f47e6364, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -131,6 +132,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 3.982903, y: 4.646021}
   m_EdgeRadius: 0
+--- !u!114 &3188331256190415247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3848954090470821069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99f3ea4ec8356404ea2887694865b521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foodType: 1
 --- !u!1 &6734489770875544848
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,7 +216,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1644966795
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 1c32ccd95d541a7498fdca2be5fe9935, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

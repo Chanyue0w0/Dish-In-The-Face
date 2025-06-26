@@ -60,11 +60,20 @@ public class TableGroupManager : MonoBehaviour
 
 	public void ClearTableItem(GameObject table)
 	{
-		foreach (Transform child in table.transform.GetChild(0))
+		if (table == null) return;
+
+		Transform parent = table.transform.GetChild(0);
+
+		// 刪除第一個子物件（如果有）
+		if (parent.childCount > 0)
 		{
-			Destroy(child.gameObject);
-			//orderDishOntables[table].Clear();
-			npcOntables[table].Clear();
+			Destroy(parent.GetChild(0).gameObject);
+		}
+
+		// 移除清單中的第一個元素（如果有）
+		if (npcOntables[table].Count > 0)
+		{
+			npcOntables[table].RemoveAt(0);
 		}
 	}
 }

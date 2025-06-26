@@ -263,8 +263,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8541592121303161500}
   - component: {fileID: 7002378863616266461}
-  - component: {fileID: 6096411991080613458}
   - component: {fileID: 6232604787543720162}
+  - component: {fileID: 6096411991080613458}
   - component: {fileID: 5794271118961271068}
   - component: {fileID: 6900171364552601329}
   m_Layer: 0
@@ -343,6 +343,28 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6232604787543720162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474513089845744578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6837a49748e5424f80fa5a14c385985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minPatience: 10
+  maxPatience: 20
+  eatTime: 10
+  moveSpeed: 2
+  roundManager: {fileID: 0}
+  startPosition: {fileID: 0}
+  orderIconObject: {fileID: 890640048631273743}
+  foodSpriteRenderer: {fileID: 5009767507642101398}
+  patienceBar: {fileID: 5772019527846658394}
+  barFill: {fileID: 2536191069096849125}
 --- !u!50 &6096411991080613458
 Rigidbody2D:
   serializedVersion: 4
@@ -370,28 +392,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &6232604787543720162
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3474513089845744578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6837a49748e5424f80fa5a14c385985, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  minPatience: 10
-  maxPatience: 20
-  eatTime: 10
-  moveSpeed: 2
-  roundManager: {fileID: 0}
-  startPosition: {fileID: 0}
-  orderIconObject: {fileID: 890640048631273743}
-  foodSpriteRenderer: {fileID: 5009767507642101398}
-  patienceBar: {fileID: 5772019527846658394}
-  barFill: {fileID: 2536191069096849125}
 --- !u!61 &5794271118961271068
 BoxCollider2D:
   m_ObjectHideFlags: 0
