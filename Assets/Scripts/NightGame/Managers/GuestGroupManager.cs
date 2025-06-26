@@ -3,10 +3,10 @@ using UnityEngine;
 public class GuestGroupManager : MonoBehaviour
 {
 	[Header("-------------------- Settings -------------------- ")]
-	[SerializeField] private float minSpawnInterval = 10f;
-	[SerializeField] private float maxSpawnInterval = 20f;
-	[SerializeField] private int minGuestPerWave = 3;
-	[SerializeField] private int maxGuestPerWave = 5;
+	[SerializeField] private float minSpawnColdTime;
+	[SerializeField] private float maxSpawnColdTime;
+	[SerializeField] private int minGuestPerWave;
+	[SerializeField] private int maxGuestPerWave;
 
 	[Header("-------------------- Reference -------------------- ")]
 	[SerializeField] private Transform doorPosition;
@@ -37,7 +37,7 @@ public class GuestGroupManager : MonoBehaviour
 
 	void SetNextSpawnTime()
 	{
-		nextSpawnTime = Random.Range(minSpawnInterval, maxSpawnInterval);
+		nextSpawnTime = Random.Range(minSpawnColdTime, maxSpawnColdTime);
 	}
 
 	void SpawnGuestWave()
@@ -86,8 +86,8 @@ public class GuestGroupManager : MonoBehaviour
 
 	public void SetSpawnInterval(float min, float max)
 	{
-		minSpawnInterval = min;
-		maxSpawnInterval = max;
+		minSpawnColdTime = min;
+		maxSpawnColdTime = max;
 	}
 
 	public void SetGuestWaveCount(int min, int max)
