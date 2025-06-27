@@ -392,8 +392,8 @@ MonoBehaviour:
   hp: 1
   atk: 1
   moveSpeed: 2
-  attackCooldown: 1
-  chargeTime: 0.7
+  attackCooldown: 2
+  chargeTime: 1
   attackRange: 1.5
   playerLayer:
     serializedVersion: 2
@@ -403,6 +403,8 @@ MonoBehaviour:
   spriteRenderer: {fileID: 4479673166966749816}
   roundManager: {fileID: 0}
   attackRangeBox: {fileID: 5810666919928902637}
+  dieVFX: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
+  attackVFX: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
 --- !u!195 &1175326232762330544
 NavMeshAgent:
   m_ObjectHideFlags: 0

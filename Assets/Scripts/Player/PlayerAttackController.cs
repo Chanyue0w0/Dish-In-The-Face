@@ -3,10 +3,15 @@ using System.Collections;
 
 public class PlayerAttackController : MonoBehaviour
 {
-	[SerializeField] private Transform handItem;
-	[SerializeField] private GameObject attackHitBox;
+	[Header("--------- Setting -----------")]
 	[SerializeField] private float attackDuration = 0.4f; // 可調整攻擊持續時間
 	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
+	[SerializeField] private float beerVFXDuration = 2f;
+	[Header("--------- Reference -----------")]
+	[SerializeField] private Transform handItem;
+	[SerializeField] private GameObject attackHitBox;
+	[SerializeField] private GameObject cakeVFX;
+	[SerializeField] private GameObject BeerVFX;
 
 	private void Start()
 	{
@@ -19,7 +24,23 @@ public class PlayerAttackController : MonoBehaviour
 
 		FoodsGroupManager.FoodType foodType = handItem.GetChild(0).GetComponent<FoodStatus>().foodType;
 
-		if (foodType == FoodsGroupManager.FoodType.Pie || foodType == FoodsGroupManager.FoodType.Beer)
+		switch(foodType)
+		{
+			case FoodsGroupManager.FoodType.Pie:
+				Instantiate(cakeVFX, attackHitBox.transform.position, Quaternion.identity);
+				StartCoroutine(PerformAttack());
+				break;
+			case FoodsGroupManager.FoodType.Beer:
+				GameObject vfx =Instantiate(BeerVFX, attackHitBox.transform.position, Quaternion.identity);
+				Destroy(vfx, beerVFXDuration);
+				StartCoroutine(PerformAttack());
+				break;
+			default:
+				Debug.Log("This food has not attack");
+				break;
+		}
+
+		if (foodType == FoodsGroupManager.FoodType.Pie )
 		{
 			StartCoroutine(PerformAttack());
 		}

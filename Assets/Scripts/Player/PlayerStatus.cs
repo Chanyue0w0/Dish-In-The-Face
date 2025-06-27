@@ -9,6 +9,8 @@ public class PlayerStatus : MonoBehaviour
 	[SerializeField] private int attackPower = 1; // 攻擊力
 	[SerializeField] private GameObject endPane;
 	[SerializeField] private HealthPointUIControll healthPointUIControl;
+	[SerializeField] private GameObject getHurtVFX;
+
 	private int currentHP;
 
 	// Start is called before the first frame update
@@ -33,8 +35,9 @@ public class PlayerStatus : MonoBehaviour
 		currentHP -= damage;
 		currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
-		Debug.Log("Player took damage. Current HP: " + currentHP);
+		//Debug.Log("Player took damage. Current HP: " + currentHP);
 
+		Instantiate(getHurtVFX, transform.position, Quaternion.identity);
 		healthPointUIControl.DecreaseHP();
 		if (currentHP <= 0)
 		{
@@ -53,6 +56,7 @@ public class PlayerStatus : MonoBehaviour
 	{
 		Debug.Log("Player has died.");
 		endPane.SetActive(true);
+		Time.timeScale = 0f;
 		// TODO: 加入死亡動畫、重新開始或結束畫面等
 	}
 }

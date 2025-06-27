@@ -21,6 +21,9 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private RoundManager roundManager;
 	[SerializeField] private GameObject attackRangeBox;
 
+	[SerializeField] private GameObject dieVFX;
+	[SerializeField] private GameObject attackVFX;
+
 	private Transform player;
 	private float lastAttackTime = -Mathf.Infinity;
 	private bool isCharging = false;
@@ -87,6 +90,7 @@ public class TroubleGusetController : MonoBehaviour
 	private void PerformAttack()
 	{
 		attackHitBox.SetActive(true);
+		Instantiate(attackVFX, attackHitBox.transform.position, Quaternion.identity);
 
 		// 用 Collider2D 判斷是否打中 Player
 		Collider2D[] hits = new Collider2D[5];
@@ -104,6 +108,7 @@ public class TroubleGusetController : MonoBehaviour
 				if (playerStatus != null)
 				{
 					playerStatus.TakeDamage(atk);
+					break;
 					//Debug.Log("Trouble guest attacked player via hitbox!");
 				}
 			}
@@ -128,6 +133,7 @@ public class TroubleGusetController : MonoBehaviour
 		hp -= damage;
 		if (hp <= 0)
 		{
+			Instantiate(dieVFX, attackHitBox.transform.position, Quaternion.identity);
 			roundManager.DefeatEnemySuccess();
 			Destroy(gameObject);
 		}
