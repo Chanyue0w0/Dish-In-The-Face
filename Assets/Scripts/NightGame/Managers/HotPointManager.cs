@@ -13,7 +13,6 @@ public class HotPointManager : MonoBehaviour
 	[SerializeField] private Sprite[] hotLevelSprites;         // 索引 0~4 對應 D~S
 	[SerializeField] private Image hotPointImage;              // 圖示切換
 	[SerializeField] private Image hotPointFillBar;            // fillAmount控制熱度
-	[SerializeField] private Color[] hotLevelColors;           // 對應 D~S 的顏色（長度應為5）
 
 	private float lastHotIncreaseTime;
 
@@ -30,9 +29,9 @@ public class HotPointManager : MonoBehaviour
 			{
 				hotPoint -= decreaseRate * Time.deltaTime;
 				hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
-				UpdateHotUI();
 			}
 		}
+		UpdateHotUI();
 	}
 
 	public void AddHotPoint(float value)
@@ -41,8 +40,6 @@ public class HotPointManager : MonoBehaviour
 		hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
 		lastHotIncreaseTime = Time.time;
 		//Debug.Log("hotPoint :" + hotPoint);
-
-		UpdateHotUI();
 	}
 
 	private void UpdateHotUI()
@@ -56,8 +53,6 @@ public class HotPointManager : MonoBehaviour
 		// 更新填充量與顏色
 		hotPointFillBar.fillAmount = hotPoint / maxHotPoint;
 
-		//if (hotLevelColors != null && hotLevelColors.Length > levelIndex)
-		//	hotPointFillBar.color = hotLevelColors[levelIndex];
 	}
 
 	public int GetMoneyMultiplier()
