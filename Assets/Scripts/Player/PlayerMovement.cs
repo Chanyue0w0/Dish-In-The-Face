@@ -105,13 +105,13 @@ public class PlayerController : MonoBehaviour
 	void HandleActionInput()
 	{
 		// 撿取物品或使用
-		if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.K))
+		if (Input.GetButtonDown("Interact"))
 		{
 			Interact();
 		}
 
 		// 攻擊或投擲
-		if (Input.GetKeyDown(KeyCode.J) || Input.GetMouseButtonDown(0))
+		if (Input.GetButtonDown("Fire1"))
 		{
 			attackController.IsAttackSuccess();
 			// 舊版攻擊
@@ -119,7 +119,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		// 閃避：加速並穿過 Table
-		if (Input.GetKeyDown(KeyCode.LeftShift) && Time.time - lastDashTime >= dashCooldown)
+		if ((Input.GetAxis("Dash") > 0f || Input.GetButtonDown("Dash")) && Time.time - lastDashTime >= dashCooldown)
 		{
 			StartDash();
 		}
