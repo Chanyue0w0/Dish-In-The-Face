@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private float moveSpeed = 5f;
@@ -32,6 +33,7 @@ public class PlayerController : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
 	private Animator animator;
+	private PlayerInput playerInput;
 
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
@@ -40,13 +42,17 @@ public class PlayerController : MonoBehaviour
 	private float dashDuration;
 	private float lastDashTime = -999f;
 
-	void Start()
+	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
 		animator = GetComponent<Animator>();
-
+		playerInput = GetComponent<PlayerInput>();
+	}
+	void Start()
+	{
+		isDashing = false;
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
 
@@ -54,21 +60,10 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
-		HandleMovementInput();
-		HandleActionInput();
+		//InputManager_Old();
 
-		if (isDashing)
-		{
-			dashTimer -= Time.deltaTime;
-			ShadowPool.instance.GetFormPool();
-			if (dashTimer <= 0f)
-			{
-				EndDash();
-			}
-		}
 
 		UpdateAnimatorStates();
-
 	}
 
 	void FixedUpdate()
@@ -76,14 +71,14 @@ public class PlayerController : MonoBehaviour
 		Move();
 	}
 
-	void HandleMovementInput()
+	void HandleMovementInput(float moveX, float moveY)
 	{
-		float moveX = Input.GetAxisRaw("Horizontal");
-		float moveY = Input.GetAxisRaw("Vertical");
+		//Debug.Log(moveX.ToString() + " " + moveY.ToString());
 		moveInput = new Vector2(moveX, moveY).normalized;
 
 		if (isDashing)
 		{
+			Debug.Log("is dashing");
 			moveVelocity = moveInput * dashSpeed;
 		}
 		else
@@ -102,8 +97,10 @@ public class PlayerController : MonoBehaviour
 		rb.velocity = moveVelocity;
 	}
 
-	void HandleActionInput()
+	void InputManager_Old()
 	{
+		HandleMovementInput(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
 		// 撿取物品或使用
 		if (Input.GetButtonDown("Interact"))
 		{
@@ -113,31 +110,57 @@ public class PlayerController : MonoBehaviour
 		// 攻擊或投擲
 		if (Input.GetButtonDown("Fire1"))
 		{
-			attackController.IsAttackSuccess();
-			// 舊版攻擊
-			//BasicAttack();
+			Attack();
 		}
 
 		// 閃避：加速並穿過 Table
-		if ((Input.GetAxis("Dash") > 0f || Input.GetButtonDown("Dash")) && Time.time - lastDashTime >= dashCooldown)
+		if ((Input.GetAxis("Dash") > 0f || Input.GetButtonDown("Dash")))
 		{
 			StartDash();
 		}
 	}
 
+	public void InputMovement(InputAction.CallbackContext context)
+	{
+		//Debug.Log(context);
+		Vector2 move = context.ReadValue<Vector2>();
+		HandleMovementInput(move.x, move.y);
+	}
+	public void InputAttack(InputAction.CallbackContext context)
+	{
+		//Debug.Log(context);
+		if (context.started)
+			Attack();
+	}
+	public void InputDash(InputAction.CallbackContext context)
+	{
+		//Debug.Log(context);
+		if (context.started)
+			StartDash();
+	}
+	public void InputInteract(InputAction.CallbackContext context)
+	{
+		//Debug.Log(context);
+		if (context.started)
+			Interact();
+	}
+	void Attack()
+	{
+		attackController.IsAttackSuccess();
+	}
 	void StartDash()
 	{
+		if (isDashing || Time.time - lastDashTime < dashCooldown) return;
+
+		StartCoroutine(PerformDash());
+	}
+
+	private IEnumerator PerformDash()
+	{
 		isDashing = true;
-		dashTimer = dashDuration;
 		lastDashTime = Time.time;
 
-		// 避免沒有輸入方向造成無法移動
-		if (moveInput == Vector2.zero)
-			moveInput = Vector2.right;
-
-		PullDownDish();
-
-		// 開始穿越帶有 Table tag 的物件
+		// 開始穿越指定的 tag
 		Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
 		foreach (var col in colliders)
 		{
@@ -150,27 +173,34 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 
+		// Dash 持續時間內保持 dash 速度
+		float elapsed = 0f;
+		while (elapsed < dashDuration)
+		{
+			// 期間可放下餐點
+			PullDownDish();
 
-		// TODO: 未來這裡可加上角色閃避無敵（例如0.5秒）
-		// StartCoroutine(Invincibility(0.5f));
-	}
+			moveVelocity = moveInput * dashSpeed;
 
-	void EndDash()
-	{
-		isDashing = false;
+			ShadowPool.instance.GetFormPool();
+			yield return null;
+			elapsed += Time.deltaTime;
+		}
 
-		// 恢復碰撞
-		Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
+		// Dash 結束，恢復碰撞
 		foreach (var col in colliders)
 		{
 			foreach (string tag in passThroughTags)
 			{
-				if (col.CompareTag(tag))
+				if (col != null && col.CompareTag(tag))
 				{
 					Physics2D.IgnoreCollision(playerCollider, col, false);
 				}
 			}
 		}
+
+		isDashing = false;
+		moveVelocity = moveInput * moveSpeed;
 	}
 
 	// 撿取物品或使用裝置
@@ -197,15 +227,6 @@ public class PlayerController : MonoBehaviour
 		PullDownDish();
 	}
 
-
-	//// 普通攻擊或投擲餐點
-	//void BasicAttack()
-	//{
-	//	// TODO: 攻擊或投擲行為
-	//	//Debug.Log("觸發攻擊或投擲");
-	//	attackHitBox.SetActive(true);
-	//	StartCoroutine(DisableAttackHitBoxAfterDelay(attackHitBoxDuration));
-	//}
 
 	private void PullDownDish()
 	{
@@ -266,6 +287,26 @@ public class PlayerController : MonoBehaviour
 		{
 			currentTableCollider = null;
 		}
+	}
+
+	// 公開方法：設定 dashSpeed
+	public void SetDashSpeed(float newSpeed)
+	{
+		dashSpeed = newSpeed;
+		dashDuration = dashDistance / dashSpeed; // 更新持續時間
+	}
+
+	// 公開方法：設定 dashDistance
+	public void SetDashDistance(float newDistance)
+	{
+		dashDistance = newDistance;
+		dashDuration = dashDistance / dashSpeed; // 更新持續時間
+	}
+
+	// 公開方法：設定 dashCooldown
+	public void SetDashCooldown(float newCooldown)
+	{
+		dashCooldown = newCooldown;
 	}
 
 }

@@ -223,10 +223,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4699623705060983603}
+  - component: {fileID: 2343966239047891797}
   - component: {fileID: 4479673166966749816}
   - component: {fileID: 5767427161216902811}
   - component: {fileID: 5007685018733955347}
-  - component: {fileID: 2343966239047891797}
   - component: {fileID: 1175326232762330544}
   m_Layer: 0
   m_Name: Trouble guest
@@ -251,8 +251,37 @@ Transform:
   - {fileID: 4297895115152169151}
   - {fileID: 6080744957751707977}
   - {fileID: 8524495795035749050}
+  - {fileID: 924433501599749929}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2343966239047891797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394560797054130701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 236cf3606cb59e3458d319435c8ae5d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hp: 1
+  atk: 1
+  moveSpeed: 2
+  attackCooldown: 2
+  chargeTime: 1
+  attackRange: 1.5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  attackHitBox: {fileID: 6765627097533768325}
+  agent: {fileID: 1175326232762330544}
+  spriteRenderer: {fileID: 4479673166966749816}
+  roundManager: {fileID: 0}
+  attackRangeBox: {fileID: 5810666919928902637}
+  dieVFX: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
+  attackVFX: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
 --- !u!212 &4479673166966749816
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -377,34 +406,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 7
---- !u!114 &2343966239047891797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7394560797054130701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 236cf3606cb59e3458d319435c8ae5d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hp: 1
-  atk: 1
-  moveSpeed: 2
-  attackCooldown: 2
-  chargeTime: 1
-  attackRange: 1.5
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  attackHitBox: {fileID: 6765627097533768325}
-  agent: {fileID: 1175326232762330544}
-  spriteRenderer: {fileID: 4479673166966749816}
-  roundManager: {fileID: 0}
-  attackRangeBox: {fileID: 5810666919928902637}
-  dieVFX: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
-  attackVFX: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
 --- !u!195 &1175326232762330544
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -427,6 +428,37 @@ NavMeshAgent:
   m_BaseOffset: 2.945
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!1 &7411572733806607380
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 924433501599749929}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &924433501599749929
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7411572733806607380}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 12.693083, y: 8.633062, z: 0}
+  m_LocalScale: {x: 3.741954, y: 3.741954, z: 3.741954}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4699623705060983603}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7591430462144331241
 GameObject:
   m_ObjectHideFlags: 0

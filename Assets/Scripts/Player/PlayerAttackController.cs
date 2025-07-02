@@ -5,8 +5,8 @@ public class PlayerAttackController : MonoBehaviour
 {
 	[Header("--------- Setting -----------")]
 	[SerializeField] private float attackDuration = 0.4f; // 可調整攻擊持續時間
-	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[SerializeField] private float beerVFXDuration = 2f;
+	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItem;
 	[SerializeField] private GameObject attackHitBox;
