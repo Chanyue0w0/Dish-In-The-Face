@@ -172,6 +172,8 @@ public class PlayerMovement : MonoBehaviour
 				}
 			}
 		}
+		RumbleManager.Instance.RumbleContinuous(0.4f, 0.4f);
+
 
 		// Dash 持續時間內保持 dash 速度
 		float elapsed = 0f;
@@ -200,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		isDashing = false;
+		RumbleManager.Instance.StopRumble();
 		moveVelocity = moveInput * moveSpeed;
 	}
 

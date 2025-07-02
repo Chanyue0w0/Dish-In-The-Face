@@ -1,0 +1,96 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class RumbleManager : MonoBehaviour
+{
+	public static RumbleManager Instance { get; private set; }
+
+	private Coroutine rumbleCoroutine;
+	private bool wasTimeScaleZero = false;
+
+	private void Awake()
+	{
+		if (Instance != null && Instance != this)
+		{
+			Destroy(gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(gameObject);
+	}
+
+	private void Update()
+	{
+		//  檢查 timeScale 是否變為 0
+		if (Time.timeScale == 0f && !wasTimeScaleZero)
+		{
+			StopRumble();
+			wasTimeScaleZero = true;
+		}
+		else if (Time.timeScale > 0f && wasTimeScaleZero)
+		{
+			wasTimeScaleZero = false;
+		}
+	}
+
+	/// <summary>
+	/// 啟動震動（指定震度與持續時間）
+	/// </summary>
+	public void Rumble(float lowFrequency, float highFrequency, float duration)
+	{
+		if (Gamepad.current == null) return;
+
+		if (rumbleCoroutine != null)
+			StopCoroutine(rumbleCoroutine);
+
+		rumbleCoroutine = StartCoroutine(RumbleRoutine(lowFrequency, highFrequency, duration));
+	}
+
+	private IEnumerator RumbleRoutine(float lowFreq, float highFreq, float duration)
+	{
+		Gamepad.current.SetMotorSpeeds(lowFreq, highFreq);
+		yield return new WaitForSeconds(duration);
+		Gamepad.current.SetMotorSpeeds(0f, 0f);
+		rumbleCoroutine = null;
+	}
+
+	/// <summary>
+	/// 啟動持續震動（無限時長，需手動停止）
+	/// </summary>
+	public void RumbleContinuous(float lowFrequency, float highFrequency)
+	{
+		if (Gamepad.current == null) return;
+
+		if (rumbleCoroutine != null)
+			StopCoroutine(rumbleCoroutine);
+
+		Gamepad.current.SetMotorSpeeds(lowFrequency, highFrequency);
+		rumbleCoroutine = null; // 不需記錄 Coroutine，讓 StopRumble 照常運作
+	}
+
+	/// <summary>
+	/// 停止震動
+	/// </summary>
+	public void StopRumble()
+	{
+		if (Gamepad.current == null) return;
+
+		if (rumbleCoroutine != null)
+			StopCoroutine(rumbleCoroutine);
+
+		Gamepad.current.SetMotorSpeeds(0f, 0f);
+		rumbleCoroutine = null;
+	}
+
+	private void OnDisable()
+	{
+		StopRumble();
+	}
+
+	private void OnApplicationQuit()
+	{
+		StopRumble();
+	}
+
+}
