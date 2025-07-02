@@ -76,4 +76,9 @@ public class TableGroupManager : MonoBehaviour
 			npcOntables[table].RemoveAt(0);
 		}
 	}
+
+	public void AddCanUseTable(GameObject table)
+	{
+		tableObjects.Add(table);
+	}
 }

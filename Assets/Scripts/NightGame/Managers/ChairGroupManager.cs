@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ChairGroupManager : MonoBehaviour
 {
 	[Header("Chair List")]
-	[SerializeField] private Transform[] chairList; // 所有椅子位置
+	[SerializeField] private List<Transform> chairList; // 所有椅子位置
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
 	/// 隨機尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
@@ -38,5 +39,10 @@ public class ChairGroupManager : MonoBehaviour
 	{
 		if (occupiedChairs.Contains(targetChair))
 			occupiedChairs.Remove(targetChair);
+	}
+
+	public void AddCanUseChair(Transform targetChair)
+	{
+		chairList.Add(targetChair);
 	}
 }

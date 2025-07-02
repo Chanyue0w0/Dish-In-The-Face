@@ -42,4 +42,13 @@ public class RoundManager : MonoBehaviour
 		coinUIController.AddCoin(rewardCoin * hotPointManager.GetMoneyMultiplier());
 
 	}
+
+    public void SetFinishDishHotPoint(float point)
+    {
+		finishDishHotPoint = point;
+	}
+	public void SetAttackEnemyHotPoint(float point)
+	{
+		attackEnemyHotPoint = point;
+	}
 }

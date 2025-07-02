@@ -79,22 +79,27 @@ public class GuestGroupManager : MonoBehaviour
 		}
 	}
 
-	void GenerateTrash(Vector3 position)
+	// 砞﹚程ネΘ玱丁
+	public void SetMinSpawnColdTime(float value)
 	{
-		Debug.Log("ネΘ︰В at " + position);
+		minSpawnColdTime = value;
 	}
 
-	public void SetSpawnInterval(float min, float max)
+	// 砞﹚程ネΘ玱丁
+	public void SetMaxSpawnColdTime(float value)
 	{
-		minSpawnColdTime = min;
-		maxSpawnColdTime = max;
+		maxSpawnColdTime = value;
 	}
 
-	public void SetGuestWaveCount(int min, int max)
+	// 砞﹚–猧程ぶネΘ计秖
+	public void SetMinGuestPerWave(int value)
 	{
-		minGuestPerWave = min;
-		maxGuestPerWave = max;
+		minGuestPerWave = value;
 	}
 
-	
+	// 砞﹚–猧程ネΘ计秖
+	public void SetMaxGuestPerWave(int value)
+	{
+		maxGuestPerWave = value;
+	}
 }
