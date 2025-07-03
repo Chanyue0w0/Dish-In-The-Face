@@ -12,9 +12,11 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private GameObject cakeVFX;
 	[SerializeField] private GameObject BeerVFX;
+	[SerializeField] private PlayerMovement playerMovement;
 
 	private void Start()
 	{
+		playerMovement = GetComponent<PlayerMovement>();
 		attackHitBox.SetActive(false);
 	}
 
@@ -51,6 +53,7 @@ public class PlayerAttackController : MonoBehaviour
 	private IEnumerator PerformAttack()
 	{
 		attackHitBox.SetActive(true);
+		playerMovement.DestoryFirstItem();
 
 		// 檢測 hitbox 的範圍內有無敵人（可根據 hitbox 範圍調整）
 		Collider2D[] hits = Physics2D.OverlapBoxAll(attackHitBox.transform.position,
