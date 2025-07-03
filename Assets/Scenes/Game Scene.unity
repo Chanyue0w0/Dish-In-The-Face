@@ -7159,7 +7159,9 @@ MonoBehaviour:
   - Table
   - Enemy
   - NormalGuest
+  slideSpeed: 5
   isDashing: 0
+  isSlide: 0
   chairGroupManager: {fileID: 643318459}
   attackController: {fileID: 632101740}
   handItemNow: {fileID: 1126725959}
@@ -7246,6 +7248,7 @@ MonoBehaviour:
   attackHitBox: {fileID: 1225431441}
   cakeVFX: {fileID: 351022916506592422, guid: ec4a11eff311a00478211208a5ed3f37, type: 3}
   BeerVFX: {fileID: 4818930366549204378, guid: a0a7a86f411893f4eb7dd8ae5ef9d357, type: 3}
+  playerMovement: {fileID: 0}
 --- !u!114 &632101741
 MonoBehaviour:
   m_ObjectHideFlags: 0
