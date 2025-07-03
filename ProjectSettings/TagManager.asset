@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - AttackObject
   - NormalGuest
+  - Chair
   layers:
   - Default
   - TransparentFX

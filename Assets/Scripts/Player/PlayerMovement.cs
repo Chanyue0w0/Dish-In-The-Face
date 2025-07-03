@@ -21,13 +21,14 @@ public class PlayerMovement : MonoBehaviour
 
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
-	[SerializeField] private TableGroupManager tableGroupManager;
+	[SerializeField] private ChairGroupManager chairGroupManager;
 	[SerializeField] private PlayerAttackController attackController;
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
 
-	private Collider2D currentFoodTrigger;   // 當前接觸到的食物觸發器
-	private Collider2D currentTableCollider; // 當前接觸到的桌子碰撞器
+	private Collider2D currentFoodTrigger;   // 當前接觸到的食物
+	private Collider2D currentTableCollider; // 當前接觸到的桌子
+	private Collider2D currentChairTrigger; // 當前接觸到的椅子
 
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -38,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
 
-	private float dashTimer = 0f;
+	//private float dashTimer = 0f;
 	private float dashDuration;
 	private float lastDashTime = -999f;
 
@@ -61,8 +62,6 @@ public class PlayerMovement : MonoBehaviour
 	void Update()
 	{
 		//InputManager_Old();
-
-
 		UpdateAnimatorStates();
 	}
 
@@ -78,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
 
 		if (isDashing)
 		{
-			Debug.Log("is dashing");
+			//Debug.Log("is dashing");
 			moveVelocity = moveInput * dashSpeed;
 		}
 		else
@@ -180,7 +179,7 @@ public class PlayerMovement : MonoBehaviour
 		while (elapsed < dashDuration)
 		{
 			// 期間可放下餐點
-			PullDownDish();
+			//PullDownDish();
 
 			moveVelocity = moveInput * dashSpeed;
 
@@ -233,12 +232,12 @@ public class PlayerMovement : MonoBehaviour
 
 	private void PullDownDish()
 	{
-		if (currentTableCollider != null && handItemNow.transform.childCount > 0)
+		if (currentChairTrigger != null && handItemNow.transform.childCount > 0)
 		{
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 
 			// 傳入 handItemNow 的子物件給 Table
-			tableGroupManager.PullDownTableItem(currentTableCollider.gameObject, item);
+			chairGroupManager.PullDownChairItem(currentChairTrigger.transform, item);
 		}
 	}
 
@@ -268,12 +267,20 @@ public class PlayerMovement : MonoBehaviour
 		{
 			currentFoodTrigger = other;
 		}
+		else if (other.CompareTag("Chair"))
+		{
+			currentChairTrigger = other;
+		}
 	}
 	void OnTriggerExit2D(Collider2D other)
 	{
 		if (other == currentFoodTrigger)
 		{
 			currentFoodTrigger = null;
+		}
+		else if (other == currentChairTrigger)
+		{
+			currentChairTrigger = null;
 		}
 	}
 

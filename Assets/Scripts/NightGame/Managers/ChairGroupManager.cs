@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ChairGroupManager : MonoBehaviour
@@ -8,6 +6,14 @@ public class ChairGroupManager : MonoBehaviour
 	[Header("Chair List")]
 	[SerializeField] private List<Transform> chairList; // 所有椅子位置
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
+
+	private void Start()
+	{
+		foreach (Transform obj in chairList)
+		{
+			ClearChairItem(obj);
+		}
+	}
 
 	/// 隨機尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
 	public Transform FindEmptyChair()
@@ -38,11 +44,39 @@ public class ChairGroupManager : MonoBehaviour
 	public void ReleaseChair(Transform targetChair)
 	{
 		if (occupiedChairs.Contains(targetChair))
+		{
 			occupiedChairs.Remove(targetChair);
+			ClearChairItem(targetChair);
+		}
 	}
 
-	public void AddCanUseChair(Transform targetChair)
+	public void PullDownChairItem(Transform chair, GameObject handItem)
 	{
-		chairList.Add(targetChair);
+		Transform chairItem = chair.transform.GetChild(0);
+		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+
+		if (chair.childCount < 2) return;
+		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
+
+		// 回報已上餐
+		if (npc.IsReceiveFood(foodSprite))
+		{
+			// 放置餐點
+			handItem.transform.SetParent(chairItem.transform);
+			handItem.transform.localPosition = Vector3.zero;
+		}
+	}
+
+	public void ClearChairItem(Transform chair)
+	{
+		if (chair == null) return;
+
+		Transform parentItem = chair.transform.GetChild(0);
+
+		// 刪除第一個子物件（如果有）
+		if (parentItem.childCount > 0)
+		{
+			Destroy(parentItem.GetChild(0).gameObject);
+		}
 	}
 }
