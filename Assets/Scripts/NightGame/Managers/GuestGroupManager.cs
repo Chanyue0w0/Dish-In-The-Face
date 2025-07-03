@@ -7,7 +7,9 @@ public class GuestGroupManager : MonoBehaviour
 	[SerializeField] private float maxSpawnColdTime;
 	[SerializeField] private int minGuestPerWave;
 	[SerializeField] private int maxGuestPerWave;
-
+	[SerializeField] private bool isSpawnNormalGuest;
+	[SerializeField] private bool isSpawnWanderGuest;
+	[SerializeField] private bool isSpawnTroubleGuest;
 	[Header("-------------------- Reference -------------------- ")]
 	[SerializeField] private Transform doorPosition;
 
@@ -51,18 +53,20 @@ public class GuestGroupManager : MonoBehaviour
 			switch (guestType)
 			{
 				case 0:
-					guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+					if (isSpawnNormalGuest)
+						guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 					break;
 				case 1:
-
-					guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+					if (isSpawnWanderGuest)
+						guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 
 					//guest = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 					//if (Random.value < 0.3f)
 					//	GenerateTrash(guest.transform.position);
 					break;
 				case 2:
-					guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+					if (isSpawnTroubleGuest)
+						guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
 					break;
 			}
 		}

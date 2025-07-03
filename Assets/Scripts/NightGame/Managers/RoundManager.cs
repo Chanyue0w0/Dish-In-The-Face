@@ -12,7 +12,6 @@ public class RoundManager : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[SerializeField] public HotPointManager hotPointManager;
     [SerializeField] public FoodsGroupManager foodsGroupManager;
-    [SerializeField] public TableGroupManager tableGroupManager;
 	[SerializeField] public GuestGroupManager guestGroupManager;
     [SerializeField] public ChairGroupManager chairGroupManager;
     [SerializeField] public CoinUIController coinUIController;

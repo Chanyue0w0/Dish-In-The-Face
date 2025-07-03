@@ -25,7 +25,6 @@ public class NormalGuestController : MonoBehaviour
 	private bool isEating = false;
 	private bool isLeaving = false;
 	private Sprite orderFoodSprite = null;
-	private Collider2D currentTableCollider;
 
 	void Awake()
 	{
@@ -85,14 +84,15 @@ public class NormalGuestController : MonoBehaviour
 
 	private void OrderDish()
 	{
+		transform.SetParent(targetChair);
 		orderIconObject.SetActive(true);
 		orderFoodSprite = roundManager.foodsGroupManager.OrderFoodRandomly();
 		foodSpriteRenderer.sprite = orderFoodSprite;
-		roundManager.tableGroupManager.SetOrderDishOnTable(currentTableCollider.gameObject, gameObject);
 	}
 
 	public bool IsReceiveFood(Sprite foods)
 	{
+		// 確認點餐中，且是所需餐點
 		if (!isSeated || isEating || foods != orderFoodSprite) return false;
 
 		isEating = true;
@@ -116,11 +116,11 @@ public class NormalGuestController : MonoBehaviour
 
 		isLeaving = true;
 
-		if (currentTableCollider != null)
+		if (targetChair != null)
 		{
-			roundManager.tableGroupManager.ClearTableItem(currentTableCollider.gameObject);
-			currentTableCollider = null;
 			roundManager.chairGroupManager.ReleaseChair(targetChair);
+			roundManager.chairGroupManager.ClearChairItem(targetChair);
+			targetChair = null;
 		}
 		StartCoroutine(MoveOut());
 	}
@@ -137,11 +137,4 @@ public class NormalGuestController : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.CompareTag("Table"))
-		{
-			currentTableCollider = other;
-		}
-	}
 }
