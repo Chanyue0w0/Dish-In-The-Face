@@ -87,9 +87,10 @@ public class PlayerMovement : MonoBehaviour
 			moveVelocity = moveInput * moveSpeed;
 		}
 
+
 		if (moveX != 0)
 		{
-			gameObject.transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
 		}
 	}
 
