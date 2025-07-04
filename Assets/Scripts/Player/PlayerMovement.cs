@@ -281,6 +281,7 @@ public class PlayerMovement : MonoBehaviour
 		float t = 0f;
 		while (t < 1f)
 		{
+			PullDownDish();
 			t += Time.deltaTime * slideSpeed;
 			transform.position = Vector2.Lerp(start, end, t);
 			yield return null;
