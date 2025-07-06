@@ -13,7 +13,7 @@ public class NormalGuestController : MonoBehaviour
 	[Header("-------- Stuck Retry Setting --------")]
 	[SerializeField] private float stuckCheckInterval = 1.5f; // 幾秒內都沒移動視為卡住
 	[SerializeField] private float stuckThreshold = 0.05f;    // 認定卡住的最小移動距離
-	[SerializeField] private float retryDelay = 1f;           // 卡住後延遲幾秒才重新 SetDestination
+	[SerializeField] private float retryDelay = 2f;           // 卡住後延遲幾秒才重新 SetDestination
 
 	[Header("-------- Reference --------")]
 	[SerializeField] private RoundManager roundManager;
@@ -226,7 +226,7 @@ public class NormalGuestController : MonoBehaviour
 			if (targetChair != null)
 			{
 				agent.SetDestination(targetChair.position); // 重新嘗試導航
-				Debug.Log($"{gameObject.name} 卡住重導航");
+				//Debug.Log($"{gameObject.name} 卡住重導航");
 			}
 		}
 

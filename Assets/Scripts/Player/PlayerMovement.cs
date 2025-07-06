@@ -122,6 +122,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
+	// new Input System
 	public void InputMovement(InputAction.CallbackContext context)
 	{
 		//Debug.Log(context);
@@ -257,18 +258,15 @@ public class PlayerMovement : MonoBehaviour
 
 	private IEnumerator Slide(Collider2D tableCol)
 	{
-		isSlide = true; // 切換為滑行狀態
-		isDashing = false; // 關閉 dash 狀態
-		RumbleManager.Instance.StopRumble(); // 停止手把震動
+		isSlide = true;
+		isDashing = false;
+		RumbleManager.Instance.StopRumble();
 
-		// 關閉與桌子的碰撞，避免卡住
 		Physics2D.IgnoreCollision(playerCollider, tableCol, true);
 
-		// 取得桌子的碰撞區域（Bounds）
 		Bounds bounds = tableCol.bounds;
 		Vector2 start, end;
 
-		// 判斷玩家目前在桌子上方或下方，決定滑行方向
 		if (transform.position.y >= bounds.center.y)
 		{
 			start = new Vector2(bounds.center.x, bounds.max.y);
@@ -280,22 +278,24 @@ public class PlayerMovement : MonoBehaviour
 			end = new Vector2(bounds.center.x, bounds.max.y);
 		}
 
-		// 執行滑行動畫，從 start 滑到 end
-		float t = 0f;
-		while (t < 1f)
+		float distance = Vector2.Distance(start, end);
+		float duration = distance / slideSpeed;
+		float elapsedTime = 0f;
+
+		while (elapsedTime < duration)
 		{
 			PullDownDish();
-			t += Time.deltaTime * slideSpeed;
-			transform.position = Vector2.Lerp(start, end, t);
+			elapsedTime += Time.deltaTime;
+			transform.position = Vector2.Lerp(start, end, elapsedTime / duration);
 			yield return null;
 		}
 
-		// 滑行結束後恢復桌子的碰撞
 		Physics2D.IgnoreCollision(playerCollider, tableCol, false);
 
-		isSlide = false; // 滑行狀態結束
-		moveVelocity = Vector2.zero; // 停止移動
+		isSlide = false;
+		moveVelocity = Vector2.zero;
 	}
+
 
 
 
