@@ -164,7 +164,7 @@ public class NormalGuestController : MonoBehaviour
 		}
 
 		// 直接走回大門（startPosition）作為離場點
-		Vector3 exitPos = startPosition.position;
+		Vector3 exitPos = startPosition.position + new Vector3(0, -10, 0);
 		agent.SetDestination(exitPos);
 		StartCoroutine(CheckExitReached(exitPos));
 	}

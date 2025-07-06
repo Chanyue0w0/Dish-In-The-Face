@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 		isDashing = false;
 		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
-
+		handItemUI.ChangeHandItemUI();
 	}
 
 	void Update()
@@ -220,6 +220,8 @@ public class PlayerMovement : MonoBehaviour
 	// 撿取物品或使用裝置
 	void Interact()
 	{
+		handItemUI.ChangeHandItemUI();
+
 		if (currentFoodTrigger != null)
 		{
 			//Debug.Log("get foood");
@@ -240,7 +242,6 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 
-		handItemUI.ChangeHandItemUI();
 		PullDownDish();
 	}
 
