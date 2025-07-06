@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private Collider2D currentFoodTrigger;   // 當前接觸到的食物
 	private Collider2D currentTableCollider; // 當前接觸到的桌子
-	private Collider2D currentChairTrigger; // 當前接觸到的椅子
+	private List<Collider2D> currentChairTriggers = new List<Collider2D>(); // 當前接觸到的椅子
 
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -244,14 +244,17 @@ public class PlayerMovement : MonoBehaviour
 
 	private void PullDownDish()
 	{
-		if (currentChairTrigger != null && handItemNow.transform.childCount > 0)
+		if (currentChairTriggers.Count > 0 && handItemNow.transform.childCount > 0)
 		{
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 
-			// 傳入 handItemNow 的子物件給 Table
-			chairGroupManager.PullDownChairItem(currentChairTrigger.transform, item);
+			foreach (var chair in currentChairTriggers)
+			{
+				chairGroupManager.PullDownChairItem(chair.transform, item);
+			}
 		}
 	}
+
 	private IEnumerator Slide(Collider2D tableCol)
 	{
 		isSlide = true; // 切換為滑行狀態
@@ -332,7 +335,8 @@ public class PlayerMovement : MonoBehaviour
 		}
 		else if (other.CompareTag("Chair"))
 		{
-			currentChairTrigger = other;
+			if (!currentChairTriggers.Contains(other))
+				currentChairTriggers.Add(other);
 		}
 	}
 	void OnTriggerExit2D(Collider2D other)
@@ -341,11 +345,12 @@ public class PlayerMovement : MonoBehaviour
 		{
 			currentFoodTrigger = null;
 		}
-		else if (other == currentChairTrigger)
+		else if (currentChairTriggers.Contains(other))
 		{
-			currentChairTrigger = null;
+			currentChairTriggers.Remove(other);
 		}
 	}
+
 
 	void OnCollisionStay2D(Collision2D collision)
 	{
