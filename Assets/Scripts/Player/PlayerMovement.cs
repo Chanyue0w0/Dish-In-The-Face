@@ -12,10 +12,10 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float dashSpeed = 10f;           // 閃避時的速度
 	[SerializeField] private float dashDistance = 2f;         // 閃避距離（位移距離 = dashSpeed * dashDuration）
 	[SerializeField] private float dashCooldown = 0.1f;       // 閃避冷卻時間
+	[SerializeField] private float dashVirbation = 0.7f;
 	[SerializeField] private List<string> passThroughTags;    // 閃避時可穿過的 tag
 	[Header("Slide")]
 	[SerializeField] private float slideSpeed = 5f; // 玩家滑過桌子的速度，可調整
-
 
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
@@ -161,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		isDashing = true;
 		lastDashTime = Time.time;
-		RumbleManager.Instance.RumbleContinuous(0.4f, 0.4f);
+		RumbleManager.Instance.RumbleContinuous(dashVirbation, dashVirbation);
 
 		//// 開始穿越指定的 tag
 		//Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();

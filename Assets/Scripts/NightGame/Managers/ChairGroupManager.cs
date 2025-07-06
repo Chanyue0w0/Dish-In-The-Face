@@ -7,6 +7,18 @@ public class ChairGroupManager : MonoBehaviour
 	[SerializeField] private List<Transform> chairList; // 所有椅子位置
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
+	private void Awake()
+	{
+		chairList.Clear();
+
+		GameObject[] allChairs = GameObject.FindGameObjectsWithTag("Chair");
+		foreach (GameObject chairObj in allChairs)
+		{
+			chairList.Add(chairObj.transform);
+		}
+	}
+
+
 	private void Start()
 	{
 		foreach (Transform obj in chairList)

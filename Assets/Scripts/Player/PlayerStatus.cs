@@ -33,7 +33,7 @@ public class PlayerStatus : MonoBehaviour
 	public void TakeDamage(int damage)
 	{
 
-		RumbleManager.Instance.Rumble(0.7f, 0.7f, 0.5f);
+		RumbleManager.Instance.Rumble(1.5f, 1.5f, 0.7f);
 
 		currentHP -= damage;
 		currentHP = Mathf.Clamp(currentHP, 0, maxHP);
