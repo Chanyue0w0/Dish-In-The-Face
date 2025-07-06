@@ -356,10 +356,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6837a49748e5424f80fa5a14c385985, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minPatience: 10
-  maxPatience: 20
+  minPatience: 20
+  maxPatience: 40
   eatTime: 10
   moveSpeed: 2
+  stuckCheckInterval: 1.5
+  stuckThreshold: 0.05
+  retryDelay: 1
   roundManager: {fileID: 0}
   startPosition: {fileID: 0}
   orderIconObject: {fileID: 890640048631273743}

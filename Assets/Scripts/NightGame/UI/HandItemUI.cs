@@ -15,17 +15,18 @@ public class HandItemUI : MonoBehaviour
 	public void ChangeHandItemUI()
     {
         if (playerHandItem.childCount == 0)
-        {
-            dishCountText.text = "";
+		{
+			dishImage.gameObject.SetActive(false);
+			dishCountText.text = "";
             return;
 		}
 
         dishCountText.text = playerHandItem.childCount.ToString();
         Sprite sprite = playerHandItem.GetChild(0)?.GetChild(0)?.GetComponent<SpriteRenderer>()?.sprite;
-        if (sprite == null )
+        if (sprite == null)
         {
-            dishImage.gameObject.SetActive(false);
-            return;
+			dishImage.gameObject.SetActive(false);
+			return;
         }
 
         dishImage.gameObject.SetActive(true);
