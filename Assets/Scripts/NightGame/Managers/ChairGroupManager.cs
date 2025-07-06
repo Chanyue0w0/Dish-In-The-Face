@@ -91,4 +91,9 @@ public class ChairGroupManager : MonoBehaviour
 			Destroy(parentItem.GetChild(0).gameObject);
 		}
 	}
+
+	public bool IsChairccupied(Transform chair)
+	{
+		return occupiedChairs.Contains(chair);
+	}
 }

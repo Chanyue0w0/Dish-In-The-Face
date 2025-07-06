@@ -267,6 +267,7 @@ GameObject:
   - component: {fileID: 6096411991080613458}
   - component: {fileID: 5794271118961271068}
   - component: {fileID: 6900171364552601329}
+  - component: {fileID: 1397730837156832888}
   m_Layer: 0
   m_Name: Normal guest
   m_TagString: NormalGuest
@@ -472,6 +473,28 @@ CircleCollider2D:
   m_Offset: {x: -0.1694226, y: -0.9046912}
   serializedVersion: 2
   m_Radius: 1.9861519
+--- !u!195 &1397730837156832888
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474513089845744578}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 2.5649998
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 5.9099994
+  m_BaseOffset: 2.9549997
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5772019527846658394
 GameObject:
   m_ObjectHideFlags: 0
