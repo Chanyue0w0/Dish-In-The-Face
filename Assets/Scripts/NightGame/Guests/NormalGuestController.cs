@@ -43,6 +43,7 @@ public class NormalGuestController : MonoBehaviour
 		}
 		else
 		{
+			orderFoodSprite = null;
 			Leave(); // 沒椅子就離場
 		}
 	}
