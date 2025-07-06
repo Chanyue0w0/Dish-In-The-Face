@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("Script")]
 	[SerializeField] private ChairGroupManager chairGroupManager;
 	[SerializeField] private PlayerAttackController attackController;
+	[SerializeField] private HandItemUI handItemUI;
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
 
@@ -149,6 +150,7 @@ public class PlayerMovement : MonoBehaviour
 	}
 	void Attack()
 	{
+		handItemUI.ChangeHandItemUI();
 		attackController.IsAttackSuccess();
 	}
 	void StartDash()
@@ -238,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 
-
+		handItemUI.ChangeHandItemUI();
 		PullDownDish();
 	}
 
