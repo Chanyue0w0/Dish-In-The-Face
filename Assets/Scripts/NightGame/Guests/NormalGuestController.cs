@@ -18,6 +18,7 @@ public class NormalGuestController : MonoBehaviour
 	[Header("-------- Reference --------")]
 	[SerializeField] private RoundManager roundManager;
 	[SerializeField] private Transform startPosition;             // 起點位置（通常是大門）
+	[SerializeField] private Transform endPosition;             // 起點位置（通常是大門）
 	[SerializeField] private GameObject orderIconObject;          // 點餐圖示
 	[SerializeField] private SpriteRenderer foodSpriteRenderer;   // 顯示餐點用
 	[SerializeField] private GameObject patienceBar;              // 耐心條物件
@@ -50,7 +51,9 @@ public class NormalGuestController : MonoBehaviour
 
 		// 找起點和管理器
 		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
-		startPosition = GameObject.Find("Door Position").transform;
+		startPosition = GameObject.Find("Enter Position").transform;
+		endPosition = GameObject.Find("Exit Position").transform;
+
 
 		// 嘗試找椅子
 		targetChair = roundManager.chairGroupManager.FindEmptyChair();
@@ -156,6 +159,9 @@ public class NormalGuestController : MonoBehaviour
 		if (isLeaving) return;
 		isLeaving = true;
 
+		orderIconObject.SetActive(false);
+		patienceBar.SetActive(false);
+
 		if (targetChair != null)
 		{
 			roundManager.chairGroupManager.ReleaseChair(targetChair);
@@ -163,20 +169,33 @@ public class NormalGuestController : MonoBehaviour
 			targetChair = null;
 		}
 
-		// 直接走回大門（startPosition）作為離場點
-		Vector3 exitPos = startPosition.position + new Vector3(0, -10, 0);
+		Vector3 exitPos = endPosition.position;
 		agent.SetDestination(exitPos);
 		StartCoroutine(CheckExitReached(exitPos));
 	}
 
 	private IEnumerator CheckExitReached(Vector3 exitPos)
 	{
-		while (Vector3.Distance(transform.position, exitPos) > 0.05f)
+		float waitTime = 0f;
+		float timeout = 25f; // 最多等10秒避免卡死
+
+		//Debug.Log(Vector2.Distance(transform.position, exitPos));
+		while (Vector2.Distance(transform.position, exitPos) > 2f && waitTime < timeout)
 		{
+			if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
+			{
+				break;
+			}
+
+			waitTime += Time.deltaTime;
 			yield return null;
 		}
-		Destroy(gameObject); // 到門口後銷毀 NPC
+
+		Destroy(gameObject);
 	}
+
+
+
 
 
 	// 根據 NavMeshAgent velocity.x 翻轉角色左右方向
