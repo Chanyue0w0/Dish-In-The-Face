@@ -4,7 +4,8 @@ using UnityEngine.AI;
 public class TroubleGusetController : MonoBehaviour
 {
 	[Header("----- Status -----")]
-	[SerializeField] private int hp = 1;
+	[SerializeField] private int currentHp;
+	[SerializeField] private int maxHp = 3;
 	[SerializeField] private int atk = 1;
 	[SerializeField] private float moveSpeed = 2f;
 
@@ -21,6 +22,10 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private RoundManager roundManager;
 	[SerializeField] private GameObject attackRangeBox;
 
+
+	[SerializeField] private GameObject hpBar;              // 血條物件
+	[SerializeField] private Transform barFill;             // 血條內部填色
+
 	[SerializeField] private GameObject dieVFX;
 	[SerializeField] private GameObject attackVFX;
 
@@ -31,14 +36,18 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void Awake()
 	{
-
 		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
 		player = GameObject.FindGameObjectWithTag("Player").transform;
+
+
+		maxHp = Random.Range(1, 4); // 隨機 1~3
+		currentHp = maxHp;
 
 		agent.updateRotation = false;
 		agent.updateUpAxis = false;
 		agent.speed = moveSpeed;
 
+		hpBar.SetActive(false);
 		attackHitBox.SetActive(false); // 初始關閉
 		attackRangeBox.SetActive(false);
 	}
@@ -129,21 +138,30 @@ public class TroubleGusetController : MonoBehaviour
 
 	public void TakeDamage(int damage)
 	{
-		Debug.Log(this.name + "die");
-		hp -= damage;
-		if (hp <= 0)
+		hpBar.SetActive(true);
+		currentHp -= damage;
+		
+		float ratio = (float)currentHp / maxHp;
+		//Debug.Log(ratio);
+		barFill.localScale = new Vector3(ratio, 1f, 1f);
+		
+		//Debug.Log(this.name + "die");
+		if (currentHp <= 0)
 		{
 			Instantiate(dieVFX, attackHitBox.transform.position, Quaternion.identity);
 			roundManager.DefeatEnemySuccess();
 			Destroy(gameObject);
 		}
+
 	}
 
-	//private void OnDrawGizmosSelected()
-	//{
-	//	if (spriteRenderer == null) return;
-	//	Vector3 attackCenter = transform.position + transform.right * (spriteRenderer.flipX ? -1 : 1) * attackRange * 0.5f;
-	//	Gizmos.color = Color.red;
-	//	Gizmos.DrawWireSphere(attackCenter, 0.5f);
-	//}
+	// 偵測到被攻擊
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.CompareTag("AttackObject"))
+		{
+			Collider2D beAttackedObj = other;
+			TakeDamage(1);
+		}
+	}
 }

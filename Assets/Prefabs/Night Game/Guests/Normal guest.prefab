@@ -195,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 3269597891425854225}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.02}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -239,8 +239,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1788067647
-  m_SortingLayer: 7
+  m_SortingLayerID: -1127780697
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0.8653064, b: 0, a: 1}
@@ -356,8 +356,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6837a49748e5424f80fa5a14c385985, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minPatience: 20
-  maxPatience: 40
+  minPatience: 10
+  maxPatience: 30
   eatTime: 10
   moveSpeed: 2
   stuckCheckInterval: 1.5
@@ -365,6 +365,7 @@ MonoBehaviour:
   retryDelay: 1
   roundManager: {fileID: 0}
   startPosition: {fileID: 0}
+  endPosition: {fileID: 0}
   orderIconObject: {fileID: 890640048631273743}
   foodSpriteRenderer: {fileID: 5009767507642101398}
   patienceBar: {fileID: 5772019527846658394}

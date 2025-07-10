@@ -2,21 +2,31 @@ using UnityEngine;
 
 public class GuestGroupManager : MonoBehaviour
 {
-	[Header("-------------------- Settings -------------------- ")]
+	[Header("-------------------- Settings --------------------")]
 	[SerializeField] private float minSpawnColdTime;
 	[SerializeField] private float maxSpawnColdTime;
-	[SerializeField] private int minGuestPerWave;
-	[SerializeField] private int maxGuestPerWave;
-	[SerializeField] private bool isSpawnNormalGuest;
-	[SerializeField] private bool isSpawnWanderGuest;
-	[SerializeField] private bool isSpawnTroubleGuest;
-	[Header("-------------------- Reference -------------------- ")]
+
+	[Header("Normal Guest Settings")]
+	[SerializeField] private bool isSpawnNormalGuest = true;
+	[SerializeField] private int minNormalGuests = 1;
+	[SerializeField] private int maxNormalGuests = 3;
+
+	[Header("Wander Guest Settings")]
+	[SerializeField] private bool isSpawnWanderGuest = true;
+	[SerializeField] private int minWanderGuests = 0;
+	[SerializeField] private int maxWanderGuests = 2;
+
+	[Header("Trouble Guest Settings")]
+	[SerializeField] private bool isSpawnTroubleGuest = true;
+	[SerializeField] private int minTroubleGuests = 0;
+	[SerializeField] private int maxTroubleGuests = 1;
+
+	[Header("-------------------- Reference --------------------")]
 	[SerializeField] private Transform doorPosition;
 
 	[SerializeField] private GameObject normalGuestPrefab;
 	[SerializeField] private GameObject wanderGuestPrefab;
 	[SerializeField] private GameObject troubleGuestPrefab;
-
 
 	private float timer;
 	private float nextSpawnTime;
@@ -44,30 +54,32 @@ public class GuestGroupManager : MonoBehaviour
 
 	void SpawnGuestWave()
 	{
-		int guestCount = Random.Range(minGuestPerWave, maxGuestPerWave + 1);
-		for (int i = 0; i < guestCount; i++)
+		if (isSpawnNormalGuest)
 		{
-			int guestType = Random.Range(0, 3); // 0: normal, 1: wander, 2: trouble
-			GameObject guest = null;
-
-			switch (guestType)
+			int count = Random.Range(minNormalGuests, maxNormalGuests + 1);
+			for (int i = 0; i < count; i++)
 			{
-				case 0:
-					if (isSpawnNormalGuest)
-						guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
-					break;
-				case 1:
-					if (isSpawnWanderGuest)
-						guest = Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
+				Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
+			}
+		}
 
-					//guest = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
-					//if (Random.value < 0.3f)
-					//	GenerateTrash(guest.transform.position);
-					break;
-				case 2:
-					if (isSpawnTroubleGuest)
-						guest = Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, gameObject.transform);
-					break;
+		if (isSpawnWanderGuest)
+		{
+			int count = Random.Range(minWanderGuests, maxWanderGuests + 1);
+			for (int i = 0; i < count; i++)
+			{
+				var wander = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
+				// if (Random.value < 0.3f)
+				//     GenerateTrash(wander.transform.position);
+			}
+		}
+
+		if (isSpawnTroubleGuest)
+		{
+			int count = Random.Range(minTroubleGuests, maxTroubleGuests + 1);
+			for (int i = 0; i < count; i++)
+			{
+				Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
 			}
 		}
 	}
@@ -83,27 +95,7 @@ public class GuestGroupManager : MonoBehaviour
 		}
 	}
 
-	// 砞﹚程ネΘ玱丁
-	public void SetMinSpawnColdTime(float value)
-	{
-		minSpawnColdTime = value;
-	}
-
-	// 砞﹚程ネΘ玱丁
-	public void SetMaxSpawnColdTime(float value)
-	{
-		maxSpawnColdTime = value;
-	}
-
-	// 砞﹚–猧程ぶネΘ计秖
-	public void SetMinGuestPerWave(int value)
-	{
-		minGuestPerWave = value;
-	}
-
-	// 砞﹚–猧程ネΘ计秖
-	public void SetMaxGuestPerWave(int value)
-	{
-		maxGuestPerWave = value;
-	}
+	// Public setters ㄌ惠―玂痙┪簿埃
+	public void SetMinSpawnColdTime(float value) => minSpawnColdTime = value;
+	public void SetMaxSpawnColdTime(float value) => maxSpawnColdTime = value;
 }

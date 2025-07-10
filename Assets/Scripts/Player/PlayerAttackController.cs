@@ -14,10 +14,13 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private GameObject BeerVFX;
 	[SerializeField] private PlayerMovement playerMovement;
 
+	private bool isAttacked = false;
 	private void Start()
 	{
 		playerMovement = GetComponent<PlayerMovement>();
 		attackHitBox.SetActive(false);
+
+		isAttacked = false;
 	}
 
 	public bool IsAttackSuccess()
@@ -53,26 +56,9 @@ public class PlayerAttackController : MonoBehaviour
 	private IEnumerator PerformAttack()
 	{
 		attackHitBox.SetActive(true);
-		playerMovement.DestoryFirstItem();
-
-		// 檢測 hitbox 的範圍內有無敵人（可根據 hitbox 範圍調整）
-		Collider2D[] hits = Physics2D.OverlapBoxAll(attackHitBox.transform.position,
-													attackHitBox.transform.localScale,
-													0f);
-
-		foreach (Collider2D hit in hits)
-		{
-			if (hit.CompareTag("Enemy"))
-			{
-				TroubleGusetController enemy = hit.GetComponent<TroubleGusetController>();
-				if (enemy != null)
-				{
-					enemy.TakeDamage(1);
-				}
-			}
-		}
 
 		yield return new WaitForSeconds(attackDuration);
 		attackHitBox.SetActive(false);
+		isAttacked = false;
 	}
 }
