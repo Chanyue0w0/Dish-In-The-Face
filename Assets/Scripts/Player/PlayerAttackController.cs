@@ -14,13 +14,13 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private GameObject BeerVFX;
 	[SerializeField] private PlayerMovement playerMovement;
 
-	private bool isAttacked = false;
+	//private bool isAttacked = false;
 	private void Start()
 	{
 		playerMovement = GetComponent<PlayerMovement>();
 		attackHitBox.SetActive(false);
 
-		isAttacked = false;
+		//isAttacked = false;
 	}
 
 	public bool IsAttackSuccess()
@@ -59,6 +59,6 @@ public class PlayerAttackController : MonoBehaviour
 
 		yield return new WaitForSeconds(attackDuration);
 		attackHitBox.SetActive(false);
-		isAttacked = false;
+		//isAttacked = false;
 	}
 }
