@@ -4208,7 +4208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  holdItemCount: 10
+  holdItemCount: 1
   dashSpeed: 15
   dashDistance: 3
   dashCooldown: 0.3
@@ -23226,7 +23226,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1508197785
 RectTransform:
   m_ObjectHideFlags: 0
