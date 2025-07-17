@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class ChairGroupManager : MonoBehaviour
 {
 	[Header("Chair List")]
 	[SerializeField] private List<Transform> chairList; // 所有椅子位置
 	[SerializeField] private Transform guestEnterPoistion;
+
+	[Header("Reference")]
+	[SerializeField] private GameObject coinPrefab;
+
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
 	private void Awake()
@@ -101,6 +107,17 @@ public class ChairGroupManager : MonoBehaviour
 			newItem.transform.SetParent(chairItem.transform);
 			newItem.transform.localPosition = Vector3.zero;
 		}
+	}
+
+	public void PullDownCoin(Transform chair, int coinCount)
+	{
+		Transform chairItem = chair.transform.GetChild(0);
+
+		GameObject coinObj = Instantiate(coinPrefab);
+		coinObj.GetComponent<CoinOnTable>().SetCoinCount(coinCount); // 設定金幣數量為 10
+		coinObj.transform.localScale = coinPrefab.transform.lossyScale;
+		coinObj.transform.SetParent(chairItem.transform);
+		coinObj.transform.localPosition = Vector3.zero;
 	}
 
 	public void ClearChairItem(Transform chair)
