@@ -11,6 +11,7 @@ TagManager:
   - AttackObject
   - NormalGuest
   - Chair
+  - Coin
   layers:
   - Default
   - TransparentFX

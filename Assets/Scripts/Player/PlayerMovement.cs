@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
 	private Animator animator;
 	private PlayerInput playerInput;
 
+	private Vector2 slideDirection;
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
 
@@ -281,6 +282,7 @@ public class PlayerMovement : MonoBehaviour
 			end = new Vector2(bounds.center.x, bounds.max.y);
 		}
 
+		slideDirection = (end - start).normalized;
 		float distance = Vector2.Distance(start, end);
 		float duration = distance / slideSpeed;
 		float elapsedTime = 0f;
@@ -393,5 +395,23 @@ public class PlayerMovement : MonoBehaviour
 	public void DestoryFirstItem()
 	{
 		Destroy(handItemNow.transform.GetChild(0).gameObject);
+	}
+
+	/// 回傳滑行方向
+	public int GetSlideDirection()
+	{
+		if (!isSlide) return 0;
+
+		if (slideDirection.y > 0.1f)
+			return 1;   // 往上滑
+		else if (slideDirection.y < -0.1f)
+			return -1;  // 往下滑
+		else
+			return 0;   // 水平滑 or 幾乎沒動
+	}
+
+	public bool IsPlayerSlide()
+	{
+		return isSlide;
 	}
 }

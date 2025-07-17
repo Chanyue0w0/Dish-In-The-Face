@@ -1734,7 +1734,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   finishDishHotPoint: 0.8
   attackEnemyHotPoint: 0.6
-  rewardCoin: 10
+  defeatEnemyrewardCoin: 10
   hotPointManager: {fileID: 89439753}
   foodsGroupManager: {fileID: 381182771}
   guestGroupManager: {fileID: 761160831}
@@ -4448,6 +4448,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chairList: []
   guestEnterPoistion: {fileID: 506713175}
+  coinPrefab: {fileID: 5133485625459300629, guid: 13db0ec4549276c40bd0f8be8451c74a, type: 3}
 --- !u!1 &644515211
 GameObject:
   m_ObjectHideFlags: 0

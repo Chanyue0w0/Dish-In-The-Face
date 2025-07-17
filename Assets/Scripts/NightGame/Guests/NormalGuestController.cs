@@ -140,7 +140,6 @@ public class NormalGuestController : MonoBehaviour
 		isEating = true;
 		orderIconObject.SetActive(false);
 		patienceBar.SetActive(false);
-		roundManager.FinishDishSuccess();
 		StopAllCoroutines();
 		StartCoroutine(EatAndLeave());
 		return true;
@@ -150,6 +149,7 @@ public class NormalGuestController : MonoBehaviour
 	private IEnumerator EatAndLeave()
 	{
 		yield return new WaitForSeconds(eatTime);
+		roundManager.FinishDishSuccess(targetChair, 10);
 		Leave();
 	}
 
