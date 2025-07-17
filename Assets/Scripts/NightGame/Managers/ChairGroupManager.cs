@@ -82,7 +82,7 @@ public class ChairGroupManager : MonoBehaviour
 
 	public void PullDownChairItem(Transform chair, GameObject handItem)
 	{
-		Transform chairItem = chair.transform.GetChild(0);
+		Transform chairItem = chair.transform.GetChild(0); 
 		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
 
 		if (chair.childCount < 2) return;
@@ -92,8 +92,14 @@ public class ChairGroupManager : MonoBehaviour
 		if (npc.IsReceiveFood(foodSprite))
 		{
 			// 放置餐點
-			handItem.transform.SetParent(chairItem.transform);
-			handItem.transform.localPosition = Vector3.zero;
+			//handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
+			//handItem.transform.localPosition = Vector3.zero;
+
+			// 生成 handItem 的複製品（Instantiate 一份新物件）
+			GameObject newItem = Instantiate(handItem); // 複製餐點放到桌子上，玩家手上餐點不變
+			newItem.transform.localScale = handItem.transform.lossyScale;
+			newItem.transform.SetParent(chairItem.transform);
+			newItem.transform.localPosition = Vector3.zero;
 		}
 	}
 
