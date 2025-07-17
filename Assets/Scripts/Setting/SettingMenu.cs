@@ -18,8 +18,8 @@ public class SettingsMenu : MonoBehaviour
 	[SerializeField] private Slider sfxSlider;
 
 	[Header("------------- Text ------------------")]
-	[SerializeField] private Text musicVolumeText;
-	[SerializeField] private Text sfxVolumeText;
+	[SerializeField] private TextMeshProUGUI musicVolumeText;
+	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 	[SerializeField] private TextMeshProUGUI fpsText;
 
 	[Header("------------- gameboject ------------------")]
@@ -80,7 +80,7 @@ public class SettingsMenu : MonoBehaviour
 	{
 		float volume = musicSlider.value;
 		musicVolumeText.text = ((int)(volume * 100f)).ToString();
-		audioMixer.SetFloat("Music", Mathf.Log10(volume) * 30);
+		//audioMixer.SetFloat("Music", Mathf.Log10(volume) * 30);
 		PlayerPrefs.SetFloat("MusicVolume", volume);
 		AudioManager.instance.musicVolume = volume;
 	}
@@ -97,7 +97,7 @@ public class SettingsMenu : MonoBehaviour
 	{
 		float volume = sfxSlider.value;
 		sfxVolumeText.text = ((int)(volume * 100f)).ToString();
-		audioMixer.SetFloat("SFX", Mathf.Log10(volume) * 30);
+		//audioMixer.SetFloat("SFX", Mathf.Log10(volume) * 30);
 		PlayerPrefs.SetFloat("SFXVolume", volume);
 		AudioManager.instance.SFXVolume = volume;
 	}
