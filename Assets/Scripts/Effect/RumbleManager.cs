@@ -9,6 +9,8 @@ public class RumbleManager : MonoBehaviour
 	private Coroutine rumbleCoroutine;
 	private bool wasTimeScaleZero = false;
 
+	private bool isRumble = true;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
@@ -38,6 +40,8 @@ public class RumbleManager : MonoBehaviour
 	/// </summary>
 	public void Rumble(float lowFrequency, float highFrequency, float duration)
 	{
+		if (!isRumble) return;
+
 		if (Gamepad.current == null) return;
 
 		if (rumbleCoroutine != null)
@@ -59,6 +63,9 @@ public class RumbleManager : MonoBehaviour
 	/// </summary>
 	public void RumbleContinuous(float lowFrequency, float highFrequency)
 	{
+		if (!isRumble) return;
+
+
 		if (Gamepad.current == null) return;
 
 		if (rumbleCoroutine != null)
@@ -92,4 +99,8 @@ public class RumbleManager : MonoBehaviour
 		StopRumble();
 	}
 
+	public void SetEnableRumble(bool rumble)
+	{
+		isRumble = rumble;
+	}
 }
