@@ -9,6 +9,8 @@ public class RumbleManager : MonoBehaviour
 	private Coroutine rumbleCoroutine;
 	private bool wasTimeScaleZero = false;
 
+	private bool isRumble = true;
+
 	private void Awake()
 	{
 		if (Instance != null && Instance != this)
@@ -33,11 +35,11 @@ public class RumbleManager : MonoBehaviour
 		}
 	}
 
-	/// <summary>
 	/// 啟動震動（指定震度與持續時間）
-	/// </summary>
 	public void Rumble(float lowFrequency, float highFrequency, float duration)
 	{
+		if (!isRumble) return;
+
 		if (Gamepad.current == null) return;
 
 		if (rumbleCoroutine != null)
@@ -54,11 +56,12 @@ public class RumbleManager : MonoBehaviour
 		rumbleCoroutine = null;
 	}
 
-	/// <summary>
 	/// 啟動持續震動（無限時長，需手動停止）
-	/// </summary>
 	public void RumbleContinuous(float lowFrequency, float highFrequency)
 	{
+		if (!isRumble) return;
+
+
 		if (Gamepad.current == null) return;
 
 		if (rumbleCoroutine != null)
@@ -68,9 +71,7 @@ public class RumbleManager : MonoBehaviour
 		rumbleCoroutine = null; // 不需記錄 Coroutine，讓 StopRumble 照常運作
 	}
 
-	/// <summary>
 	/// 停止震動
-	/// </summary>
 	public void StopRumble()
 	{
 		if (Gamepad.current == null) return;
@@ -92,4 +93,8 @@ public class RumbleManager : MonoBehaviour
 		StopRumble();
 	}
 
+	public void SetEnableRumble(bool rumble)
+	{
+		isRumble = rumble;
+	}
 }
