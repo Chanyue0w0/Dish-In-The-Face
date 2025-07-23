@@ -8,28 +8,22 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: cfxr proc ring water ripple local space arc ab
-  m_Shader: {fileID: 4800000, guid: e260cfa7296ee7642b167f1eb5be5023, type: 3}
-  m_Parent: {fileID: 0}
-  m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords:
+  m_Shader: {fileID: -6465566751694194690, guid: 1581eccce46ba384596a1dce7936ab19,
+    type: 3}
+  m_ValidKeywords:
   - _CFXR_DISSOLVE
-  - _CFXR_DITHERED_SHADOWS_OFF
   - _CFXR_WORLD_SPACE_RING
+  m_InvalidKeywords:
+  - _CFXR_DITHERED_SHADOWS_OFF
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _AlphaTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _DissolveTex:
         m_Texture: {fileID: 2800000, guid: e09598ca19faace49acaf7b6bfb5516c, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -42,20 +36,11 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _MaskTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NormalMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _CFXR_DITHERED_SHADOWS: 0
     - _DissolveSmooth: 0.03
     - _DstBlend: 10
-    - _EnableExternalAlpha: 0
     - _HdrBoost: 0
     - _HdrMultiply: 0
     - _InvertDissolveTex: 0
@@ -70,8 +55,5 @@ Material:
     - _UseSP: 0
     - _WorldSpaceRing: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Debug: {r: 0, g: 0, b: 0, a: 0}
-    - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
