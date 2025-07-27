@@ -82,7 +82,6 @@ public class ChairGroupManager : MonoBehaviour
 		if (occupiedChairs.Contains(targetChair))
 		{
 			occupiedChairs.Remove(targetChair);
-			ClearChairItem(targetChair);
 		}
 	}
 
@@ -111,6 +110,7 @@ public class ChairGroupManager : MonoBehaviour
 
 	public void PullDownCoin(Transform chair, int coinCount)
 	{
+		if (chair == null) return;
 		Transform chairItem = chair.transform.GetChild(0);
 
 		GameObject coinObj = Instantiate(coinPrefab);

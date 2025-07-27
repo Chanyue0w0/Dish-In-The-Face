@@ -10175,8 +10175,8 @@ MonoBehaviour:
   minSpawnColdTime: 5
   maxSpawnColdTime: 10
   isSpawnNormalGuest: 1
-  minNormalGuests: 1
-  maxNormalGuests: 3
+  minNormalGuests: 3
+  maxNormalGuests: 5
   isSpawnWanderGuest: 0
   minWanderGuests: 0
   maxWanderGuests: 2
