@@ -414,4 +414,9 @@ public class PlayerMovement : MonoBehaviour
 	{
 		return isSlide;
 	}
+
+	public bool IsPlayerDash()
+	{
+		return isDashing;
+	}
 }
