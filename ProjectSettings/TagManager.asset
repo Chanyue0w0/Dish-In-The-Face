@@ -12,6 +12,8 @@ TagManager:
   - NormalGuest
   - Chair
   - Coin
+  - WanderGuest
+  - Obstacle
   layers:
   - Default
   - TransparentFX
