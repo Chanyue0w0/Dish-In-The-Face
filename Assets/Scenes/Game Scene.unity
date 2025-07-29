@@ -916,6 +916,8 @@ MonoBehaviour:
   - 6
   - 8
   - 10
+  currentMinHotPoint: 0
+  currentMaxHotPoint: 10
   hotLevelSprites:
   - {fileID: 21300000, guid: a3d636b8da538a8428122579d047e039, type: 3}
   - {fileID: 21300000, guid: f82557d10ae554a418988279c51b5c4e, type: 3}
@@ -924,6 +926,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5a32ae3b8f4cd3147a97f60ac67e35c3, type: 3}
   hotPointImage: {fileID: 1696843143}
   hotPointFillBar: {fileID: 1978379211}
+  roundManager: {fileID: 182932467}
 --- !u!114 &89439754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1790,6 +1793,7 @@ MonoBehaviour:
   guestGroupManager: {fileID: 761160831}
   chairGroupManager: {fileID: 643318459}
   coinUIController: {fileID: 1414407264}
+  globalLightManager: {fileID: 1781125744}
 --- !u!1 &191916613
 GameObject:
   m_ObjectHideFlags: 0
@@ -10229,8 +10233,8 @@ MonoBehaviour:
   minNormalGuests: 3
   maxNormalGuests: 5
   isSpawnWanderGuest: 1
-  minWanderGuests: 0
-  maxWanderGuests: 2
+  minWanderGuests: 1
+  maxWanderGuests: 3
   isSpawnTroubleGuest: 1
   minTroubleGuests: 0
   maxTroubleGuests: 2
@@ -25255,6 +25259,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1781125743}
   - component: {fileID: 1781125742}
+  - component: {fileID: 1781125744}
   m_Layer: 0
   m_Name: Global Light 2D
   m_TagString: Untagged
@@ -25327,6 +25332,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1781125744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781125741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3725a578103b6d4aa2431ecabe8e301, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cycleDuration: 6
+  enableRGBLoop: 0
+  colorCycleList:
+  - {r: 1, g: 0.4047272, b: 0.2216981, a: 1}
+  - {r: 0.8859604, g: 1, b: 0.4470588, a: 1}
+  - {r: 0.9437074, g: 0.49803922, b: 0.99215686, a: 1}
+  - {r: 0.42207614, g: 0.3066038, b: 1, a: 1}
+  - {r: 0.051486313, g: 0.62412935, b: 0.8396226, a: 1}
+  - {r: 0.040138844, g: 0.7735849, b: 0.31030706, a: 1}
 --- !u!1 &1796851947
 GameObject:
   m_ObjectHideFlags: 0
