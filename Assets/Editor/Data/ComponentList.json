@@ -1,0 +1,17 @@
+{
+    "scenes": [
+        {
+            "sceneName": "Game Scene",
+            "components": [
+                {
+                    "path": "Player",
+                    "type": "PlayerMovement, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "Guests Group",
+                    "type": "GuestGroupManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                }
+            ]
+        }
+    ]
+}

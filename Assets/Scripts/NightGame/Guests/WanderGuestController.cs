@@ -16,6 +16,10 @@ public class WanderGuestController : MonoBehaviour
 	[SerializeField] private float stuckCheckInterval = 1.5f;  // 幾秒內沒動作視為卡住
 	[SerializeField] private float stuckThreshold = 0.05f;     // 多近的距離視為沒移動
 	[SerializeField] private float retryDelay = 2f;            // 卡住後等待多久再重新尋路
+	
+	[Header("Leave Settings")]
+	[SerializeField] private float minStayDuration = 15f;  // 最短停留秒數
+	[SerializeField] private float maxStayDuration = 30f;  // 最長停留秒數
 
 	[Header("------------ Reference ------------")]
 	[SerializeField] GameObject[] obstacles;  // 可生成的障礙物 Prefab
@@ -40,6 +44,11 @@ public class WanderGuestController : MonoBehaviour
 
 		lastPosition = transform.position;
 		MoveToNewDestination(); // 初始找一個位置開始徘徊
+
+
+		// 安排離開計時器
+		float leaveTime = Random.Range(minStayDuration, maxStayDuration);
+		StartCoroutine(LeaveAfterDelay(leaveTime));
 	}
 
 	void Update()
@@ -158,4 +167,15 @@ public class WanderGuestController : MonoBehaviour
 		else if (agent.velocity.x < -0.01f)
 			transform.rotation = Quaternion.Euler(0, 180, 0);     // 朝左
 	}
+
+	// 一段時間後自動離開（例如被移除）
+	private IEnumerator LeaveAfterDelay(float delay)
+	{
+		yield return new WaitForSeconds(delay);
+
+		// 離開處理（可改成播放動畫、淡出等）
+		Debug.Log($"{gameObject.name} 離開");
+		Destroy(gameObject); // 預設直接刪除
+	}
+
 }
