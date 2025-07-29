@@ -29,6 +29,7 @@ public class RoundManager : MonoBehaviour
 	// 放下餐點成功
 	public void PullDownDishSuccess()
 	{
+		Debug.Log("增加熱度!!!!!!!!!!");
 		hotPointManager.AddHotPoint(finishDishHotPoint);
 	}
 	 //完成餐點取得金幣(顧客吃完)

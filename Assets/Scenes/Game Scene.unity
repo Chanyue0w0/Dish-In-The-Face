@@ -4694,6 +4694,7 @@ MonoBehaviour:
   chairList: []
   guestEnterPoistion: {fileID: 506713175}
   coinPrefab: {fileID: 5133485625459300629, guid: 13db0ec4549276c40bd0f8be8451c74a, type: 3}
+  roundManager: {fileID: 182932467}
 --- !u!1 &644515211
 GameObject:
   m_ObjectHideFlags: 0

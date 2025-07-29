@@ -174,7 +174,7 @@ public class WanderGuestController : MonoBehaviour
 		yield return new WaitForSeconds(delay);
 
 		// 離開處理（可改成播放動畫、淡出等）
-		Debug.Log($"{gameObject.name} 離開");
+		//Debug.Log($"{gameObject.name} 離開");
 		Destroy(gameObject); // 預設直接刪除
 	}
 
