@@ -910,7 +910,12 @@ MonoBehaviour:
   hotPoint: 0
   decreaseRate: 0.5
   decayDelay: 3
-  maxHotPoint: 10
+  stageMaxHotPoint:
+  - 2
+  - 4
+  - 6
+  - 8
+  - 10
   hotLevelSprites:
   - {fileID: 21300000, guid: a3d636b8da538a8428122579d047e039, type: 3}
   - {fileID: 21300000, guid: f82557d10ae554a418988279c51b5c4e, type: 3}
@@ -1777,7 +1782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54f45469d918e884c80ddc670262c698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  finishDishHotPoint: 0.8
+  finishDishHotPoint: 0.6
   attackEnemyHotPoint: 0.6
   defeatEnemyrewardCoin: 10
   hotPointManager: {fileID: 89439753}

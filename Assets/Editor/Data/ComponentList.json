@@ -10,6 +10,14 @@
                 {
                     "path": "Guests Group",
                     "type": "GuestGroupManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "Managers/Rround Manager",
+                    "type": "RoundManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "Canvas/Game Info Panel/Hot Point Manager",
+                    "type": "HotPointManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
                 }
             ]
         }
