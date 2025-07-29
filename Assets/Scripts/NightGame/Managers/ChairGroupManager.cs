@@ -11,7 +11,7 @@ public class ChairGroupManager : MonoBehaviour
 
 	[Header("Reference")]
 	[SerializeField] private GameObject coinPrefab;
-
+	[SerializeField] private RoundManager roundManager;
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
 	private void Awake()
@@ -105,6 +105,9 @@ public class ChairGroupManager : MonoBehaviour
 			newItem.transform.localScale = handItem.transform.lossyScale;
 			newItem.transform.SetParent(chairItem.transform);
 			newItem.transform.localPosition = Vector3.zero;
+
+			// 上餐成功增加熱度
+			roundManager.PullDownDishSuccess();
 		}
 	}
 
