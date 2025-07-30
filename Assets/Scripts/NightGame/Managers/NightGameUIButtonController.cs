@@ -3,9 +3,20 @@ using UnityEngine.SceneManagement;
 
 public class NightGameUIButtonController : MonoBehaviour
 {
+	[SerializeField] GameObject settingPanel;
+	[SerializeField] RoundManager roundManager;
     public void OnClickRestart()
     {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-		Time.timeScale = 1.0f;
+	}
+
+	public void OnClickSetting()
+	{
+		settingPanel.SetActive(true);
+	}
+
+	public void OnClickContinue()
+	{
+		roundManager.GameContinue();
 	}
 }

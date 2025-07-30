@@ -72,12 +72,15 @@ TagManager:
   - name: Food
     uniqueID: 2650000501
     locked: 0
-  - name: UI
+  - name: game_UI
     uniqueID: 1788067647
     locked: 0
-  - name: UI_1
+  - name: game_UI_1
     uniqueID: 3167186599
     locked: 0
   - name: VFX
     uniqueID: 207207721
+    locked: 0
+  - name: UI
+    uniqueID: 2630706115
     locked: 0
