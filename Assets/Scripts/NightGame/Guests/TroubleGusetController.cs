@@ -100,6 +100,8 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		attackHitBox.SetActive(true);
 		Instantiate(attackVFX, attackHitBox.transform.position, Quaternion.identity);
+		// 生成音效
+		AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyAttack, transform.position);
 
 		// 用 Collider2D 判斷是否打中 Player
 		Collider2D[] hits = new Collider2D[5];
