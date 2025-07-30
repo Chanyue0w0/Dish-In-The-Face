@@ -1,152 +1,209 @@
-//using System.Collections;
-//using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Audio;
 using TMPro;
 
-public class SettingsMenu : MonoBehaviour
+public class SettingMenu : MonoBehaviour
 {
-	[SerializeField] private int targetFPS = 30;
-	[SerializeField] private float currentFPS;
-	[SerializeField] private float musicVolume;
-	[SerializeField] private float sfxVolume;
+	// -------- UI 參考 --------
 
-	[Header("------------- Other ------------------")]
-	[SerializeField] private AudioMixer audioMixer;
+	[Header("-------- UI Reference --------")]
+	[Header("Panels")]
+	[SerializeField] private GameObject settingPanel;
+	[Header("Volume UI")]
+	[SerializeField] private Slider masterSlider;
+	[SerializeField] private TextMeshProUGUI masterVolumeText;
+
 	[SerializeField] private Slider musicSlider;
-	[SerializeField] private Slider sfxSlider;
-
-	[Header("------------- Text ------------------")]
 	[SerializeField] private TextMeshProUGUI musicVolumeText;
+
+	[SerializeField] private Slider sfxSlider;
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
-	[SerializeField] private TextMeshProUGUI fpsText;
 
-	[Header("------------- gameboject ------------------")]
-	[SerializeField] private GameObject volumePanel;
-	[SerializeField] private GameObject staffPanel;
-	[SerializeField] private GameObject graphicsPanel;
+	[Header("Buttons")]
+	[SerializeField] private Button[] displayModeButtons;
+	[SerializeField] private Button[] resolutionButtons;
+	[SerializeField] private Button[] vsyncButtons;
+	[SerializeField] private Button[] refreshRateButtons;
+	[SerializeField] private Button[] vibrationButtons;
+	[SerializeField] private Button[] languageButtons;
 
-
-
-	// Start is called before the first frame update
-	void Start()
+	private void Start()
 	{
-		volumePanel.SetActive(true);
-		staffPanel.SetActive(false);
-		graphicsPanel.SetActive(false);
-
+		settingPanel.SetActive(false);
 		InitSetting();
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-		//currentFPS = Time.frameCount / Time.time;
-		currentFPS = 1.0f / Time.deltaTime;
 	}
 
 	private void InitSetting()
 	{
-		if (PlayerPrefs.HasKey("MusicVolume"))
-		{
-			LoadMusicVolume();
-		}
-		else
-		{
-			SetMusicVolume();
-		}
+		// 音量設定
+		float master = PlayerPrefsManager.GetMasterVolume();
+		masterSlider.value = master;
+		OnValueChangedMasterVolume();
 
-		if (PlayerPrefs.HasKey("SFXVolume"))
-		{
-			LoadSFXVolume();
-		}
-		else
-		{
-			SetSFXVolume();
-		}
+		float music = PlayerPrefsManager.GetMusicVolume();
+		musicSlider.value = music;
+		OnValueChangedMusicVolume();
 
-		if (PlayerPrefs.HasKey("FPS"))
-		{
-			LoadTargetFPS();
-		}
-		else
-		{
-			SetTargetFPS(targetFPS);
-		}
+		float sfx = PlayerPrefsManager.GetSFXVolume();
+		sfxSlider.value = sfx;
+		OnValueChangedSFXVolume();
+
+		// 顯示模式
+		string displayMode = PlayerPrefsManager.GetDisplayMode();
+		OnClickSetDisplayMode(displayMode);
+
+		// 解析度
+		string resolution = PlayerPrefsManager.GetResolution();
+		OnClickSetResolution(resolution);
+
+		// VSync
+		bool vsync = PlayerPrefsManager.GetVSync();
+		OnClickSetVSync(vsync);
+
+		// 更新率
+		string refreshRate = PlayerPrefsManager.GetRefreshRate();
+		OnClickSetRefreshRate(refreshRate);
+
+		// 控制器震動
+		bool vibration = PlayerPrefsManager.GetControllerVibration();
+		OnClickSetControllerVibration(vibration);
+
+		// 語言
+		string language = PlayerPrefsManager.GetLanguage();
+		OnClickSetLanguage(language);
 	}
 
-	public void SetMusicVolume()
-	{
-		float volume = musicSlider.value;
-		musicVolumeText.text = ((int)(volume * 100f)).ToString();
-		//audioMixer.SetFloat("Music", Mathf.Log10(volume) * 30);
-		PlayerPrefs.SetFloat("MusicVolume", volume);
-		AudioManager.instance.musicVolume = volume;
-	}
-
-	private void LoadMusicVolume()
-	{
-		musicSlider.value = PlayerPrefs.GetFloat("MusicVolume");
-
-		musicVolumeText.text = ((int)(musicSlider.value * 100f)).ToString();
-		SetMusicVolume();
-	}
-
-	public void SetSFXVolume()
-	{
-		float volume = sfxSlider.value;
-		sfxVolumeText.text = ((int)(volume * 100f)).ToString();
-		//audioMixer.SetFloat("SFX", Mathf.Log10(volume) * 30);
-		PlayerPrefs.SetFloat("SFXVolume", volume);
-		AudioManager.instance.SFXVolume = volume;
-	}
-
-	private void LoadSFXVolume()
-	{
-		sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume");
-		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
-		SetSFXVolume();
-	}
-
-	public void SetTargetFPS(int fps)
-	{
-		fpsText.text = fps.ToString();
-		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = fps;
-		PlayerPrefs.SetInt("FPS", fps);
-		targetFPS = fps;
-	}
-
-	private void LoadTargetFPS()
-	{
-		SetTargetFPS(PlayerPrefs.GetInt("FPS"));
-	}
-
-
-	public void OnClickVolumePanel()
-	{
-		volumePanel.SetActive(true);
-		staffPanel.SetActive(false);
-		graphicsPanel.SetActive(false);
-	}
-	public void OnClickStaffPanel()
-	{
-		volumePanel.SetActive(false);
-		staffPanel.SetActive(true);
-		graphicsPanel.SetActive(false);
-	}
-
-	public void OnClickGraphicsPanel()
-	{
-
-		volumePanel.SetActive(false);
-		staffPanel.SetActive(false);
-		graphicsPanel.SetActive(true);
-	}
-
+	// Exit
 	public void OnClickExit()
 	{
+		settingPanel.SetActive(false);
+	}
 
+	// -------- Master Volume --------
+	public void OnValueChangedMasterVolume()
+	{
+		masterVolumeText.text = ((int)(masterSlider.value * 100f)).ToString();
+		PlayerPrefsManager.SetMasterVolume(masterSlider.value);
+		AudioManager.instance.masterVolume = masterSlider.value;
+	}
+	public void OnClickMasterVolume(bool increase)
+	{
+		masterSlider.value += increase ? 0.01f : -0.01f;
+		masterSlider.value = Mathf.Clamp(masterSlider.value, 0f, 1f);
+		OnValueChangedMasterVolume();
+	}
+
+	// -------- Music Volume --------
+	public void OnValueChangedMusicVolume()
+	{
+		musicVolumeText.text = ((int)(musicSlider.value * 100f)).ToString();
+		PlayerPrefsManager.SetMusicVolume(musicSlider.value);
+		AudioManager.instance.musicVolume = musicSlider.value;
+	}
+	public void OnClickMusicVolume(bool increase)
+	{
+		musicSlider.value += increase ? 0.01f : -0.01f;
+		musicSlider.value = Mathf.Clamp(musicSlider.value, 0f, 1f);
+		OnValueChangedMusicVolume();
+	}
+
+	// -------- SFX Volume --------
+	public void OnValueChangedSFXVolume()
+	{
+		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
+		PlayerPrefsManager.SetSFXVolume(sfxSlider.value);
+		AudioManager.instance.SFXVolume = sfxSlider.value;
+	}
+	public void OnClickSFXVolume(bool increase)
+	{
+		sfxSlider.value += increase ? 0.01f : -0.01f;
+		sfxSlider.value = Mathf.Clamp(sfxSlider.value, 0f, 1f);
+		OnValueChangedSFXVolume();
+	}
+
+	// -------- Display Mode --------
+	public void OnClickSetDisplayMode(string mode)
+	{
+		for (int i = 0; i < displayModeButtons.Length; i++)
+		{
+			bool isSelected = displayModeButtons[i].name == mode;
+			ColorBlock colors = displayModeButtons[i].colors;
+			colors.normalColor = isSelected ? Color.red : Color.white;
+			displayModeButtons[i].colors = colors;
+		}
+		PlayerPrefsManager.SetDisplayMode(mode);
+		if (mode == "Borderless Windowed") Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+		else if (mode == "Windowed Mode") Screen.fullScreenMode = FullScreenMode.Windowed;
+		else if (mode == "Fullscreen") Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+	}
+
+	// -------- Resolution --------
+	public void OnClickSetResolution(string resolution)
+	{
+		for (int i = 0; i < resolutionButtons.Length; i++)
+		{
+			bool isSelected = resolutionButtons[i].name == resolution;
+			ColorBlock colors = resolutionButtons[i].colors;
+			colors.normalColor = isSelected ? Color.red : Color.white;
+			resolutionButtons[i].colors = colors;
+		}
+		PlayerPrefsManager.SetResolution(resolution);
+		string[] parts = resolution.Split('x');
+		Screen.SetResolution(int.Parse(parts[0]), int.Parse(parts[1]), Screen.fullScreenMode);
+	}
+
+	// -------- V-Sync --------
+	public void OnClickSetVSync(bool isOn)
+	{
+		HighlightButtonGroup(vsyncButtons, isOn ? 0 : 1);
+		PlayerPrefsManager.SetVSync(isOn);
+		QualitySettings.vSyncCount = isOn ? 1 : 0;
+	}
+
+	// -------- Refresh Rate --------
+	public void OnClickSetRefreshRate(string rate)
+	{
+		for (int i = 0; i < refreshRateButtons.Length; i++)
+		{
+			bool isSelected = refreshRateButtons[i].name == rate;
+			ColorBlock colors = refreshRateButtons[i].colors;
+			colors.normalColor = isSelected ? Color.red : Color.white;
+			refreshRateButtons[i].colors = colors;
+		}
+		PlayerPrefsManager.SetRefreshRate(rate);
+		// 功能應與解析度一併實作
+	}
+
+	// -------- Controller Vibration --------
+	public void OnClickSetControllerVibration(bool isOn)
+	{
+		HighlightButtonGroup(vibrationButtons, isOn ? 0 : 1);
+		PlayerPrefsManager.SetControllerVibration(isOn);
+		RumbleManager.Instance.SetEnableRumble(isOn);
+	}
+
+	// -------- Language（保留功能區） --------
+	public void OnClickSetLanguage(string lang)
+	{
+		for (int i = 0; i < languageButtons.Length; i++)
+		{
+			bool isSelected = languageButtons[i].name == lang;
+			ColorBlock colors = languageButtons[i].colors;
+			colors.normalColor = isSelected ? Color.red : Color.white;
+			languageButtons[i].colors = colors;
+		}
+		PlayerPrefsManager.SetLanguage(lang);
+		// TODO: 載入語言字典
+	}
+
+	// -------- 按鈕高亮 --------
+	private void HighlightButtonGroup(Button[] buttons, int selectedIndex)
+	{
+		for (int i = 0; i < buttons.Length; i++)
+		{
+			ColorBlock colors = buttons[i].colors;
+			colors.normalColor = (i == selectedIndex) ? Color.red : Color.white;
+			buttons[i].colors = colors;
+		}
 	}
 }

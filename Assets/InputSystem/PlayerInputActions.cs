@@ -62,6 +62,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GameStop"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d7aee1c-e7c3-403c-b0ad-38e13eb26a0e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -229,6 +238,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7374610-ebe2-4e6c-bcb4-35cb155c097f"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""GameStop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0cda6e3b-b194-4434-b2b8-52983c98eb52"",
+                    ""path"": ""<Keyboard>/{Menu}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard Mouse"",
+                    ""action"": ""GameStop"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -269,6 +300,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Fire1 = m_Player.FindAction("Fire1", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_GameStop = m_Player.FindAction("GameStop", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -334,6 +366,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Fire1;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_GameStop;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -342,6 +375,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Fire1 => m_Wrapper.m_Player_Fire1;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @GameStop => m_Wrapper.m_Player_GameStop;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -363,6 +397,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @GameStop.started += instance.OnGameStop;
+            @GameStop.performed += instance.OnGameStop;
+            @GameStop.canceled += instance.OnGameStop;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -379,6 +416,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @GameStop.started -= instance.OnGameStop;
+            @GameStop.performed -= instance.OnGameStop;
+            @GameStop.canceled -= instance.OnGameStop;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -420,5 +460,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnFire1(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnGameStop(InputAction.CallbackContext context);
     }
 }

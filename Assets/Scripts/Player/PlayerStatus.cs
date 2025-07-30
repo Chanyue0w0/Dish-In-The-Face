@@ -7,10 +7,9 @@ public class PlayerStatus : MonoBehaviour
 	[Header("Player Stats")]
 	[SerializeField] private int maxHP = 5;       // 最大血量
 	[SerializeField] private int attackPower = 1; // 攻擊力
-	[SerializeField] private GameObject endPane;
 	[SerializeField] private HealthPointUIControll healthPointUIControl;
 	[SerializeField] private GameObject getHurtVFX;
-
+	[SerializeField] private RoundManager roundManager;
 	private int currentHP;
 
 	// Start is called before the first frame update
@@ -22,11 +21,6 @@ public class PlayerStatus : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		// 可加入測試：按鍵受傷
-		if (Input.GetKeyDown(KeyCode.H))
-		{
-			TakeDamage(1);
-		}
 	}
 
 	// 受到傷害
@@ -58,8 +52,7 @@ public class PlayerStatus : MonoBehaviour
 	private void Die()
 	{
 		Debug.Log("Player has died.");
-		endPane.SetActive(true);
-		Time.timeScale = 0f;
+		roundManager.GameOver();
 		// TODO: 加入死亡動畫、重新開始或結束畫面等
 	}
 }
