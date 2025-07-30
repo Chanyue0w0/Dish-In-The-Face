@@ -5,17 +5,22 @@ public class PlayerAttackController : MonoBehaviour
 {
 	[Header("--------- Setting -----------")]
 	[SerializeField] private float attackDuration = 0.4f; // 可調整攻擊持續時間
-	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[SerializeField] private float beerVFXDuration = 2f;
+	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItem;
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private GameObject cakeVFX;
 	[SerializeField] private GameObject BeerVFX;
+	[SerializeField] private PlayerMovement playerMovement;
 
+	//private bool isAttacked = false;
 	private void Start()
 	{
+		playerMovement = GetComponent<PlayerMovement>();
 		attackHitBox.SetActive(false);
+
+		//isAttacked = false;
 	}
 
 	public bool IsAttackSuccess()
@@ -52,24 +57,8 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		attackHitBox.SetActive(true);
 
-		// 檢測 hitbox 的範圍內有無敵人（可根據 hitbox 範圍調整）
-		Collider2D[] hits = Physics2D.OverlapBoxAll(attackHitBox.transform.position,
-													attackHitBox.transform.localScale,
-													0f);
-
-		foreach (Collider2D hit in hits)
-		{
-			if (hit.CompareTag("Enemy"))
-			{
-				TroubleGusetController enemy = hit.GetComponent<TroubleGusetController>();
-				if (enemy != null)
-				{
-					enemy.TakeDamage(1);
-				}
-			}
-		}
-
 		yield return new WaitForSeconds(attackDuration);
 		attackHitBox.SetActive(false);
+		//isAttacked = false;
 	}
 }

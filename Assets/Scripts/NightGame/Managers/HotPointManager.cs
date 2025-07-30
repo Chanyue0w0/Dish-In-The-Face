@@ -3,74 +3,89 @@ using UnityEngine.UI;
 
 public class HotPointManager : MonoBehaviour
 {
-	[SerializeField] private float hotPoint = 0f;              // 0~10 之間
+	[SerializeField] private float hotPoint = 0f;
+
 	[Header("-------- Setting ---------")]
-	[SerializeField] private float decreaseRate = 0.1f;        // 每秒下降的熱度
-	[SerializeField] private float decayDelay = 3f;            // 等待多少秒後開始下降
-	[SerializeField] private float maxHotPoint = 10f;
+	[SerializeField] private float decreaseRate = 0.1f;
+	[SerializeField] private float decayDelay = 3f;
+	[SerializeField] private float[] stageMaxHotPoint = { 2f, 4f, 6f, 8f, 10f };
+
+	[SerializeField] private float currentMinHotPoint = 0f;
+	[SerializeField] private float currentMaxHotPoint = 10f;
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private Sprite[] hotLevelSprites;         // 索引 0~4 對應 D~S
-	[SerializeField] private Image hotPointImage;              // 圖示切換
-	[SerializeField] private Image hotPointFillBar;            // fillAmount控制熱度
-	[SerializeField] private Color[] hotLevelColors;           // 對應 D~S 的顏色（長度應為5）
-
+	[SerializeField] private Sprite[] hotLevelSprites; // D~S 對應 0~4
+	[SerializeField] private Image hotPointImage;
+	[SerializeField] private Image hotPointFillBar;
+	[SerializeField] private RoundManager roundManager;
 	private float lastHotIncreaseTime;
+	private int currentLevelIndex;
+	
 
 	private void Start()
 	{
+		currentLevelIndex = GetHotLevelIndex();
+		currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
+		currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
 		UpdateHotUI();
 	}
 
 	private void Update()
 	{
-		if (Time.time - lastHotIncreaseTime > decayDelay)
+		// 太久沒觸發熱度，自動下降
+		if (Time.time - lastHotIncreaseTime > decayDelay && hotPoint > 0f)
 		{
-			if (hotPoint > 0f)
-			{
-				hotPoint -= decreaseRate * Time.deltaTime;
-				hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
-				UpdateHotUI();
-			}
+			hotPoint -= decreaseRate * Time.deltaTime;
+			hotPoint = Mathf.Clamp(hotPoint, 0f, stageMaxHotPoint[^1]); // Clamp to max stage value
 		}
+
+		int newLevelIndex = GetHotLevelIndex();
+		if (newLevelIndex != currentLevelIndex) // 進階、更新區間
+		{
+			currentLevelIndex = newLevelIndex;
+			currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
+			currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
+
+			if (currentLevelIndex == stageMaxHotPoint.Length - 1) roundManager.globalLightManager.SetLightCycleLoopEnabled(true);
+			else roundManager.globalLightManager.SetLightCycleLoopEnabled(false);
+		}
+
+		UpdateHotUI();
 	}
 
 	public void AddHotPoint(float value)
 	{
 		hotPoint += value;
-		hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPoint);
+		hotPoint = Mathf.Clamp(hotPoint, 0f, stageMaxHotPoint[^1]);
 		lastHotIncreaseTime = Time.time;
-		//Debug.Log("hotPoint :" + hotPoint);
-
-		UpdateHotUI();
 	}
 
 	private void UpdateHotUI()
 	{
-		int levelIndex = GetHotLevelIndex();
-
-		// 切換圖示
-		if (hotLevelSprites != null && hotLevelSprites.Length > levelIndex)
-			hotPointImage.sprite = hotLevelSprites[levelIndex];
-
-		// 更新填充量與顏色
-		hotPointFillBar.fillAmount = hotPoint / maxHotPoint;
-
-		//if (hotLevelColors != null && hotLevelColors.Length > levelIndex)
-		//	hotPointFillBar.color = hotLevelColors[levelIndex];
+		// 更新圖示
+		if (hotLevelSprites != null && hotLevelSprites.Length > currentLevelIndex)
+		{
+			hotPointImage.sprite = hotLevelSprites[currentLevelIndex];
+			hotPointFillBar.sprite = hotLevelSprites[currentLevelIndex];
+		}
+		// 更新 fillAmount 基於該等級區間
+		float normalized = (hotPoint - currentMinHotPoint) / (currentMaxHotPoint - currentMinHotPoint);
+		Debug.Log(normalized);
+		hotPointFillBar.fillAmount = normalized;
 	}
 
 	public int GetMoneyMultiplier()
 	{
-		return GetHotLevelIndex() + 1;
+		return currentLevelIndex + 1;
 	}
 
 	private int GetHotLevelIndex()
 	{
-		if (hotPoint >= 8f) return 4; // S
-		if (hotPoint >= 6f) return 3; // A
-		if (hotPoint >= 4f) return 2; // B
-		if (hotPoint >= 2f) return 1; // C
-		return 0;                     // D
+		for (int i = stageMaxHotPoint.Length - 1; i >= 1; i--)
+		{
+			if (hotPoint >= stageMaxHotPoint[i-1])
+				return i;
+		}
+		return 0;
 	}
 }

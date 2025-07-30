@@ -2,20 +2,18 @@ using UnityEngine;
 
 public class RoundManager : MonoBehaviour
 {
-
-
 	[Header("-------- Setting ---------")]
 	[SerializeField] private float finishDishHotPoint = 0.5f;
     [SerializeField] private float attackEnemyHotPoint = 0.5f;
-	[SerializeField] private int rewardCoin = 10;
+	[SerializeField] private int defeatEnemyrewardCoin = 10;
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] public HotPointManager hotPointManager;
     [SerializeField] public FoodsGroupManager foodsGroupManager;
-    [SerializeField] public TableGroupManager tableGroupManager;
 	[SerializeField] public GuestGroupManager guestGroupManager;
     [SerializeField] public ChairGroupManager chairGroupManager;
     [SerializeField] public CoinUIController coinUIController;
+	[SerializeField] public GlobalLightManager globalLightManager;
 	// Start is called before the first frame update
 	void Start()
     {
@@ -29,17 +27,34 @@ public class RoundManager : MonoBehaviour
     }
 
 
-    // 完成餐點
-    public void FinishDishSuccess()
-    {
-        hotPointManager.AddHotPoint(finishDishHotPoint);
-		coinUIController.AddCoin(rewardCoin * hotPointManager.GetMoneyMultiplier());
+	// 放下餐點成功
+	public void PullDownDishSuccess()
+	{
+		hotPointManager.AddHotPoint(finishDishHotPoint);
+	}
+	 //完成餐點取得金幣(顧客吃完)
+	public void FinishDishSuccess(Transform targetChair, int coinCound)
+	{
+		chairGroupManager.PullDownCoin(targetChair, coinCound);
 	}
 
-    public void DefeatEnemySuccess()
+	public void DefeatEnemySuccess()
     {
         hotPointManager.AddHotPoint(attackEnemyHotPoint);
-		coinUIController.AddCoin(rewardCoin * hotPointManager.GetMoneyMultiplier());
+		GetCoin(defeatEnemyrewardCoin);
+	}
 
+	public void GetCoin(int coinCount)
+	{
+		coinUIController.AddCoin(coinCount * hotPointManager.GetMoneyMultiplier());
+	}
+
+	public void SetFinishDishHotPoint(float point)
+    {
+		finishDishHotPoint = point;
+	}
+	public void SetAttackEnemyHotPoint(float point)
+	{
+		attackEnemyHotPoint = point;
 	}
 }

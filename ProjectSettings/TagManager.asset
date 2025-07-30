@@ -10,6 +10,10 @@ TagManager:
   - Enemy
   - AttackObject
   - NormalGuest
+  - Chair
+  - Coin
+  - WanderGuest
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -70,6 +74,9 @@ TagManager:
     locked: 0
   - name: UI
     uniqueID: 1788067647
+    locked: 0
+  - name: UI_1
+    uniqueID: 3167186599
     locked: 0
   - name: VFX
     uniqueID: 207207721

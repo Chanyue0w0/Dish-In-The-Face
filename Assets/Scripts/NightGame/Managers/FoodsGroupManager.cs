@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -149,4 +147,8 @@ public class FoodsGroupManager : MonoBehaviour
 		return null; // 如果找不到就回傳 null
 	}
 
+	public void TakeFood(Sprite food, int count)
+	{
+		
+	}
 }

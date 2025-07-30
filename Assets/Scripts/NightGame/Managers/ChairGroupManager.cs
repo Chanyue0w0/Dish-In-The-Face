@@ -1,42 +1,152 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class ChairGroupManager : MonoBehaviour
 {
 	[Header("Chair List")]
-	[SerializeField] private Transform[] chairList; // 所有椅子位置
+	[SerializeField] private List<Transform> chairList; // 所有椅子位置
+	[SerializeField] private Transform guestEnterPoistion;
+
+	[Header("Reference")]
+	[SerializeField] private GameObject coinPrefab;
+	[SerializeField] private RoundManager roundManager;
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
-	/// 隨機尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
+	private void Awake()
+	{
+		chairList.Clear();
+
+		GameObject[] allChairs = GameObject.FindGameObjectsWithTag("Chair");
+		foreach (GameObject chairObj in allChairs)
+		{
+			chairList.Add(chairObj.transform);
+		}
+		SortChairList(); // 椅子以靠近重生點分類
+	}
+
+
+	private void Start()
+	{
+		foreach (Transform obj in chairList)
+		{
+			ClearChairItem(obj);
+		}
+	}
+
+	///// 隨機尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
+	//public Transform FindEmptyChair()
+	//{
+	//	// 建立一個清單來存放所有尚未被佔用的椅子
+	//	List<Transform> availableChairs = new List<Transform>();
+
+	//	foreach (Transform chair in chairList)
+	//	{
+	//		if (!occupiedChairs.Contains(chair))
+	//			availableChairs.Add(chair);
+	//	}
+
+	//	// 若沒有空椅子，回傳 null
+	//	if (availableChairs.Count == 0)
+	//		return null;
+
+	//	// 隨機選取其中一張椅子
+	//	Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
+
+	//	// 標記為已佔用
+	//	occupiedChairs.Add(selectedChair);
+
+	//	return selectedChair;
+	//}
+
+	/// 依序尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
 	public Transform FindEmptyChair()
 	{
-		// 建立一個清單來存放所有尚未被佔用的椅子
-		List<Transform> availableChairs = new List<Transform>();
-
 		foreach (Transform chair in chairList)
 		{
 			if (!occupiedChairs.Contains(chair))
-				availableChairs.Add(chair);
+			{
+				occupiedChairs.Add(chair);
+				return chair;
+			}
 		}
 
 		// 若沒有空椅子，回傳 null
-		if (availableChairs.Count == 0)
-			return null;
-
-		// 隨機選取其中一張椅子
-		Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
-
-		// 標記為已佔用
-		occupiedChairs.Add(selectedChair);
-
-		return selectedChair;
+		return null;
 	}
 
 	/// 當客人離席時釋放椅子。
 	public void ReleaseChair(Transform targetChair)
 	{
 		if (occupiedChairs.Contains(targetChair))
+		{
 			occupiedChairs.Remove(targetChair);
+		}
+	}
+
+	public void PullDownChairItem(Transform chair, GameObject handItem)
+	{
+		Transform chairItem = chair.transform.GetChild(0); 
+		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+
+		if (chair.childCount < 2) return;
+		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
+
+		// 回報已上餐
+		if (npc.IsReceiveFood(foodSprite))
+		{
+			// 放置餐點
+			//handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
+			//handItem.transform.localPosition = Vector3.zero;
+
+			// 生成 handItem 的複製品（Instantiate 一份新物件）
+			GameObject newItem = Instantiate(handItem); // 複製餐點放到桌子上，玩家手上餐點不變
+			newItem.transform.localScale = handItem.transform.lossyScale;
+			newItem.transform.SetParent(chairItem.transform);
+			newItem.transform.localPosition = Vector3.zero;
+
+			// 上餐成功增加熱度
+			roundManager.PullDownDishSuccess();
+		}
+	}
+
+	public void PullDownCoin(Transform chair, int coinCount)
+	{
+		if (chair == null) return;
+		Transform chairItem = chair.transform.GetChild(0);
+
+		GameObject coinObj = Instantiate(coinPrefab);
+		coinObj.GetComponent<CoinOnTable>().SetCoinCount(coinCount); // 設定金幣數量為 10
+		coinObj.transform.localScale = coinPrefab.transform.lossyScale;
+		coinObj.transform.SetParent(chairItem.transform);
+		coinObj.transform.localPosition = Vector3.zero;
+	}
+
+	public void ClearChairItem(Transform chair)
+	{
+		if (chair == null) return;
+
+		Transform parentItem = chair.transform.GetChild(0);
+
+		// 刪除第一個子物件（如果有）
+		if (parentItem.childCount > 0)
+		{
+			Destroy(parentItem.GetChild(0).gameObject);
+		}
+	}
+
+	public bool IsChairccupied(Transform chair)
+	{
+		return occupiedChairs.Contains(chair);
+	}
+
+	private void SortChairList()
+	{
+		// 按照距離 spawnPoistion 的遠近排序（由近到遠）
+		chairList.Sort((a, b) =>
+			Vector3.Distance(a.position, guestEnterPoistion.position)
+			.CompareTo(Vector3.Distance(b.position, guestEnterPoistion.position))
+		);
 	}
 }

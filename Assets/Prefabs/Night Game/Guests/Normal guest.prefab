@@ -195,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 3269597891425854225}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.02}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -239,8 +239,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1127780697
+  m_SortingLayer: 8
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 0.8653064, b: 0, a: 1}
@@ -264,9 +264,9 @@ GameObject:
   - component: {fileID: 8541592121303161500}
   - component: {fileID: 7002378863616266461}
   - component: {fileID: 6232604787543720162}
-  - component: {fileID: 6096411991080613458}
   - component: {fileID: 5794271118961271068}
   - component: {fileID: 6900171364552601329}
+  - component: {fileID: 1397730837156832888}
   m_Layer: 0
   m_Name: Normal guest
   m_TagString: NormalGuest
@@ -356,42 +356,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minPatience: 10
-  maxPatience: 20
+  maxPatience: 30
   eatTime: 10
   moveSpeed: 2
+  stuckCheckInterval: 1.5
+  stuckThreshold: 0.05
+  retryDelay: 1
   roundManager: {fileID: 0}
   startPosition: {fileID: 0}
+  endPosition: {fileID: 0}
   orderIconObject: {fileID: 890640048631273743}
   foodSpriteRenderer: {fileID: 5009767507642101398}
   patienceBar: {fileID: 5772019527846658394}
   barFill: {fileID: 2536191069096849125}
---- !u!50 &6096411991080613458
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3474513089845744578}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 7
 --- !u!61 &5794271118961271068
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -424,7 +401,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.031150103, y: -0.11178064}
+  m_Offset: {x: -0.01643002, y: 0.09427786}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -435,7 +412,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 7.245668, y: 6.64108}
+  m_Size: {x: 5.450013, y: 6.228963}
   m_EdgeRadius: 0
 --- !u!58 &6900171364552601329
 CircleCollider2D:
@@ -444,7 +421,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3474513089845744578}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -469,9 +446,31 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.007966455, y: 0}
+  m_Offset: {x: -0.1694226, y: -0.9046912}
   serializedVersion: 2
-  m_Radius: 2.6602352
+  m_Radius: 1.9861519
+--- !u!195 &1397730837156832888
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474513089845744578}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 2.5649998
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 5.9099994
+  m_BaseOffset: 2.9549997
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5772019527846658394
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,8 +542,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1788067647
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
