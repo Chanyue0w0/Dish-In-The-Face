@@ -33,6 +33,8 @@ public class CoinOnTable : MonoBehaviour
 
 		if (coinVFXPrefab != null)
 		{
+			// 生成音效
+			AudioManager.instance.PlayOneShot(FMODEvents.instance.coinCollected, transform.position);
 			// 生成特效
 			GameObject vfx = Instantiate(coinVFXPrefab, transform.position, Quaternion.identity);
 

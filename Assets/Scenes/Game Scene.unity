@@ -30262,13 +30262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b486b4f0bb331cd4b9302d218c8f63b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <ambience>k__BackingField:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
   <music>k__BackingField:
     Guid:
       Data1: -452697966
@@ -30285,18 +30278,32 @@ MonoBehaviour:
     Path: 
   <coinCollected>k__BackingField:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
-  <coinIdle>k__BackingField:
+      Data1: 861096036
+      Data2: 1096477641
+      Data3: -596871040
+      Data4: -1286889556
+    Path: event:/SFX/select08
+  <pieAttack>k__BackingField:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 1290031606
+      Data2: 1092567863
+      Data3: -1320413802
+      Data4: -1601871592
+    Path: event:/SFX/heavy_punch1
+  <beerAttack>k__BackingField:
+    Guid:
+      Data1: 1326430992
+      Data2: 1282589017
+      Data3: -271242873
+      Data4: -2012759129
+    Path: event:/SFX/water-splash
+  <enemyAttack>k__BackingField:
+    Guid:
+      Data1: -240914633
+      Data2: 1247272816
+      Data3: 521786292
+      Data4: 494266835
+    Path: event:/SFX/swing1
 --- !u!1 &1506557782
 GameObject:
   m_ObjectHideFlags: 0
