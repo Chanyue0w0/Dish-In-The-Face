@@ -8,8 +8,10 @@ public class RumbleManager : MonoBehaviour
 
 	private Coroutine rumbleCoroutine;
 	private bool wasTimeScaleZero = false;
-
 	private bool isRumble = true;
+
+	[Range(0f, 1f)]
+	[SerializeField] private float rumbleScale = 1f; // 震動強度比例（0~1）
 
 	private void Awake()
 	{
@@ -23,7 +25,7 @@ public class RumbleManager : MonoBehaviour
 
 	private void Update()
 	{
-		//  檢查 timeScale 是否變為 0
+		// 檢查 timeScale 是否變為 0
 		if (Time.timeScale == 0f && !wasTimeScaleZero)
 		{
 			StopRumble();
@@ -39,8 +41,11 @@ public class RumbleManager : MonoBehaviour
 	public void Rumble(float lowFrequency, float highFrequency, float duration)
 	{
 		if (!isRumble) return;
-
 		if (Gamepad.current == null) return;
+
+		// 根據 rumbleScale 調整震動強度
+		lowFrequency *= rumbleScale;
+		highFrequency *= rumbleScale;
 
 		if (rumbleCoroutine != null)
 			StopCoroutine(rumbleCoroutine);
@@ -60,15 +65,17 @@ public class RumbleManager : MonoBehaviour
 	public void RumbleContinuous(float lowFrequency, float highFrequency)
 	{
 		if (!isRumble) return;
-
-
 		if (Gamepad.current == null) return;
 
 		if (rumbleCoroutine != null)
 			StopCoroutine(rumbleCoroutine);
 
+		// 根據 rumbleScale 調整震動強度
+		lowFrequency *= rumbleScale;
+		highFrequency *= rumbleScale;
+
 		Gamepad.current.SetMotorSpeeds(lowFrequency, highFrequency);
-		rumbleCoroutine = null; // 不需記錄 Coroutine，讓 StopRumble 照常運作
+		rumbleCoroutine = null;
 	}
 
 	/// 停止震動
@@ -96,5 +103,11 @@ public class RumbleManager : MonoBehaviour
 	public void SetEnableRumble(bool rumble)
 	{
 		isRumble = rumble;
+	}
+
+	/// 設定震動比例（0~1）
+	public void SetRumbleScale(float scale)
+	{
+		rumbleScale = Mathf.Clamp01(scale);
 	}
 }
