@@ -29539,27 +29539,27 @@ MonoBehaviour:
   sfxSlider: {fileID: 1384777146}
   sfxVolumeText: {fileID: 1636122623}
   displayModeButtons:
-  - {fileID: 486675219}
-  - {fileID: 1616902645}
-  - {fileID: 1516153230}
+  - {fileID: 486675220}
+  - {fileID: 1616902646}
+  - {fileID: 1516153231}
   resolutionButtons:
-  - {fileID: 441539553}
-  - {fileID: 1552078259}
-  - {fileID: 2024399728}
+  - {fileID: 441539554}
+  - {fileID: 1552078260}
+  - {fileID: 2024399729}
   vsyncButtons:
-  - {fileID: 399375985}
-  - {fileID: 307241613}
+  - {fileID: 399375986}
+  - {fileID: 307241614}
   refreshRateButtons:
-  - {fileID: 112840555}
-  - {fileID: 453158207}
-  - {fileID: 2133457931}
-  - {fileID: 1032890514}
+  - {fileID: 112840556}
+  - {fileID: 453158208}
+  - {fileID: 2133457932}
+  - {fileID: 1032890515}
   vibrationButtons:
-  - {fileID: 944209923}
-  - {fileID: 615217329}
+  - {fileID: 944209924}
+  - {fileID: 615217330}
   languageButtons:
-  - {fileID: 368912593}
-  - {fileID: 1073684618}
+  - {fileID: 368912594}
+  - {fileID: 1073684619}
 --- !u!222 &1378927165
 CanvasRenderer:
   m_ObjectHideFlags: 0

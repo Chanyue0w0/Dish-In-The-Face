@@ -25,7 +25,6 @@ public class NightGameUIButtonController : MonoBehaviour
 
 	public void InputESC(InputAction.CallbackContext context)
 	{
-		Debug.Log("click esc");
 		if (context.started)
 		{
 			if (settingPanel.activeSelf)
