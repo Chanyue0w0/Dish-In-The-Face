@@ -40,15 +40,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "GameStop",
-                    "type": "Button",
-                    "id": "1d7aee1c-e7c3-403c-b0ad-38e13eb26a0e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -216,26 +207,54 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
+                }
+            ]
+        },
+        {
+            "name": "UIControll",
+            "id": "4c4fe0d5-35e8-4aff-971c-6cc796a9a9b6",
+            "actions": [
+                {
+                    "name": "ESC",
+                    "type": "Button",
+                    "id": "d826f63e-0011-4662-a0df-0b4c92c09cb3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
                 {
                     "name": "",
-                    "id": "f7374610-ebe2-4e6c-bcb4-35cb155c097f",
-                    "path": "<Gamepad>/start",
+                    "id": "9a43b215-acbd-438b-a06c-7ba75be14906",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Gamepad",
-                    "action": "GameStop",
+                    "groups": "Keyboard Mouse",
+                    "action": "ESC",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "0cda6e3b-b194-4434-b2b8-52983c98eb52",
-                    "path": "<Keyboard>/{Menu}",
+                    "id": "7adad0e2-ab7b-41fb-8ecf-8d7188b5e8ca",
+                    "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "GameStop",
+                    "groups": "Gamepad",
+                    "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1ab6e823-23f1-46cb-a9d9-5a0134df8e17",
+                    "path": "<XInputController>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ESC",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

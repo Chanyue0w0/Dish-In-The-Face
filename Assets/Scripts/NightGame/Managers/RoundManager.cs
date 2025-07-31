@@ -28,13 +28,7 @@ public class RoundManager : MonoBehaviour
 		GameContinue();
 	}
 
-	private void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			GameStop();
-		}
-	}
+	
 
 	// 放下餐點成功
 	public void PullDownDishSuccess()
