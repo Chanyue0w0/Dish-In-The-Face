@@ -62,6 +62,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ESC"",
+                    ""type"": ""Button"",
+                    ""id"": ""0208c392-4878-4616-b8da-e6aa2e71439d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -229,27 +238,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                }
-            ]
-        },
-        {
-            ""name"": ""UIControll"",
-            ""id"": ""4c4fe0d5-35e8-4aff-971c-6cc796a9a9b6"",
-            ""actions"": [
-                {
-                    ""name"": ""ESC"",
-                    ""type"": ""Button"",
-                    ""id"": ""d826f63e-0011-4662-a0df-0b4c92c09cb3"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
+                },
                 {
                     ""name"": """",
-                    ""id"": ""9a43b215-acbd-438b-a06c-7ba75be14906"",
+                    ""id"": ""b95a2158-0a24-43ba-bc79-a93a61fdc97e"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -260,22 +252,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""7adad0e2-ab7b-41fb-8ecf-8d7188b5e8ca"",
+                    ""id"": ""ac813e0f-4ba3-49ca-bb9c-c929dece5fcc"",
                     ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
-                    ""action"": ""ESC"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1ab6e823-23f1-46cb-a9d9-5a0134df8e17"",
-                    ""path"": ""<XInputController>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
                     ""action"": ""ESC"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -319,9 +300,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
         m_Player_Fire1 = m_Player.FindAction("Fire1", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
-        // UIControll
-        m_UIControll = asset.FindActionMap("UIControll", throwIfNotFound: true);
-        m_UIControll_ESC = m_UIControll.FindAction("ESC", throwIfNotFound: true);
+        m_Player_ESC = m_Player.FindAction("ESC", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -387,6 +366,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Dash;
     private readonly InputAction m_Player_Fire1;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_ESC;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -395,6 +375,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
         public InputAction @Fire1 => m_Wrapper.m_Player_Fire1;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @ESC => m_Wrapper.m_Player_ESC;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -416,6 +397,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @ESC.started += instance.OnESC;
+            @ESC.performed += instance.OnESC;
+            @ESC.canceled += instance.OnESC;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -432,6 +416,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @ESC.started -= instance.OnESC;
+            @ESC.performed -= instance.OnESC;
+            @ESC.canceled -= instance.OnESC;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -449,52 +436,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
-
-    // UIControll
-    private readonly InputActionMap m_UIControll;
-    private List<IUIControllActions> m_UIControllActionsCallbackInterfaces = new List<IUIControllActions>();
-    private readonly InputAction m_UIControll_ESC;
-    public struct UIControllActions
-    {
-        private @PlayerInputActions m_Wrapper;
-        public UIControllActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @ESC => m_Wrapper.m_UIControll_ESC;
-        public InputActionMap Get() { return m_Wrapper.m_UIControll; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
-        public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(UIControllActions set) { return set.Get(); }
-        public void AddCallbacks(IUIControllActions instance)
-        {
-            if (instance == null || m_Wrapper.m_UIControllActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_UIControllActionsCallbackInterfaces.Add(instance);
-            @ESC.started += instance.OnESC;
-            @ESC.performed += instance.OnESC;
-            @ESC.canceled += instance.OnESC;
-        }
-
-        private void UnregisterCallbacks(IUIControllActions instance)
-        {
-            @ESC.started -= instance.OnESC;
-            @ESC.performed -= instance.OnESC;
-            @ESC.canceled -= instance.OnESC;
-        }
-
-        public void RemoveCallbacks(IUIControllActions instance)
-        {
-            if (m_Wrapper.m_UIControllActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        public void SetCallbacks(IUIControllActions instance)
-        {
-            foreach (var item in m_Wrapper.m_UIControllActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_UIControllActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    public UIControllActions @UIControll => new UIControllActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -519,9 +460,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnFire1(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
-    }
-    public interface IUIControllActions
-    {
         void OnESC(InputAction.CallbackContext context);
     }
 }

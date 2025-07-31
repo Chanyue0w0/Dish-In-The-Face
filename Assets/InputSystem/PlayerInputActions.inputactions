@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ESC",
+                    "type": "Button",
+                    "id": "0208c392-4878-4616-b8da-e6aa2e71439d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -207,27 +216,10 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "UIControll",
-            "id": "4c4fe0d5-35e8-4aff-971c-6cc796a9a9b6",
-            "actions": [
-                {
-                    "name": "ESC",
-                    "type": "Button",
-                    "id": "d826f63e-0011-4662-a0df-0b4c92c09cb3",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "9a43b215-acbd-438b-a06c-7ba75be14906",
+                    "id": "b95a2158-0a24-43ba-bc79-a93a61fdc97e",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
@@ -238,22 +230,11 @@
                 },
                 {
                     "name": "",
-                    "id": "7adad0e2-ab7b-41fb-8ecf-8d7188b5e8ca",
+                    "id": "ac813e0f-4ba3-49ca-bb9c-c929dece5fcc",
                     "path": "<Gamepad>/start",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "ESC",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1ab6e823-23f1-46cb-a9d9-5a0134df8e17",
-                    "path": "<XInputController>/start",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
                     "action": "ESC",
                     "isComposite": false,
                     "isPartOfComposite": false

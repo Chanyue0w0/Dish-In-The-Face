@@ -6,20 +6,12 @@ public class NightGameUIButtonController : MonoBehaviour
 {
 	[SerializeField] GameObject settingPanel;
 	[SerializeField] RoundManager roundManager;
-
-
-	private PlayerInput playerInput;
-
 	public void OnClickRestart()
     {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 	}
 	private void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			
-		}
 	}
 	public void OnClickSetting()
 	{
@@ -33,6 +25,7 @@ public class NightGameUIButtonController : MonoBehaviour
 
 	public void InputESC(InputAction.CallbackContext context)
 	{
+		Debug.Log("click esc");
 		if (context.started)
 		{
 			if (settingPanel.activeSelf)
