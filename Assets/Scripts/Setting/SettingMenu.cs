@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class SettingMenu : MonoBehaviour
 {
@@ -20,12 +21,12 @@ public class SettingMenu : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 
 	[Header("Buttons")]
-	[SerializeField] private Button[] displayModeButtons;
-	[SerializeField] private Button[] resolutionButtons;
-	[SerializeField] private Button[] vsyncButtons;
-	[SerializeField] private Button[] refreshRateButtons;
-	[SerializeField] private Button[] vibrationButtons;
-	[SerializeField] private Button[] languageButtons;
+	[SerializeField] private Image[] displayModeButtons;
+	[SerializeField] private Image[] resolutionButtons;
+	[SerializeField] private Image[] vsyncButtons;
+	[SerializeField] private Image[] refreshRateButtons;
+	[SerializeField] private Image[] vibrationButtons;
+	[SerializeField] private Image[] languageButtons;
 
 	private void Start()
 	{
@@ -124,13 +125,7 @@ public class SettingMenu : MonoBehaviour
 	// -------- Display Mode --------
 	public void OnClickSetDisplayMode(string mode)
 	{
-		for (int i = 0; i < displayModeButtons.Length; i++)
-		{
-			bool isSelected = displayModeButtons[i].name == mode;
-			ColorBlock colors = displayModeButtons[i].colors;
-			colors.normalColor = isSelected ? Color.red : Color.white;
-			displayModeButtons[i].colors = colors;
-		}
+		HighlightButtonGroup(displayModeButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetDisplayMode(mode);
 		if (mode == "Borderless Windowed") Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
 		else if (mode == "Windowed Mode") Screen.fullScreenMode = FullScreenMode.Windowed;
@@ -140,13 +135,7 @@ public class SettingMenu : MonoBehaviour
 	// -------- Resolution --------
 	public void OnClickSetResolution(string resolution)
 	{
-		for (int i = 0; i < resolutionButtons.Length; i++)
-		{
-			bool isSelected = resolutionButtons[i].name == resolution;
-			ColorBlock colors = resolutionButtons[i].colors;
-			colors.normalColor = isSelected ? Color.red : Color.white;
-			resolutionButtons[i].colors = colors;
-		}
+		HighlightButtonGroup(resolutionButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetResolution(resolution);
 		string[] parts = resolution.Split('x');
 		Screen.SetResolution(int.Parse(parts[0]), int.Parse(parts[1]), Screen.fullScreenMode);
@@ -155,7 +144,7 @@ public class SettingMenu : MonoBehaviour
 	// -------- V-Sync --------
 	public void OnClickSetVSync(bool isOn)
 	{
-		HighlightButtonGroup(vsyncButtons, isOn ? 0 : 1);
+		HighlightButtonGroup(vsyncButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetVSync(isOn);
 		QualitySettings.vSyncCount = isOn ? 1 : 0;
 	}
@@ -163,13 +152,7 @@ public class SettingMenu : MonoBehaviour
 	// -------- Refresh Rate --------
 	public void OnClickSetRefreshRate(string rate)
 	{
-		for (int i = 0; i < refreshRateButtons.Length; i++)
-		{
-			bool isSelected = refreshRateButtons[i].name == rate;
-			ColorBlock colors = refreshRateButtons[i].colors;
-			colors.normalColor = isSelected ? Color.red : Color.white;
-			refreshRateButtons[i].colors = colors;
-		}
+		HighlightButtonGroup(refreshRateButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetRefreshRate(rate);
 		// 功能應與解析度一併實作
 	}
@@ -177,7 +160,7 @@ public class SettingMenu : MonoBehaviour
 	// -------- Controller Vibration --------
 	public void OnClickSetControllerVibration(bool isOn)
 	{
-		HighlightButtonGroup(vibrationButtons, isOn ? 0 : 1);
+		HighlightButtonGroup(vibrationButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetControllerVibration(isOn);
 		RumbleManager.Instance.SetEnableRumble(isOn);
 	}
@@ -185,25 +168,17 @@ public class SettingMenu : MonoBehaviour
 	// -------- Language（保留功能區） --------
 	public void OnClickSetLanguage(string lang)
 	{
-		for (int i = 0; i < languageButtons.Length; i++)
-		{
-			bool isSelected = languageButtons[i].name == lang;
-			ColorBlock colors = languageButtons[i].colors;
-			colors.normalColor = isSelected ? Color.red : Color.white;
-			languageButtons[i].colors = colors;
-		}
+		HighlightButtonGroup(languageButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetLanguage(lang);
 		// TODO: 載入語言字典
 	}
 
 	// -------- 按鈕高亮 --------
-	private void HighlightButtonGroup(Button[] buttons, int selectedIndex)
+	private void HighlightButtonGroup(Image[] buttonImages, GameObject currentButtonOgj)
 	{
-		for (int i = 0; i < buttons.Length; i++)
+		for (int i = 0; i < buttonImages.Length; i++)
 		{
-			ColorBlock colors = buttons[i].colors;
-			colors.normalColor = (i == selectedIndex) ? Color.red : Color.white;
-			buttons[i].colors = colors;
+			buttonImages[i].color = (buttonImages[i].gameObject == currentButtonOgj) ? Color.red : Color.white;
 		}
 	}
 }
