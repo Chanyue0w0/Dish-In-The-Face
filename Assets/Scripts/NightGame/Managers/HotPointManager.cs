@@ -70,7 +70,6 @@ public class HotPointManager : MonoBehaviour
 		}
 		// 更新 fillAmount 基於該等級區間
 		float normalized = (hotPoint - currentMinHotPoint) / (currentMaxHotPoint - currentMinHotPoint);
-		Debug.Log(normalized);
 		hotPointFillBar.fillAmount = normalized;
 	}
 
