@@ -2,14 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class SettingMenu : MonoBehaviour
 {
-	// -------- UI °Ñ¦Ò --------
-
-	[Header("-------- UI Reference --------")]
 	[Header("Panels")]
 	[SerializeField] private GameObject settingPanel;
+	[SerializeField] private GameObject normalPanel;
+	[SerializeField] private GameObject staffPanel;
+	[SerializeField] private GameObject keyPanel;
+
+	[Header("-------- UI Reference --------")]
 	[Header("Volume UI")]
 	[SerializeField] private Slider masterSlider;
 	[SerializeField] private TextMeshProUGUI masterVolumeText;
@@ -28,9 +31,15 @@ public class SettingMenu : MonoBehaviour
 	[SerializeField] private Image[] vibrationButtons;
 	[SerializeField] private Image[] languageButtons;
 
+	private List<GameObject> panels = new List<GameObject>();
 	private void Start()
 	{
 		settingPanel.SetActive(false);
+		panels.Add(normalPanel);
+		panels.Add(staffPanel);
+		panels.Add(keyPanel);
+
+		OnClickPanel(normalPanel);
 		InitSetting();
 	}
 
@@ -179,6 +188,15 @@ public class SettingMenu : MonoBehaviour
 		for (int i = 0; i < buttonImages.Length; i++)
 		{
 			buttonImages[i].color = (buttonImages[i].gameObject == currentButtonOgj) ? Color.red : Color.white;
+		}
+	}
+
+	public void OnClickPanel(GameObject panel)
+	{
+		foreach(GameObject p in panels)
+		{
+			if (panel == p) p.SetActive(true);
+			else p.SetActive(false);
 		}
 	}
 }
