@@ -30394,11 +30394,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <music>k__BackingField:
     Guid:
-      Data1: -452697966
-      Data2: 1289314263
-      Data3: -387323502
-      Data4: 2030387031
-    Path: event:/Master/Music/BGM Test
+      Data1: 288856000
+      Data2: 1135944250
+      Data3: 1117391262
+      Data4: -2060591246
+    Path: event:/Music/Main Music
   <playerFootsteps>k__BackingField:
     Guid:
       Data1: 0
@@ -30408,31 +30408,31 @@ MonoBehaviour:
     Path: 
   <coinCollected>k__BackingField:
     Guid:
-      Data1: 861096036
-      Data2: 1096477641
-      Data3: -596871040
-      Data4: -1286889556
-    Path: event:/SFX/select08
+      Data1: 2125533040
+      Data2: 1239755137
+      Data3: -1134258545
+      Data4: -330635120
+    Path: event:/SFX/select07
   <pieAttack>k__BackingField:
     Guid:
-      Data1: 1290031606
-      Data2: 1092567863
-      Data3: -1320413802
-      Data4: -1601871592
+      Data1: -1783262030
+      Data2: 1327447223
+      Data3: 2029305011
+      Data4: -1759183884
     Path: event:/SFX/heavy_punch1
   <beerAttack>k__BackingField:
     Guid:
-      Data1: 1326430992
-      Data2: 1282589017
-      Data3: -271242873
-      Data4: -2012759129
-    Path: event:/SFX/water-splash
+      Data1: 547704140
+      Data2: 1088447427
+      Data3: -1050690917
+      Data4: -1590770496
+    Path: event:/SFX/water-splash-199583
   <enemyAttack>k__BackingField:
     Guid:
-      Data1: -240914633
-      Data2: 1247272816
-      Data3: 521786292
-      Data4: 494266835
+      Data1: 1641033783
+      Data2: 1225441542
+      Data3: 192947610
+      Data4: 472483547
     Path: event:/SFX/swing1
 --- !u!1 &1495544753
 GameObject:

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{de22dcc3-d786-42ea-8b6c-d2b7eb691360}">
+		<property name="assetPath">
+			<value>Music/Rag Time On The Rug.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>152.37224489795918</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b4f14da5-e5c1-4ff7-9767-d98b7cc9629f}</destination>
+		</relationship>
+	</object>
+</objects>
