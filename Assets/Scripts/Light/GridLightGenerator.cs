@@ -69,6 +69,7 @@ public class GridLightGenerator : MonoBehaviour
 				if (lightPrefab != null)
 				{
 					lightGO = Instantiate(lightPrefab, pos, Quaternion.identity, transform);
+					lightGO.name = $"Light_{x}_{y}";
 					light2D = lightGO.GetComponent<Light2D>() ?? lightGO.AddComponent<Light2D>();
 
 					var source = lightPrefab.GetComponent<Light2D>();
