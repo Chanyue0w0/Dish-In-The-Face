@@ -16,7 +16,6 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float retryDelay = 2f;           // 卡住後延遲幾秒才重新 SetDestination
 
 	[Header("-------- Reference --------")]
-	[SerializeField] private RoundManager roundManager;
 	[SerializeField] private Transform startPosition;             // 起點位置（通常是大門）
 	[SerializeField] private Transform endPosition;             // 起點位置（通常是大門）
 	[SerializeField] private GameObject orderIconObject;          // 點餐圖示
@@ -50,13 +49,12 @@ public class NormalGuestController : MonoBehaviour
 		patienceTime = Random.Range(minPatience, maxPatience);
 
 		// 找起點和管理器
-		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
 		startPosition = GameObject.Find("Enter Position").transform;
 		endPosition = GameObject.Find("Exit Position").transform;
 
 
 		// 嘗試找椅子
-		targetChair = roundManager.chairGroupManager.FindEmptyChair();
+		targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
 		if (targetChair != null)
 		{
 			agent.SetDestination(targetChair.position);
@@ -79,7 +77,7 @@ public class NormalGuestController : MonoBehaviour
 		// 如果椅子突然被佔用，離場
 		if (!isSeated && targetChair != null && targetChair.childCount > 1)
 		{
-			roundManager.chairGroupManager.ReleaseChair(targetChair);
+			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
 			targetChair = null;
 			Leave();
 		}
@@ -127,7 +125,7 @@ public class NormalGuestController : MonoBehaviour
 	private void OrderDish()
 	{
 		orderIconObject.SetActive(true);
-		orderFoodSprite = roundManager.foodsGroupManager.OrderFoodRandomly();
+		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
 		foodSpriteRenderer.sprite = orderFoodSprite;
 	}
 
@@ -149,7 +147,7 @@ public class NormalGuestController : MonoBehaviour
 	private IEnumerator EatAndLeave()
 	{
 		yield return new WaitForSeconds(eatTime);
-		roundManager.FinishDishSuccess(targetChair, 10);
+		RoundManager.Instance.FinishDishSuccess(targetChair, 10);
 		Leave();
 	}
 
@@ -164,8 +162,8 @@ public class NormalGuestController : MonoBehaviour
 
 		if (targetChair != null)
 		{
-			roundManager.chairGroupManager.ReleaseChair(targetChair);
-			roundManager.chairGroupManager.ClearChairItem(targetChair);
+			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
+			RoundManager.Instance.chairGroupManager.ClearChairItem(targetChair);
 			targetChair = null;
 		}
 

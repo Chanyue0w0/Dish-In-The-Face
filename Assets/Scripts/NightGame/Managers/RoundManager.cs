@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class RoundManager : MonoBehaviour
 {
+	public static RoundManager Instance { get; private set; } // 單例
+
 	[Header("-------- Setting ---------")]
 	[SerializeField] private float finishDishHotPoint = 0.5f;
 	[SerializeField] private float attackEnemyHotPoint = 0.5f;
@@ -9,36 +11,47 @@ public class RoundManager : MonoBehaviour
 
 	[Header("-------- Reference ---------")]
 	[Header("Manager")]
-	[SerializeField] public HotPointManager hotPointManager;
-	[SerializeField] public FoodsGroupManager foodsGroupManager;
-	[SerializeField] public GuestGroupManager guestGroupManager;
-	[SerializeField] public ChairGroupManager chairGroupManager;
-	[SerializeField] public CoinUIController coinUIController;
-	[SerializeField] public GlobalLightManager globalLightManager;
+	public HotPointManager hotPointManager;
+	public FoodsGroupManager foodsGroupManager;
+	public GuestGroupManager guestGroupManager;
+	public ChairGroupManager chairGroupManager;
+	public CoinUIController coinUIController;
+	public GlobalLightManager globalLightManager;
 
 	[Header("GameObject")]
 	[SerializeField] private GameObject endPane;
-	[SerializeField] GameObject stopPanel;
+	[SerializeField] private GameObject stopPanel;
 
-	// Start is called before the first frame update
-	void Start()
+	private void Awake()
+	{
+		// 設定單例
+		if (Instance != null && Instance != this)
+		{
+			Destroy(gameObject); // 如果已經有其他實例，刪掉這個
+			return;
+		}
+		Instance = this;
+		// 如果希望跨場景保留，加這行：
+		// DontDestroyOnLoad(gameObject);
+	}
+
+	private void Start()
 	{
 		endPane.SetActive(false);
 		stopPanel.SetActive(false);
 		GameContinue();
 	}
 
-	
-
 	// 放下餐點成功
 	public void PullDownDishSuccess()
 	{
 		hotPointManager.AddHotPoint(finishDishHotPoint);
 	}
-	//完成餐點取得金幣(顧客吃完)
-	public void FinishDishSuccess(Transform targetChair, int coinCound)
+
+	// 完成餐點取得金幣(顧客吃完)
+	public void FinishDishSuccess(Transform targetChair, int coinCount)
 	{
-		chairGroupManager.PullDownCoin(targetChair, coinCound);
+		chairGroupManager.PullDownCoin(targetChair, coinCount);
 	}
 
 	public void DefeatEnemySuccess()
@@ -56,6 +69,7 @@ public class RoundManager : MonoBehaviour
 	{
 		finishDishHotPoint = point;
 	}
+
 	public void SetAttackEnemyHotPoint(float point)
 	{
 		attackEnemyHotPoint = point;
