@@ -51,6 +51,7 @@ public class ReigonLightControll : MonoBehaviour
 		childLights.Clear();
 		childLights.AddRange(GetComponentsInChildren<Light2D>());
 
+		// 記錄最初顏色
 		originalLightColors.Clear();
 		foreach (var light in childLights)
 			originalLightColors.Add(light.color);
@@ -115,30 +116,23 @@ public class ReigonLightControll : MonoBehaviour
 	{
 		if (colorList.Count == 0) return;
 
-		// 計算漸變進度
 		float t = (Mathf.Sin(Time.time * colorCycleSpeed) + 1f) / 2f;
-
-		// 當前顏色與下一個顏色索引
 		Color fromColor = colorList[currentColorIndex];
 		Color toColor = colorList[(currentColorIndex + 1) % colorList.Count];
-
-		// 平滑漸變
 		Color cycleColor = Color.Lerp(fromColor, toColor, t);
 
-		// 套用到每個 Light2D（基於原本的色系做乘算）
 		for (int i = 0; i < childLights.Count; i++)
 		{
 			Light2D light = childLights[i];
-			Color original = originalLightColors[i];
+			Color original = originalLightColors[i]; // 用最初顏色
 			light.color = new Color(
 				original.r * cycleColor.r,
 				original.g * cycleColor.g,
 				original.b * cycleColor.b,
-				original.a // 不改變透明度
+				original.a
 			);
 		}
 
-		// 切換顏色段
 		if (Time.time - timer > (1f / colorCycleSpeed))
 		{
 			currentColorIndex = (currentColorIndex + 1) % colorList.Count;
@@ -146,16 +140,23 @@ public class ReigonLightControll : MonoBehaviour
 		}
 	}
 
+	// 重設顏色到最初狀態
+	private void ResetToOriginalColors()
+	{
+		for (int i = 0; i < childLights.Count; i++)
+		{
+			childLights[i].color = originalLightColors[i];
+		}
+	}
 
-	// 外部設定模式
-	public void SetMode(LightMode newMode) => mode = newMode;
+	// 外部設定模式（切換時回到最初顏色）
+	public void SetMode(LightMode newMode)
+	{
+		ResetToOriginalColors();
+		mode = newMode;
+	}
 
-	// 外部控制旋轉啟用
 	public void SetRotationEnabled(bool enabled) => isRotationEnabled = enabled;
-
-	// 外部控制旋轉速度
 	public void SetRotationSpeed(float speed) => rotationSpeed = speed;
-
-	// 外部控制旋轉方向
 	public void SetRotationDirection(bool clockwise) => isClockwise = clockwise;
 }
