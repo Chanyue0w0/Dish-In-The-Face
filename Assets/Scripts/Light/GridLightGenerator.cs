@@ -14,16 +14,13 @@ public class GridLightGenerator : MonoBehaviour
 	[Header("Grid Setting")]
 	[SerializeField] private int columns = 5;     // 橫向幾列光源
 	[SerializeField] private int rows = 5;        // 垂直幾列光源
-	[SerializeField] private float paddingX = 0.1f; // X軸間距縮減
-	[SerializeField] private float paddingY = 0.1f; // Y軸間距縮減
 
 	[Header("Light Scale")]
-	[SerializeField] private bool useAutoScale = true; // 是否自動依格子調整大小
 	[SerializeField] private Vector2 manualScale = new Vector2(1f, 1f); // 手動設定大小
 
 	[Header("Light Color (Alternating)")]
-	[SerializeField] private List<Color> lightColors = new List<Color> { Color.red, Color.green, Color.blue }; // 可自訂顏色列表
 	[SerializeField] private bool useCustomColors = true; // 是否使用自訂顏色
+	[SerializeField] private List<Color> lightColors = new List<Color> { Color.red, Color.green, Color.blue }; // 可自訂顏色列表
 
 	[Header("Light Prefab (Optional)")]
 	[SerializeField] private GameObject lightPrefab; // 可選用的 Light2D 預製物件
@@ -88,17 +85,7 @@ public class GridLightGenerator : MonoBehaviour
 
 				lightGO.transform.position = pos;
 
-				// 縮放控制
-				if (useAutoScale)
-				{
-					float scaleX = cellWidth - paddingX;
-					float scaleY = cellHeight - paddingY;
-					lightGO.transform.localScale = new Vector3(scaleX, scaleY, 1f);
-				}
-				else
-				{
-					lightGO.transform.localScale = new Vector3(manualScale.x, manualScale.y, 1f);
-				}
+				lightGO.transform.localScale = new Vector3(manualScale.x, manualScale.y, 1f);
 
 				// 顏色設定
 				if (useCustomColors && lightColors.Count > 0)
