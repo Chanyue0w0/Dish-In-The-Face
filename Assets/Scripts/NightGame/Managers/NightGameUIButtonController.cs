@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public class NightGameUIButtonController : MonoBehaviour
 {
 	[SerializeField] GameObject settingPanel;
-	[SerializeField] RoundManager roundManager;
 	public void OnClickRestart()
     {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -20,7 +19,7 @@ public class NightGameUIButtonController : MonoBehaviour
 
 	public void OnClickContinue()
 	{
-		roundManager.GameContinue();
+		RoundManager.Instance.GameContinue();
 	}
 
 	public void InputESC(InputAction.CallbackContext context)
@@ -33,7 +32,7 @@ public class NightGameUIButtonController : MonoBehaviour
 				return;
 			}
 
-			roundManager.GameStop();
+			RoundManager.Instance.GameStop();
 		}
 	}
 }

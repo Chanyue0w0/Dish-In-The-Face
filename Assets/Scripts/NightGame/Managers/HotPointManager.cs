@@ -17,7 +17,6 @@ public class HotPointManager : MonoBehaviour
 	[SerializeField] private Sprite[] hotLevelSprites; // D~S πÔ¿≥ 0~4
 	[SerializeField] private Image hotPointImage;
 	[SerializeField] private Image hotPointFillBar;
-	[SerializeField] private RoundManager roundManager;
 	private float lastHotIncreaseTime;
 	private int currentLevelIndex;
 	
@@ -46,8 +45,8 @@ public class HotPointManager : MonoBehaviour
 			currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
 			currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
 
-			if (currentLevelIndex == stageMaxHotPoint.Length - 1) roundManager.globalLightManager.SetLightCycleLoopEnabled(true);
-			else roundManager.globalLightManager.SetLightCycleLoopEnabled(false);
+			if (currentLevelIndex == stageMaxHotPoint.Length - 1) RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(true);
+			else RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(false);
 		}
 
 		UpdateHotUI();
