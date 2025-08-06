@@ -33,7 +33,7 @@ public class PlayerStatus : MonoBehaviour
 
 		//Debug.Log("Player took damage. Current HP: " + currentHP);
 
-		Instantiate(getHurtVFX, transform.position, Quaternion.identity);
+		VFXPool.Instance.SpawnVFX("Hurt", transform.position, Quaternion.identity, 1f);
 		healthPointUIControl.DecreaseHP();
 		if (currentHP <= 0)
 		{
