@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4605954416490134240}
   - component: {fileID: 2274923271906761723}
   - component: {fileID: 5464492851791182571}
+  - component: {fileID: 5630417034037897178}
   m_Layer: 0
   m_Name: Wander guest
   m_TagString: NormalGuest
@@ -108,6 +109,8 @@ MonoBehaviour:
   stuckCheckInterval: 1.5
   stuckThreshold: 0.05
   retryDelay: 2
+  minStayDuration: 15
+  maxStayDuration: 30
   obstacles:
   - {fileID: 875495723434509806, guid: 39902337e0f57de42adf0ecc5092b9be, type: 3}
   - {fileID: 184884488866778669, guid: cabb475c59a24af4a87d2805342699ba, type: 3}
@@ -240,3 +243,15 @@ NavMeshAgent:
   m_BaseOffset: 2.9549997
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &5630417034037897178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515934212084511566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f75fa76dd766cde4295c0e52d221951a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

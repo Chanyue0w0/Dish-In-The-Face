@@ -1013,7 +1013,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5a32ae3b8f4cd3147a97f60ac67e35c3, type: 3}
   hotPointImage: {fileID: 1696843143}
   hotPointFillBar: {fileID: 1978379211}
-  roundManager: {fileID: 182932467}
 --- !u!114 &89439754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6885,7 +6884,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingPanel: {fileID: 223021264}
-  roundManager: {fileID: 182932467}
 --- !u!1 &602824184
 GameObject:
   m_ObjectHideFlags: 0
@@ -7689,7 +7687,6 @@ MonoBehaviour:
   attackPower: 1
   healthPointUIControl: {fileID: 1040384623}
   getHurtVFX: {fileID: 1734798603044744806, guid: 5529b62ea6c622e45bd67dc98f9fb860, type: 3}
-  roundManager: {fileID: 0}
 --- !u!114 &632101740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8003,7 +8000,6 @@ MonoBehaviour:
   chairList: []
   guestEnterPoistion: {fileID: 506713175}
   coinPrefab: {fileID: 5133485625459300629, guid: 13db0ec4549276c40bd0f8be8451c74a, type: 3}
-  roundManager: {fileID: 182932467}
 --- !u!1 &644515211
 GameObject:
   m_ObjectHideFlags: 0
@@ -13999,12 +13995,15 @@ MonoBehaviour:
   isSpawnNormalGuest: 1
   minNormalGuests: 3
   maxNormalGuests: 5
+  poolSizeNormal: 10
   isSpawnWanderGuest: 1
   minWanderGuests: 1
   maxWanderGuests: 3
+  poolSizeWander: 5
   isSpawnTroubleGuest: 1
   minTroubleGuests: 0
   maxTroubleGuests: 2
+  poolSizeTrouble: 5
   doorPosition: {fileID: 506713175}
   normalGuestPrefab: {fileID: 3474513089845744578, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
   wanderGuestPrefab: {fileID: 7515934212084511566, guid: 493cd2c31a9f26946a0264fc6e39f21d, type: 3}

@@ -20,46 +20,56 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
 	[SerializeField] private GameObject attackRangeBox;
-
-
-	[SerializeField] private GameObject hpBar;              // 血條物件
-	[SerializeField] private Transform barFill;             // 血條內部填色
-
+	[SerializeField] private GameObject hpBar;
+	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject dieVFX;
 	[SerializeField] private GameObject attackVFX;
 
 	private Transform player;
-	private float lastAttackTime = -Mathf.Infinity;
-	private bool isCharging = false;
+	private float lastAttackTime;
+	private bool isCharging;
 	private float chargeStartTime;
+
+	// 物件池處理器
+	private GuestPoolHandler poolHandler;
 
 	private void Awake()
 	{
-		player = GameObject.FindGameObjectWithTag("Player").transform;
-
-
-		maxHp = Random.Range(1, 4); // 隨機 1~3
-		currentHp = maxHp;
-
+		// 初始化 NavMeshAgent
+		agent = GetComponent<NavMeshAgent>();
 		agent.updateRotation = false;
 		agent.updateUpAxis = false;
 		agent.speed = moveSpeed;
 
+		// 初始化物件池處理器
+		poolHandler = GetComponent<GuestPoolHandler>();
+	}
+
+	private void OnEnable()
+	{
+		// 每次從物件池取出時重置狀態
+		player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+		maxHp = Random.Range(1, 4);
+		currentHp = maxHp;
+
 		hpBar.SetActive(false);
-		attackHitBox.SetActive(false); // 初始關閉
+		attackHitBox.SetActive(false);
 		attackRangeBox.SetActive(false);
+
+		lastAttackTime = -Mathf.Infinity;
+		isCharging = false;
 	}
 
 	private void Update()
 	{
 		if (player == null) return;
 
-
+		// 翻轉朝向
 		if (agent.velocity.x < -0.01f)
 			transform.rotation = Quaternion.Euler(0, 0, 0);
 		else if (agent.velocity.x > 0.01f)
 			transform.rotation = Quaternion.Euler(0, 180, 0);
-
 
 		if (isCharging)
 		{
@@ -87,7 +97,7 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void StartCharge()
 	{
-		attackRangeBox.SetActive (true);
+		attackRangeBox.SetActive(true);
 		isCharging = true;
 		chargeStartTime = Time.time;
 		lastAttackTime = Time.time;
@@ -98,10 +108,9 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		attackHitBox.SetActive(true);
 		Instantiate(attackVFX, attackHitBox.transform.position, Quaternion.identity);
-		// 生成音效
+
 		AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyAttack, transform.position);
 
-		// 用 Collider2D 判斷是否打中 Player
 		Collider2D[] hits = new Collider2D[5];
 		ContactFilter2D filter = new ContactFilter2D();
 		filter.SetLayerMask(playerLayer);
@@ -118,12 +127,10 @@ public class TroubleGusetController : MonoBehaviour
 				{
 					playerStatus.TakeDamage(atk);
 					break;
-					//Debug.Log("Trouble guest attacked player via hitbox!");
 				}
 			}
 		}
 
-		// 0.1 秒後關閉 hitbox，繼續移動
 		Invoke(nameof(DisableAttackHitBox), 0.1f);
 		agent.isStopped = false;
 	}
@@ -131,36 +138,34 @@ public class TroubleGusetController : MonoBehaviour
 	private void DisableAttackHitBox()
 	{
 		attackHitBox.SetActive(false);
-
 		attackRangeBox.SetActive(false);
 	}
-
 
 	public void TakeDamage(int damage)
 	{
 		hpBar.SetActive(true);
 		currentHp -= damage;
-		
+
 		float ratio = (float)currentHp / maxHp;
-		//Debug.Log(ratio);
 		barFill.localScale = new Vector3(ratio, 1f, 1f);
-		
-		//Debug.Log(this.name + "die");
+
 		if (currentHp <= 0)
 		{
 			Instantiate(dieVFX, attackHitBox.transform.position, Quaternion.identity);
 			RoundManager.Instance.DefeatEnemySuccess();
-			Destroy(gameObject);
-		}
 
+			// 回收物件到物件池
+			if (poolHandler != null)
+				poolHandler.Release();
+			else
+				gameObject.SetActive(false);
+		}
 	}
 
-	// 偵測到被攻擊
-	void OnTriggerEnter2D(Collider2D other)
+	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("AttackObject"))
 		{
-			Collider2D beAttackedObj = other;
 			TakeDamage(1);
 		}
 	}

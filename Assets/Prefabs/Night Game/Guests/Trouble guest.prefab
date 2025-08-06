@@ -397,6 +397,7 @@ GameObject:
   - component: {fileID: 5767427161216902811}
   - component: {fileID: 5007685018733955347}
   - component: {fileID: 1175326232762330544}
+  - component: {fileID: -7419589994457756344}
   m_Layer: 0
   m_Name: Trouble guest
   m_TagString: Enemy
@@ -448,7 +449,6 @@ MonoBehaviour:
   attackHitBox: {fileID: 6765627097533768325}
   agent: {fileID: 1175326232762330544}
   spriteRenderer: {fileID: 4479673166966749816}
-  roundManager: {fileID: 0}
   attackRangeBox: {fileID: 5810666919928902637}
   hpBar: {fileID: 4086668980242120356}
   barFill: {fileID: 4651630559300287694}
@@ -600,6 +600,18 @@ NavMeshAgent:
   m_BaseOffset: 2.945
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-7419589994457756344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7394560797054130701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f75fa76dd766cde4295c0e52d221951a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7591430462144331241
 GameObject:
   m_ObjectHideFlags: 0

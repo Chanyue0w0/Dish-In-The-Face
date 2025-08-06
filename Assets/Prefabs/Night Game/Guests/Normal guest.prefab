@@ -267,6 +267,7 @@ GameObject:
   - component: {fileID: 5794271118961271068}
   - component: {fileID: 6900171364552601329}
   - component: {fileID: 1397730837156832888}
+  - component: {fileID: -58607532002821039}
   m_Layer: 0
   m_Name: Normal guest
   m_TagString: NormalGuest
@@ -362,7 +363,6 @@ MonoBehaviour:
   stuckCheckInterval: 1.5
   stuckThreshold: 0.05
   retryDelay: 1
-  roundManager: {fileID: 0}
   startPosition: {fileID: 0}
   endPosition: {fileID: 0}
   orderIconObject: {fileID: 890640048631273743}
@@ -471,6 +471,18 @@ NavMeshAgent:
   m_BaseOffset: 2.9549997
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &-58607532002821039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474513089845744578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f75fa76dd766cde4295c0e52d221951a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5772019527846658394
 GameObject:
   m_ObjectHideFlags: 0

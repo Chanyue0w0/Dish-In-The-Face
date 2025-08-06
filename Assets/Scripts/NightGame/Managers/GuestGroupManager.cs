@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class GuestGroupManager : MonoBehaviour
 {
@@ -23,7 +24,6 @@ public class GuestGroupManager : MonoBehaviour
 
 	[Header("-------------------- Reference --------------------")]
 	[SerializeField] private Transform doorPosition;
-
 	[SerializeField] private GameObject normalGuestPrefab;
 	[SerializeField] private GameObject wanderGuestPrefab;
 	[SerializeField] private GameObject troubleGuestPrefab;
@@ -31,8 +31,43 @@ public class GuestGroupManager : MonoBehaviour
 	private float timer;
 	private float nextSpawnTime;
 
+	// 內建物件池
+	private ObjectPool<GameObject> normalGuestPool;
+	private ObjectPool<GameObject> wanderGuestPool;
+	private ObjectPool<GameObject> troubleGuestPool;
+
 	void Start()
 	{
+		normalGuestPool = new ObjectPool<GameObject>(
+			createFunc: () => Instantiate(normalGuestPrefab, transform),
+			actionOnGet: obj => obj.SetActive(true),
+			actionOnRelease: obj => obj.SetActive(false),
+			actionOnDestroy: obj => Destroy(obj),
+			collectionCheck: false,
+			defaultCapacity: 20,
+			maxSize: 200
+		);
+
+		wanderGuestPool = new ObjectPool<GameObject>(
+			createFunc: () => Instantiate(wanderGuestPrefab, transform),
+			actionOnGet: obj => obj.SetActive(true),
+			actionOnRelease: obj => obj.SetActive(false),
+			actionOnDestroy: obj => Destroy(obj),
+			collectionCheck: false,
+			defaultCapacity: 20,
+			maxSize: 200
+		);
+
+		troubleGuestPool = new ObjectPool<GameObject>(
+			createFunc: () => Instantiate(troubleGuestPrefab, transform),
+			actionOnGet: obj => obj.SetActive(true),
+			actionOnRelease: obj => obj.SetActive(false),
+			actionOnDestroy: obj => Destroy(obj),
+			collectionCheck: false,
+			defaultCapacity: 20,
+			maxSize: 200
+		);
+
 		SetNextSpawnTime();
 	}
 
@@ -59,7 +94,9 @@ public class GuestGroupManager : MonoBehaviour
 			int count = Random.Range(minNormalGuests, maxNormalGuests + 1);
 			for (int i = 0; i < count; i++)
 			{
-				Instantiate(normalGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
+				GameObject guest = normalGuestPool.Get();
+				guest.transform.position = GetSpawnPosition();
+				guest.GetComponent<GuestPoolHandler>().Init(normalGuestPool);
 			}
 		}
 
@@ -68,9 +105,9 @@ public class GuestGroupManager : MonoBehaviour
 			int count = Random.Range(minWanderGuests, maxWanderGuests + 1);
 			for (int i = 0; i < count; i++)
 			{
-				var wander = Instantiate(wanderGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
-				// if (Random.value < 0.3f)
-				//     GenerateTrash(wander.transform.position);
+				GameObject guest = wanderGuestPool.Get();
+				guest.transform.position = GetSpawnPosition();
+				guest.GetComponent<GuestPoolHandler>().Init(wanderGuestPool);
 			}
 		}
 
@@ -79,7 +116,9 @@ public class GuestGroupManager : MonoBehaviour
 			int count = Random.Range(minTroubleGuests, maxTroubleGuests + 1);
 			for (int i = 0; i < count; i++)
 			{
-				Instantiate(troubleGuestPrefab, GetSpawnPosition(), Quaternion.identity, transform);
+				GameObject guest = troubleGuestPool.Get();
+				guest.transform.position = GetSpawnPosition();
+				guest.GetComponent<GuestPoolHandler>().Init(troubleGuestPool);
 			}
 		}
 	}
@@ -94,8 +133,4 @@ public class GuestGroupManager : MonoBehaviour
 			return Vector3.zero;
 		}
 	}
-
-	// Public setters 可依需求保留或移除
-	public void SetMinSpawnColdTime(float value) => minSpawnColdTime = value;
-	public void SetMaxSpawnColdTime(float value) => maxSpawnColdTime = value;
 }
