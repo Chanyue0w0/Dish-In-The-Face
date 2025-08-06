@@ -2529,7 +2529,7 @@ MonoBehaviour:
   hotPointManager: {fileID: 89439753}
   foodsGroupManager: {fileID: 381182771}
   guestGroupManager: {fileID: 761160831}
-  chairGroupManager: {fileID: 643318459}
+  chairGroupManager: {fileID: 1245954770}
   coinUIController: {fileID: 1414407264}
   globalLightManager: {fileID: 1781125744}
   endPane: {fileID: 1256561644}
@@ -7622,7 +7622,7 @@ MonoBehaviour:
   slideSpeed: 10
   isDashing: 0
   isSlide: 0
-  chairGroupManager: {fileID: 643318459}
+  chairGroupManager: {fileID: 1245954770}
   attackController: {fileID: 632101740}
   handItemUI: {fileID: 1796851951}
   handItemNow: {fileID: 1126725959}
@@ -7953,53 +7953,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633321025}
   m_CullTransparentMesh: 1
---- !u!1 &643318457
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 643318458}
-  - component: {fileID: 643318459}
-  m_Layer: 0
-  m_Name: Chairs Group Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &643318458
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 643318457}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2063143629}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &643318459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 643318457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98c0802163a702740bc3822f80ffe28f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chairList: []
-  guestEnterPoistion: {fileID: 506713175}
-  coinPrefab: {fileID: 5133485625459300629, guid: 13db0ec4549276c40bd0f8be8451c74a, type: 3}
 --- !u!1 &644515211
 GameObject:
   m_ObjectHideFlags: 0
@@ -28228,8 +28181,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1245954769}
+  - component: {fileID: 1245954770}
   m_Layer: 0
-  m_Name: Tables Group
+  m_Name: Chairs Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28258,6 +28212,21 @@ Transform:
   - {fileID: 1318513494}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1245954770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245954767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98c0802163a702740bc3822f80ffe28f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chairList: []
+  guestEnterPoistion: {fileID: 506713175}
+  coinPrefab: {fileID: 5133485625459300629, guid: 13db0ec4549276c40bd0f8be8451c74a, type: 3}
 --- !u!1 &1251317838
 GameObject:
   m_ObjectHideFlags: 0
@@ -42538,11 +42507,10 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 182932466}
+  - {fileID: 593562953}
   - {fileID: 1222578148}
   - {fileID: 1559606738}
-  - {fileID: 593562953}
   - {fileID: 219287252}
-  - {fileID: 643318458}
   - {fileID: 2001401941}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
