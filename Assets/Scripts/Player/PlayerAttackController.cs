@@ -17,7 +17,6 @@ public class PlayerAttackController : MonoBehaviour
 	//private bool isAttacked = false;
 	private void Start()
 	{
-		playerMovement = GetComponent<PlayerMovement>();
 		attackHitBox.SetActive(false);
 
 		//isAttacked = false;
@@ -27,7 +26,7 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		if (handItem.childCount == 0) return false;
 
-		FoodsGroupManager.FoodType foodType = handItem.GetChild(0).GetComponent<FoodStatus>().foodType;
+		FoodsGroupManager.FoodType foodType = handItem.GetComponentInChildren<FoodStatus>().foodType;
 
 		switch(foodType)
 		{

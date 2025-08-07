@@ -53,9 +53,6 @@ public class ChairGroupManager : MonoBehaviour
 
 		// 標記為已佔用
 		occupiedChairs.Add(selectedChair);
-		
-		Debug.Log("find chair");
-
 		return selectedChair;
 	}
 
@@ -87,7 +84,7 @@ public class ChairGroupManager : MonoBehaviour
 	public void PullDownChairItem(Transform chair, GameObject handItem)
 	{
 		Transform chairItem = chair.transform.GetChild(0); 
-		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>().sprite;
 
 		if (chair.childCount < 2) return;
 		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();

@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
 	[Header("-------- Move Setting ---------")]
+	[SerializeField] private bool isSlideAutoPullDish = false;
 	[SerializeField] private float moveSpeed = 5f;
 	[SerializeField] private int holdItemCount = 10;
 	[Header("Dash")]
@@ -238,7 +239,7 @@ public class PlayerMovement : MonoBehaviour
 			{
 				GameObject newItem = Instantiate(currentFoodTrigger.gameObject, handItemNow.transform.position, Quaternion.identity);
 				newItem.transform.SetParent(handItemNow.transform);
-				newItem.transform.localScale = new Vector3(0.8f, 0.8f, 1);
+				//newItem.transform.localScale = new Vector3(0.8f, 0.8f, 1);
 				newItem.GetComponent<Collider2D>().enabled = false; // Ãö³¬¸I¼²Á×§K¤zÂZ
 			}
 		}
@@ -289,7 +290,7 @@ public class PlayerMovement : MonoBehaviour
 
 		while (elapsedTime < duration)
 		{
-			PullDownDish();
+			if (isSlideAutoPullDish) PullDownDish();
 			elapsedTime += Time.deltaTime;
 			transform.position = Vector2.Lerp(start, end, elapsedTime / duration);
 			yield return null;
