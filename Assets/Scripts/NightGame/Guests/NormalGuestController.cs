@@ -159,6 +159,7 @@ public class NormalGuestController : MonoBehaviour
 
 		if (targetChair != null)
 		{
+			transform.SetParent(RoundManager.Instance.guestGroupManager.transform);
 			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
 			RoundManager.Instance.chairGroupManager.ClearChairItem(targetChair);
 			targetChair = null;
