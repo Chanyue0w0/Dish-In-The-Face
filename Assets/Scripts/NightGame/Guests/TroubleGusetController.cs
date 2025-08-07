@@ -107,7 +107,7 @@ public class TroubleGusetController : MonoBehaviour
 	private void PerformAttack()
 	{
 		attackHitBox.SetActive(true);
-		Instantiate(attackVFX, attackHitBox.transform.position, Quaternion.identity);
+		VFXPool.Instance.SpawnVFX("Attack", attackHitBox.transform.position, Quaternion.identity, 1f);
 
 		AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyAttack, transform.position);
 
@@ -151,7 +151,7 @@ public class TroubleGusetController : MonoBehaviour
 
 		if (currentHp <= 0)
 		{
-			Instantiate(dieVFX, attackHitBox.transform.position, Quaternion.identity);
+			VFXPool.Instance.SpawnVFX("CoinFountain", attackHitBox.transform.position, Quaternion.identity, 2f);
 			RoundManager.Instance.DefeatEnemySuccess();
 
 			// 回收物件到物件池

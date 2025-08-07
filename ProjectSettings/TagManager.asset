@@ -51,14 +51,23 @@ TagManager:
   - name: Background
     uniqueID: 284442743
     locked: 0
+  - name: Background Furniture
+    uniqueID: 3720169445
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Furniture
+    uniqueID: 2156869677
     locked: 0
   - name: chair
     uniqueID: 872125167
     locked: 0
   - name: Table
     uniqueID: 2077443709
+    locked: 0
+  - name: Item
+    uniqueID: 1846716829
     locked: 0
   - name: Guest
     uniqueID: 4244410229
