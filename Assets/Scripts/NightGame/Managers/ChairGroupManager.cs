@@ -53,6 +53,8 @@ public class ChairGroupManager : MonoBehaviour
 
 		// 標記為已佔用
 		occupiedChairs.Add(selectedChair);
+		
+		Debug.Log("find chair");
 
 		return selectedChair;
 	}
