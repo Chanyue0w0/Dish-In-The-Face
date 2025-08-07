@@ -20,7 +20,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodsArray;         // 食物的 prefabs 陣列
-	[SerializeField] private TextMeshPro[] foodsCountText;
+	//[SerializeField] private TextMeshPro[] foodsCountText;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private Transform DishLoadingBar;
 
@@ -33,7 +33,7 @@ public class FoodsGroupManager : MonoBehaviour
 		foodsCount = new int[foodsArray.Length];
 		for (int i = 0; i < foodsCount.Length; i++)
 			foodsCount[i] = 10;
-		UpdateAllFoodTexts(); // 初始化時也更新顯示
+		//UpdateAllFoodTexts(); // 初始化時也更新顯示
 	}
 
 
@@ -48,7 +48,7 @@ public class FoodsGroupManager : MonoBehaviour
 		if (timer >= spawnInerval)
 		{
 			RefillFoods();
-			UpdateAllFoodTexts();
+			//UpdateAllFoodTexts();
 			timer = 0f;
 		}
 	}
@@ -61,21 +61,21 @@ public class FoodsGroupManager : MonoBehaviour
 			foodsCount[i] += spawnFoodsCount;
 		}
 
-		UpdateAllFoodTexts(); // 每次補餐時自動更新顯示
+		//UpdateAllFoodTexts(); // 每次補餐時自動更新顯示
 		//Debug.Log("補充餐點完成，每種餐點 +" + spawnCount);
 	}
 
 
-	private void UpdateAllFoodTexts()
-	{
-		for (int i = 0; i < foodsCount.Length; i++)
-		{
-			if (i < foodsCountText.Length)
-			{
-				foodsCountText[i].text = foodsCount[i].ToString();
-			}
-		}
-	}
+	//private void UpdateAllFoodTexts()
+	//{
+	//	for (int i = 0; i < foodsCount.Length; i++)
+	//	{
+	//		if (i < foodsCountText.Length)
+	//		{
+	//			foodsCountText[i].text = foodsCount[i].ToString();
+	//		}
+	//	}
+	//}
 
 	private void UpdateLoadingBar(float ratio)
 	{
@@ -104,7 +104,7 @@ public class FoodsGroupManager : MonoBehaviour
 			if (foodsArray[i].name == name)
 			{
 				foodsCount[i] = count;
-				foodsCountText[i].text = count.ToString();
+				//foodsCountText[i].text = count.ToString();
 				break;
 			}
 		}
@@ -132,19 +132,13 @@ public class FoodsGroupManager : MonoBehaviour
 		int randomIndex = Random.Range(0, foodsArray.Length);
 
 		// 取得對應的 prefab
-		GameObject selectedFood = foodsArray[randomIndex].transform.GetChild(0).gameObject;
+		GameObject selectedFood = foodsArray[randomIndex].transform.gameObject;
 
 		// 假設要找的 SpriteRenderer 是子物件的子物件
 		// 使用 GetComponentsInChildren 並略過自己本身
-		SpriteRenderer[] sprites = selectedFood.GetComponentsInChildren<SpriteRenderer>(true);
+		SpriteRenderer foodSR = selectedFood.GetComponent<SpriteRenderer>();
 
-		foreach (var sr in sprites)
-		{
-			if (sr.gameObject != selectedFood) // 確保不是 prefab 自己
-				return sr.sprite;
-		}
-
-		return null; // 如果找不到就回傳 null
+		return foodSR.sprite;
 	}
 
 	public void TakeFood(Sprite food, int count)
