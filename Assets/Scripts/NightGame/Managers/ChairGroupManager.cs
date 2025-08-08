@@ -92,6 +92,8 @@ public class ChairGroupManager : MonoBehaviour
 		// 回報已上餐
 		if (npc.IsReceiveFood(foodSprite))
 		{
+			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pullDownDish, transform.position);
+
 			// 放置餐點
 			//handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
 			//handItem.transform.localPosition = Vector3.zero;

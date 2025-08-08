@@ -25,7 +25,7 @@ public class FoodsGroupManager : MonoBehaviour
 	[SerializeField] private Transform DishLoadingBar;
 
 	private int[] foodsCount; // 對應每種餐點目前的數量
-	private float timer = 0f;
+	//private float timer = 0f;
 
 
 	void Start()
@@ -37,21 +37,21 @@ public class FoodsGroupManager : MonoBehaviour
 	}
 
 
-	void Update()
-	{
-		timer += Time.deltaTime;
+	//void Update()
+	//{
+	//	timer += Time.deltaTime;
 
 
-		// 更新讀條長度
-		UpdateLoadingBar(timer / spawnInerval);
+	//	// 更新讀條長度
+	//	UpdateLoadingBar(timer / spawnInerval);
 
-		if (timer >= spawnInerval)
-		{
-			RefillFoods();
-			//UpdateAllFoodTexts();
-			timer = 0f;
-		}
-	}
+	//	if (timer >= spawnInerval)
+	//	{
+	//		RefillFoods();
+	//		//UpdateAllFoodTexts();
+	//		timer = 0f;
+	//	}
+	//}
 
 
 	private void RefillFoods()
@@ -77,14 +77,14 @@ public class FoodsGroupManager : MonoBehaviour
 	//	}
 	//}
 
-	private void UpdateLoadingBar(float ratio)
-	{
-		// 限制 ratio 在 0~1 之間
-		ratio = Mathf.Clamp01(ratio);
+	//private void UpdateLoadingBar(float ratio)
+	//{
+	//	// 限制 ratio 在 0~1 之間
+	//	ratio = Mathf.Clamp01(ratio);
 
-		// barFill 原本 scale 為 (1, 1, 1)，用 x 縮放控制進度
-		barFill.localScale = new Vector3(ratio, 1f, 1f);
-	}
+	//	// barFill 原本 scale 為 (1, 1, 1)，用 x 縮放控制進度
+	//	barFill.localScale = new Vector3(ratio, 1f, 1f);
+	//}
 
 
 	// 更改餐點數量 by index
@@ -111,16 +111,16 @@ public class FoodsGroupManager : MonoBehaviour
 	}
 
 	// 更改每幾秒生成
-	public void SetRefillInterval(float interval)
-	{
-		spawnInerval = interval;
-	}
+	//public void SetRefillInterval(float interval)
+	//{
+	//	spawnInerval = interval;
+	//}
 
-	// 更改每次生成的數量
-	public void SetRefillAmount(int amount)
-	{
-		spawnFoodsCount = amount;
-	}
+	//// 更改每次生成的數量
+	//public void SetRefillAmount(int amount)
+	//{
+	//	spawnFoodsCount = amount;
+	//}
 
 	public Sprite OrderFoodRandomly()
 	{

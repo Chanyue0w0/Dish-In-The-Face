@@ -13,25 +13,31 @@ public class FMODEvents : MonoBehaviour
 
 
 	[field: Header("----------- SFX -----------")]
-	[field: Header("Player SFX")]
+	[field: Header("--- Player SFX ---")]
+	[field: Header("Player")]
 	[field: SerializeField] public EventReference playerFootsteps { get; private set; }
 
-	[field: Header("Coin SFX")]
-	[field: SerializeField] public EventReference coinCollected { get; private set; }
-	[field: Header("Attack SFX")]
+	[field: Header("Attack")]
 	[field: SerializeField] public EventReference pieAttack { get; private set; }
+
+
+	[field: Header("--- Item SFX ---")]
+	[field: Header("Dish")]
+	[field: SerializeField] public EventReference pullDownDish { get; private set; }
+	[field: Header("Coin")]
+	[field: SerializeField] public EventReference coinCollected { get; private set; }
 	[field: SerializeField] public EventReference beerAttack { get; private set; }
-	[field: Header("Enemy SFX")]
+	[field: Header("--- Enemy SFX ---")]
 	[field: SerializeField] public EventReference enemyAttack { get; private set; }
 
-	public static FMODEvents instance { get; private set; }
+	public static FMODEvents Instance { get; private set; }
 
 	private void Awake()
 	{
-		if (instance != null)
+		if (Instance != null)
 		{
 			Debug.LogError("Found more than one FMOD Events instance in the scene.");
 		}
-		instance = this;
+		Instance = this;
 	}
 }
