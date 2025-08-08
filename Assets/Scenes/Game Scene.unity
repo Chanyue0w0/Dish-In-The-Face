@@ -18735,6 +18735,7 @@ GameObject:
   m_Component:
   - component: {fileID: 381182769}
   - component: {fileID: 381182771}
+  - component: {fileID: 381182772}
   m_Layer: 0
   m_Name: Foods Group
   m_TagString: Untagged
@@ -18776,13 +18777,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f94174b522f852448b52dfa5a48687c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInerval: 10
-  spawnFoodsCount: 10
   foodsArray:
   - {fileID: 2087422595}
   - {fileID: 1286979655}
   barFill: {fileID: 677354403}
   DishLoadingBar: {fileID: 191916614}
+  yellowFrame: {fileID: 1714105293}
+  playerCollider: {fileID: 632101733}
+  foodLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!61 &381182772
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381182768}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -6.0695343, y: 0.4248674}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 13.139069, y: 5.0058923}
+  m_EdgeRadius: 0
 --- !u!1 &381686969
 GameObject:
   m_ObjectHideFlags: 0
@@ -30073,7 +30122,7 @@ GameObject:
   - component: {fileID: 632101731}
   - component: {fileID: 632101738}
   - component: {fileID: 632101741}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -114554,6 +114603,10 @@ PrefabInstance:
       value: Pizza
       objectReference: {fileID: 0}
     - target: {fileID: 2574647917316951092, guid: 73e8fa00e59c20248a997032d1808ecb, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2574647917316951092, guid: 73e8fa00e59c20248a997032d1808ecb, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -114597,6 +114650,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6409025635281670779, guid: 73e8fa00e59c20248a997032d1808ecb, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -114613,6 +114670,10 @@ PrefabInstance:
     - target: {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
       propertyPath: m_Name
       value: Beer
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1590767074645827787, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
       propertyPath: m_LocalScale.x
@@ -114666,6 +114727,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2283782939565454668, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845712298087831794, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Size.x
+      value: 7.9659085
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845712298087831794, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Size.y
+      value: 13.253083
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845712298087831794, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.15056634
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845712298087831794, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
+      propertyPath: m_Offset.y
+      value: -2.5529876
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -114687,9 +114768,17 @@ PrefabInstance:
       propertyPath: m_Offset.y
       value: -1.428391
       objectReference: {fileID: 0}
+    - target: {fileID: 4498919464704105283, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8350812427501041870, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_Name
       value: Pie
+      objectReference: {fileID: 0}
+    - target: {fileID: 8350812427501041870, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalScale.x
@@ -114801,8 +114890,16 @@ PrefabInstance:
       value: Cake
       objectReference: {fileID: 0}
     - target: {fileID: 784358631247158347, guid: 2c85ee26b8e92a94ab4006bf8609f627, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 784358631247158347, guid: 2c85ee26b8e92a94ab4006bf8609f627, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8343058390338176394, guid: 2c85ee26b8e92a94ab4006bf8609f627, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

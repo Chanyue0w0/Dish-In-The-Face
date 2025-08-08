@@ -30,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
 
-	private Collider2D currentFoodTrigger;   // 當前接觸到的食物
 	private Collider2D currentTableCollider; // 當前接觸到的桌子
 	private List<Collider2D> currentChairTriggers = new List<Collider2D>(); // 當前接觸到的椅子
 
@@ -224,7 +223,9 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if(handItemUI) handItemUI.ChangeHandItemUI();
 
-		if (currentFoodTrigger != null)
+		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();   // 當前接觸到的食物
+		
+		if (currentFood != null)
 		{
 			//Debug.Log("get foood");
 
@@ -237,7 +238,7 @@ public class PlayerMovement : MonoBehaviour
 			// 生成撿到的物品並附加到 handItemNow
 			for (int i = 0; i < holdItemCount; i++)
 			{
-				GameObject newItem = Instantiate(currentFoodTrigger.gameObject, handItemNow.transform.position, Quaternion.identity);
+				GameObject newItem = Instantiate(currentFood, handItemNow.transform.position, Quaternion.identity);
 				newItem.transform.SetParent(handItemNow.transform);
 				//newItem.transform.localScale = new Vector3(0.8f, 0.8f, 1);
 				newItem.GetComponent<Collider2D>().enabled = false; // 關閉碰撞避免干擾
@@ -335,11 +336,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void OnTriggerStay2D(Collider2D other)
 	{
-		if (other.CompareTag("Foods"))
-		{
-			currentFoodTrigger = other;
-		}
-		else if (other.CompareTag("Chair"))
+		if (other.CompareTag("Chair"))
 		{
 			if (!currentChairTriggers.Contains(other))
 				currentChairTriggers.Add(other);
@@ -347,11 +344,7 @@ public class PlayerMovement : MonoBehaviour
 	}
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (other == currentFoodTrigger)
-		{
-			currentFoodTrigger = null;
-		}
-		else if (currentChairTriggers.Contains(other))
+		if (currentChairTriggers.Contains(other))
 		{
 			currentChairTriggers.Remove(other);
 		}
