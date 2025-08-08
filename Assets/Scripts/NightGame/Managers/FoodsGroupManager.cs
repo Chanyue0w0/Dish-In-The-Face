@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
@@ -12,137 +11,138 @@ public class FoodsGroupManager : MonoBehaviour
 		Bread
 	}
 
-
-	[Header("-------- Setting ---------")]
-	[SerializeField] private float spawnInerval = 10f;      // 每幾秒生成（預設10秒）
-	[SerializeField] private int spawnFoodsCount = 10;           // 每次生成的數量（預設10份）
-
+	//[Header("-------- Setting ---------")]
+	//[SerializeField] private float spawnInerval = 10f;
+	//[SerializeField] private int spawnFoodsCount = 10;
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private GameObject[] foodsArray;         // 食物的 prefabs 陣列
-	//[SerializeField] private TextMeshPro[] foodsCountText;
+	[SerializeField] private GameObject[] foodsArray;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private Transform DishLoadingBar;
 
-	private int[] foodsCount; // 對應每種餐點目前的數量
-	//private float timer = 0f;
+	[Header("-------- Highlight ---------")]
+	[SerializeField] private GameObject yellowFrame;
+	[SerializeField] private Collider2D playerCollider; // 玩家自己的碰撞器
+	[SerializeField] private LayerMask foodLayerMask;   // 食物的 Layer
 
+	private Transform currentFoodTarget = null;
+	private int[] foodsCount;
+	private bool isPlayerInsideTrigger = false;
 
 	void Start()
 	{
 		foodsCount = new int[foodsArray.Length];
 		for (int i = 0; i < foodsCount.Length; i++)
 			foodsCount[i] = 10;
-		//UpdateAllFoodTexts(); // 初始化時也更新顯示
+
+		if (yellowFrame != null)
+			yellowFrame.SetActive(false);
 	}
 
-
-	//void Update()
-	//{
-	//	timer += Time.deltaTime;
-
-
-	//	// 更新讀條長度
-	//	UpdateLoadingBar(timer / spawnInerval);
-
-	//	if (timer >= spawnInerval)
-	//	{
-	//		RefillFoods();
-	//		//UpdateAllFoodTexts();
-	//		timer = 0f;
-	//	}
-	//}
-
-
-	private void RefillFoods()
+	void Update()
 	{
-		for (int i = 0; i < foodsCount.Length; i++)
+		if (!isPlayerInsideTrigger)
 		{
-			foodsCount[i] += spawnFoodsCount;
+			if (yellowFrame.activeSelf)
+				yellowFrame.SetActive(false);
+			return;
 		}
 
-		//UpdateAllFoodTexts(); // 每次補餐時自動更新顯示
-		//Debug.Log("補充餐點完成，每種餐點 +" + spawnCount);
-	}
-
-
-	//private void UpdateAllFoodTexts()
-	//{
-	//	for (int i = 0; i < foodsCount.Length; i++)
-	//	{
-	//		if (i < foodsCountText.Length)
-	//		{
-	//			foodsCountText[i].text = foodsCount[i].ToString();
-	//		}
-	//	}
-	//}
-
-	//private void UpdateLoadingBar(float ratio)
-	//{
-	//	// 限制 ratio 在 0~1 之間
-	//	ratio = Mathf.Clamp01(ratio);
-
-	//	// barFill 原本 scale 為 (1, 1, 1)，用 x 縮放控制進度
-	//	barFill.localScale = new Vector3(ratio, 1f, 1f);
-	//}
-
-
-	// 更改餐點數量 by index
-	public void SetFoodCount(int index, int count)
-	{
-		if (index >= 0 && index < foodsCount.Length)
+		// 滑鼠優先
+		Transform mouseTarget = GetHoveredFoodByMouse();
+		if (mouseTarget != null)
 		{
-			foodsCount[index] = count;
+			UpdateYellowFrame(mouseTarget);
+			return;
+		}
+
+		// 玩家碰撞為次要
+		Transform touchedTarget = GetTouchedFoodByPlayer();
+		if (touchedTarget != null)
+		{
+			UpdateYellowFrame(touchedTarget);
+		}
+		else
+		{
+			if (yellowFrame.activeSelf)
+				yellowFrame.SetActive(false);
 		}
 	}
 
-	// 更改餐點數量 by name
-	public void SetFoodCountByName(string name, int count)
+	// --- 滑鼠 hover 檢查 ---
+	private Transform GetHoveredFoodByMouse()
 	{
-		for (int i = 0; i < foodsArray.Length; i++)
+		Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+		// 只搜尋指定 Layer（通常是 Food）
+		Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos, foodLayerMask);
+		if (hit != null)
 		{
-			if (foodsArray[i].name == name)
+			return hit.transform;
+		}
+		return null;
+	}
+
+	// --- 玩家碰撞檢查 ---
+	private Transform GetTouchedFoodByPlayer()
+	{
+		foreach (GameObject food in foodsArray)
+		{
+			if (food == null) continue;
+
+			Collider2D foodCollider = food.GetComponent<Collider2D>();
+			if (foodCollider != null && foodCollider.isTrigger && foodCollider.IsTouching(playerCollider))
 			{
-				foodsCount[i] = count;
-				//foodsCountText[i].text = count.ToString();
-				break;
+				return food.transform;
 			}
 		}
+		return null;
 	}
 
-	// 更改每幾秒生成
-	//public void SetRefillInterval(float interval)
-	//{
-	//	spawnInerval = interval;
-	//}
+	// --- 移動黃框 ---
+	private void UpdateYellowFrame(Transform target)
+	{
+		currentFoodTarget = target;
 
-	//// 更改每次生成的數量
-	//public void SetRefillAmount(int amount)
-	//{
-	//	spawnFoodsCount = amount;
-	//}
+		if (!yellowFrame.activeSelf)
+			yellowFrame.SetActive(true);
 
+		yellowFrame.transform.position = currentFoodTarget.position;
+	}
+
+	// --- Trigger 檢查進出 ---
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other == playerCollider)
+			isPlayerInsideTrigger = true;
+	}
+
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if (other == playerCollider)
+		{
+			isPlayerInsideTrigger = false;
+			if (yellowFrame.activeSelf)
+				yellowFrame.SetActive(false);
+		}
+	}
+
+	// --- 隨機點餐（取得 Sprite）---
 	public Sprite OrderFoodRandomly()
 	{
-		// 確保有餐點可以選擇
 		if (foodsArray == null || foodsArray.Length == 0)
 			return null;
 
-		// 隨機選一個索引
 		int randomIndex = Random.Range(0, foodsArray.Length);
+		GameObject selectedFood = foodsArray[randomIndex];
 
-		// 取得對應的 prefab
-		GameObject selectedFood = foodsArray[randomIndex].transform.gameObject;
-
-		// 假設要找的 SpriteRenderer 是子物件的子物件
-		// 使用 GetComponentsInChildren 並略過自己本身
 		SpriteRenderer foodSR = selectedFood.GetComponent<SpriteRenderer>();
-
-		return foodSR.sprite;
+		return foodSR != null ? foodSR.sprite : null;
 	}
 
-	public void TakeFood(Sprite food, int count)
+	/// 回傳目前被 yellowFrame 鎖定的食物 GameObject，如果沒有則回傳 null
+	public GameObject GetCurrentDishObject()
 	{
-		
+		return currentFoodTarget != null ? currentFoodTarget.gameObject : null;
 	}
 }
