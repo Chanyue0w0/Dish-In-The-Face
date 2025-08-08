@@ -94,7 +94,7 @@ public class SettingMenu : MonoBehaviour
 	{
 		masterVolumeText.text = ((int)(masterSlider.value * 100f)).ToString();
 		PlayerPrefsManager.SetMasterVolume(masterSlider.value);
-		AudioManager.instance.masterVolume = masterSlider.value;
+		AudioManager.Instance.masterVolume = masterSlider.value;
 	}
 	public void OnClickMasterVolume(bool increase)
 	{
@@ -108,7 +108,7 @@ public class SettingMenu : MonoBehaviour
 	{
 		musicVolumeText.text = ((int)(musicSlider.value * 100f)).ToString();
 		PlayerPrefsManager.SetMusicVolume(musicSlider.value);
-		AudioManager.instance.musicVolume = musicSlider.value;
+		AudioManager.Instance.musicVolume = musicSlider.value;
 	}
 	public void OnClickMusicVolume(bool increase)
 	{
@@ -122,7 +122,7 @@ public class SettingMenu : MonoBehaviour
 	{
 		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
 		PlayerPrefsManager.SetSFXVolume(sfxSlider.value);
-		AudioManager.instance.SFXVolume = sfxSlider.value;
+		AudioManager.Instance.SFXVolume = sfxSlider.value;
 	}
 	public void OnClickSFXVolume(bool increase)
 	{

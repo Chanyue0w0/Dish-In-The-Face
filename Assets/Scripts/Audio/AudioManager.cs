@@ -27,15 +27,15 @@ public class AudioManager : MonoBehaviour
 	//private EventInstance ambienceEventInstance;
 	private EventInstance musicEventInstance;
 
-	public static AudioManager instance { get; private set; }
+	public static AudioManager Instance { get; private set; }
 
 	private void Awake()
 	{
-		if (instance != null)
+		if (Instance != null)
 		{
 			Debug.LogError("Found more than one Audio Manager in the scene.");
 		}
-		instance = this;
+		Instance = this;
 
 		eventInstances = new List<EventInstance>();
 		eventEmitters = new List<StudioEventEmitter>();
@@ -49,7 +49,7 @@ public class AudioManager : MonoBehaviour
 	private void Start()
 	{
 		//InitializeAmbience(FMODEvents.instance.ambience);
-		InitializeMusic(FMODEvents.instance.music);
+		InitializeMusic(FMODEvents.Instance.music);
 	}
 
 	private void Update()

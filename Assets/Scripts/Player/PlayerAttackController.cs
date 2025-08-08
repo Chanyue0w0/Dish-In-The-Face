@@ -32,13 +32,13 @@ public class PlayerAttackController : MonoBehaviour
 		{
 			case FoodsGroupManager.FoodType.Pie:
 				VFXPool.Instance.SpawnVFX("Cake", attackHitBox.transform.position, Quaternion.identity, 2f);
-				AudioManager.instance.PlayOneShot(FMODEvents.instance.pieAttack, transform.position);
+				AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 				StartCoroutine(PerformAttack());
 				break;
 
 			case FoodsGroupManager.FoodType.Beer:
 				VFXPool.Instance.SpawnVFX("Beer", attackHitBox.transform.position, Quaternion.identity, beerVFXDuration);
-				AudioManager.instance.PlayOneShot(FMODEvents.instance.beerAttack, transform.position);
+				AudioManager.Instance.PlayOneShot(FMODEvents.Instance.beerAttack, transform.position);
 				StartCoroutine(PerformAttack());
 				break;
 			default:

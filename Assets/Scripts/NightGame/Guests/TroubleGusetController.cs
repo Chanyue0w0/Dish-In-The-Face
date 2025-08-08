@@ -109,7 +109,7 @@ public class TroubleGusetController : MonoBehaviour
 		attackHitBox.SetActive(true);
 		VFXPool.Instance.SpawnVFX("Attack", attackHitBox.transform.position, Quaternion.identity, 1f);
 
-		AudioManager.instance.PlayOneShot(FMODEvents.instance.enemyAttack, transform.position);
+		AudioManager.Instance.PlayOneShot(FMODEvents.Instance.enemyAttack, transform.position);
 
 		Collider2D[] hits = new Collider2D[5];
 		ContactFilter2D filter = new ContactFilter2D();
