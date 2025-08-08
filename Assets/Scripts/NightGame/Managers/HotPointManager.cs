@@ -17,15 +17,21 @@ public class HotPointManager : MonoBehaviour
 	[SerializeField] private Sprite[] hotLevelSprites; // D~S 對應 0~4
 	[SerializeField] private Image hotPointImage;
 	[SerializeField] private Image hotPointFillBar;
+	[SerializeField] private Slider hotPointSlider;
+	
 	private float lastHotIncreaseTime;
 	private int currentLevelIndex;
-	
+	private float maxHotPointValue;
 
 	private void Start()
 	{
+		RoundManager.Instance.globalLightManager.SetLightGroupActive(0, false);
+
 		currentLevelIndex = GetHotLevelIndex();
 		currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
 		currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
+		
+		maxHotPointValue = stageMaxHotPoint[stageMaxHotPoint.Length - 1];
 		UpdateHotUI();
 	}
 
@@ -45,8 +51,13 @@ public class HotPointManager : MonoBehaviour
 			currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
 			currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
 
-			if (currentLevelIndex == stageMaxHotPoint.Length - 1) RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(true);
-			else RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(false);
+			if (currentLevelIndex == stageMaxHotPoint.Length - 2) RoundManager.Instance.globalLightManager.SetLightGroupActive(0, true);
+			else if (currentLevelIndex == stageMaxHotPoint.Length - 1) RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(true);
+			else
+			{
+				RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(false);
+				RoundManager.Instance.globalLightManager.SetLightGroupActive(0, false);
+			}
 		}
 
 		UpdateHotUI();
@@ -67,9 +78,12 @@ public class HotPointManager : MonoBehaviour
 			hotPointImage.sprite = hotLevelSprites[currentLevelIndex];
 			hotPointFillBar.sprite = hotLevelSprites[currentLevelIndex];
 		}
-		// 更新 fillAmount 基於該等級區間
-		float normalized = (hotPoint - currentMinHotPoint) / (currentMaxHotPoint - currentMinHotPoint);
-		hotPointFillBar.fillAmount = normalized;
+
+		//// 更新 fillAmount 基於該等級區間
+		//float normalized = (hotPoint - currentMinHotPoint) / (currentMaxHotPoint - currentMinHotPoint);
+		//hotPointFillBar.fillAmount = normalized;
+
+		hotPointSlider.value = (maxHotPointValue - hotPoint) / maxHotPointValue;
 	}
 
 	public int GetMoneyMultiplier()

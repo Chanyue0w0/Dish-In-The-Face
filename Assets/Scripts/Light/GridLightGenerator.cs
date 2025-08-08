@@ -45,6 +45,11 @@ public class GridLightGenerator : MonoBehaviour
 		ClearChildren();
 		generatedLights.Clear();
 
+
+		// 取得 Sorting Layer 與 Order（來源是 targetSprite）
+		int sortingLayerID = targetSprite.sortingLayerID;
+		int sortingOrder = targetSprite.sortingOrder;
+
 		// 取得 Sprite 邊界與尺寸
 		Bounds bounds = targetSprite.bounds;
 		Vector3 bottomLeft = bounds.min;
@@ -95,6 +100,10 @@ public class GridLightGenerator : MonoBehaviour
 					baseColor.a = Mathf.Clamp01(alpha);
 					light2D.color = baseColor;
 				}
+
+
+				// 套用 sorting layer 與 order
+				light2D.lightOrder = sortingOrder;
 
 				generatedLights.Add(light2D);
 			}
