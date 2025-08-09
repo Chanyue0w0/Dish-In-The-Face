@@ -27,6 +27,8 @@ public class GuestGroupManager : MonoBehaviour
 	[SerializeField] private GameObject normalGuestPrefab;
 	[SerializeField] private GameObject wanderGuestPrefab;
 	[SerializeField] private GameObject troubleGuestPrefab;
+	public Transform enterPoistion;
+	public Transform exitPoistion;
 
 	private float timer;
 	private float nextSpawnTime;

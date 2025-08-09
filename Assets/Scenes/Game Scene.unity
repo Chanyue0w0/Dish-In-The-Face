@@ -41905,6 +41905,8 @@ MonoBehaviour:
   normalGuestPrefab: {fileID: 3474513089845744578, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
   wanderGuestPrefab: {fileID: 7515934212084511566, guid: 493cd2c31a9f26946a0264fc6e39f21d, type: 3}
   troubleGuestPrefab: {fileID: 7394560797054130701, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+  enterPoistion: {fileID: 506713175}
+  exitPoistion: {fileID: 1829105584}
 --- !u!1 &761658582
 GameObject:
   m_ObjectHideFlags: 0
@@ -89090,9 +89092,10 @@ EdgeCollider2D:
   m_Points:
   - {x: 27.963717, y: -21.819853}
   - {x: 27.608501, y: -0.8191843}
-  - {x: -11.739676, y: -1.3659716}
-  - {x: -11.668883, y: -22.362093}
-  - {x: -6.423727, y: -22.012415}
+  - {x: -13.057601, y: -1.4538345}
+  - {x: -12.723224, y: -23.328573}
+  - {x: -6.072281, y: -22.978893}
+  - {x: 28.17827, y: -23.189785}
   - {x: 27.914688, y: -21.959724}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}

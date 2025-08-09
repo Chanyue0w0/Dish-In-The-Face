@@ -61,8 +61,8 @@ public class NormalGuestController : MonoBehaviour
 		timer = 0f;
 
 		// 起點與出口
-		startPosition = GameObject.Find("Enter Position").transform;
-		endPosition = GameObject.Find("Exit Position").transform;
+		startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+		endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 
 		// 嘗試找座位
 		targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
