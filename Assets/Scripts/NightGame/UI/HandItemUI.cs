@@ -22,7 +22,7 @@ public class HandItemUI : MonoBehaviour
 		}
 
         dishCountText.text = playerHandItem.childCount.ToString();
-        Sprite sprite = playerHandItem.GetChild(0)?.GetChild(0)?.GetComponent<SpriteRenderer>()?.sprite;
+        Sprite sprite = playerHandItem.GetChild(0)?.GetComponent<SpriteRenderer>()?.sprite;
         if (sprite == null)
         {
 			dishImage.gameObject.SetActive(false);
