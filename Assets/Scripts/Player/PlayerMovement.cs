@@ -36,8 +36,8 @@ public class PlayerMovement : MonoBehaviour
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
-	private Animator animator;
 	private PlayerInput playerInput;
+	private PlayerAnimationManager animationManager;
 
 	private Vector2 slideDirection;
 	private Vector2 moveInput;
@@ -52,8 +52,8 @@ public class PlayerMovement : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
-		animator = GetComponent<Animator>();
 		playerInput = GetComponent<PlayerInput>();
+		animationManager = GetComponent<PlayerAnimationManager>();
 	}
 	void Start()
 	{
@@ -66,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 	void Update()
 	{
 		//InputManager_Old();
-		UpdateAnimatorStates();
+		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
 	void FixedUpdate()
@@ -304,35 +304,6 @@ public class PlayerMovement : MonoBehaviour
 	}
 
 
-
-
-	void UpdateAnimatorStates()
-	{
-		if (isSlide)
-		{
-			animator.SetBool("isSlide", true);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isWalk", false);
-		}
-		else if (isDashing)
-		{
-			animator.SetBool("isDash", true);
-			animator.SetBool("isWalk", false);
-			animator.SetBool("isSlide", false);
-		}
-		else if (moveInput != Vector2.zero)
-		{
-			animator.SetBool("isWalk", true);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isSlide", false);
-		}
-		else
-		{
-			animator.SetBool("isWalk", false);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isSlide", false);
-		}
-	}
 
 	void OnTriggerStay2D(Collider2D other)
 	{
