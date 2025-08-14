@@ -16,7 +16,7 @@ public class TableConveyorBelt : MonoBehaviour
 	[Header("Ride Settings")]
 	[SerializeField, Min(0.01f)] private float speed = 20f;  // m/s
 	[SerializeField] private bool snapOnStart = true;
-	[SerializeField] private float exitSideOffset = 10f;
+	[SerializeField] private float exitSideOffset = 0.2f;
 
 	// === Boarding Surface ===
 	private Collider2D boardCollider; // 指定用來判斷「可以搭乘」的碰撞器（通常是桌面/輸送帶面）
@@ -154,6 +154,89 @@ public class TableConveyorBelt : MonoBehaviour
 		}
 		return bestS;
 	}
+
+	/// <summary>
+	/// 嘗試取消正在滑行的玩家，並沿「玩家輸入方向」把玩家瞬移到此桌（BoardCollider）外側
+	/// 距離為 exitSideOffset。若輸入方向與滑行方向相同，則不取消、繼續滑行。
+	/// </summary>
+	public bool TryCancelSlideAndEject(Rigidbody2D rb, float s, int slideDir, Vector2 inputDir, float sameDirDotThreshold = 0.75f)
+	{
+		if (rb == null) return false;
+
+		// 目前行進方向（依 slideDir 修正）
+		Vector2 tan = ((Vector2)EvaluateTangentByDistance(s));
+		if (tan.sqrMagnitude < 1e-6f) tan = Vector2.right;
+		tan.Normalize();
+		Vector2 travel = (slideDir >= 0) ? tan : -tan;
+
+		// 若玩家輸入與滑行方向同向 → 不取消
+		if (inputDir.sqrMagnitude > 1e-6f)
+		{
+			Vector2 inNorm = inputDir.normalized;
+			if (Vector2.Dot(inNorm, travel) >= Mathf.Clamp01(sameDirDotThreshold))
+				return false;
+		}
+
+		// 判斷帶子更偏上下或左右（決定退出軸）
+		bool beltIsVertical = Mathf.Abs(travel.y) >= Mathf.Abs(travel.x);
+
+		// 左法線（以「行進方向」為準），供無輸入時的預設退場方向
+		Vector2 leftOfTravel = ((Vector2)EvaluateLeftNormalByDistance(s)).normalized;
+		if (slideDir < 0) leftOfTravel = -leftOfTravel; // 反向行進時，左/右相反
+
+		// 計算退出方向（僅在垂直軸上取 +/-1）
+		Vector2 exitDir;
+		if (beltIsVertical)
+		{
+			// 往左右退出：優先用玩家 input.x，否則用左側
+			float signX = Mathf.Abs(inputDir.x) >= 0.2f ? Mathf.Sign(inputDir.x)
+						: (Mathf.Abs(leftOfTravel.x) > 1e-6f ? Mathf.Sign(leftOfTravel.x) : 1f);
+			exitDir = new Vector2(signX, 0f);
+		}
+		else
+		{
+			// 往上下退出：優先用玩家 input.y，否則用左側
+			float signY = Mathf.Abs(inputDir.y) >= 0.2f ? Mathf.Sign(inputDir.y)
+						: (Mathf.Abs(leftOfTravel.y) > 1e-6f ? Mathf.Sign(leftOfTravel.y) : 1f);
+			exitDir = new Vector2(0f, signY);
+		}
+
+		// 目標點：取 BoardCollider 的 AABB 外緣上，沿 exitDir 的最靠外點，再外推 ExitSideOffset
+		float margin = Mathf.Max(0.01f, ExitSideOffset);
+		Vector2 target;
+
+		if (BoardCollider)
+		{
+			Bounds b = BoardCollider.bounds;
+
+			if (beltIsVertical)
+			{
+				// 水平退出：x 取 min/max，y 夾在桌面高度範圍內，避免多餘斜跳
+				float x = exitDir.x >= 0f ? b.max.x : b.min.x;
+				float y = Mathf.Clamp(rb.position.y, b.min.y, b.max.y);
+				Vector2 support = new Vector2(x, y);
+				target = support + exitDir * margin;
+			}
+			else
+			{
+				// 垂直退出：y 取 min/max，x 夾在桌面寬度範圍內
+				float y = exitDir.y >= 0f ? b.max.y : b.min.y;
+				float x = Mathf.Clamp(rb.position.x, b.min.x, b.max.x);
+				Vector2 support = new Vector2(x, y);
+				target = support + exitDir * margin;
+			}
+		}
+		else
+		{
+			// 沒有 BoardCollider：從當前曲線位置外推
+			Vector2 p = EvaluatePositionByDistance(s);
+			target = p + exitDir * margin;
+		}
+
+		rb.MovePosition(target);
+		return true;
+	}
+
 
 	/// 根據「從 s 出發的距離增量 ds」（可正可負）得到新的 s（自動處理 loop）
 	public float AdvanceByDistance(float s, float ds)
