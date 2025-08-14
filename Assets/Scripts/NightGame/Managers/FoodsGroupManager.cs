@@ -2,15 +2,6 @@ using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
 {
-	public enum FoodType
-	{
-		Beer,
-		Cake,
-		Pizza,
-		Pie,
-		Bread
-	}
-
 	//[Header("-------- Setting ---------")]
 	//[SerializeField] private float spawnInerval = 10f;
 	//[SerializeField] private int spawnFoodsCount = 10;
