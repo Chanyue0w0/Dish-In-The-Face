@@ -1,11 +1,38 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class NightGameUIButtonController : MonoBehaviour
 {
-    public void OnClickRestart()
+	[SerializeField] GameObject settingPanel;
+	public void OnClickRestart()
     {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-		Time.timeScale = 1.0f;
+	}
+	private void Update()
+	{
+	}
+	public void OnClickSetting()
+	{
+		settingPanel.SetActive(true);
+	}
+
+	public void OnClickContinue()
+	{
+		RoundManager.Instance.GameContinue();
+	}
+
+	public void InputESC(InputAction.CallbackContext context)
+	{
+		if (context.started)
+		{
+			if (settingPanel.activeSelf)
+			{
+				settingPanel.SetActive(false);
+				return;
+			}
+
+			RoundManager.Instance.GameStop();
+		}
 	}
 }

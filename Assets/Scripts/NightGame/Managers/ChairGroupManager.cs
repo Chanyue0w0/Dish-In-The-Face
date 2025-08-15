@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class ChairGroupManager : MonoBehaviour
@@ -11,7 +10,6 @@ public class ChairGroupManager : MonoBehaviour
 
 	[Header("Reference")]
 	[SerializeField] private GameObject coinPrefab;
-	[SerializeField] private RoundManager roundManager;
 	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
 
 	private void Awake()
@@ -35,46 +33,45 @@ public class ChairGroupManager : MonoBehaviour
 		}
 	}
 
-	///// 隨機尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
-	//public Transform FindEmptyChair()
-	//{
-	//	// 建立一個清單來存放所有尚未被佔用的椅子
-	//	List<Transform> availableChairs = new List<Transform>();
-
-	//	foreach (Transform chair in chairList)
-	//	{
-	//		if (!occupiedChairs.Contains(chair))
-	//			availableChairs.Add(chair);
-	//	}
-
-	//	// 若沒有空椅子，回傳 null
-	//	if (availableChairs.Count == 0)
-	//		return null;
-
-	//	// 隨機選取其中一張椅子
-	//	Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
-
-	//	// 標記為已佔用
-	//	occupiedChairs.Add(selectedChair);
-
-	//	return selectedChair;
-	//}
-
-	/// 依序尋找一個空的椅子並標記為已佔用。找不到則回傳 null。
+	/// 隨機尋找一個空的椅子並標記為已佔用(隨機)。找不到則回傳 null。
 	public Transform FindEmptyChair()
 	{
+		// 建立一個清單來存放所有尚未被佔用的椅子
+		List<Transform> availableChairs = new List<Transform>();
+
 		foreach (Transform chair in chairList)
 		{
 			if (!occupiedChairs.Contains(chair))
-			{
-				occupiedChairs.Add(chair);
-				return chair;
-			}
+				availableChairs.Add(chair);
 		}
 
 		// 若沒有空椅子，回傳 null
-		return null;
+		if (availableChairs.Count == 0)
+			return null;
+
+		// 隨機選取其中一張椅子
+		Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
+
+		// 標記為已佔用
+		occupiedChairs.Add(selectedChair);
+		return selectedChair;
 	}
+
+	/// 依序尋找一個空的椅子並標記為已佔用(照順序)。找不到則回傳 null。
+	//public Transform FindEmptyChair()
+	//{
+	//	foreach (Transform chair in chairList)
+	//	{
+	//		if (!occupiedChairs.Contains(chair))
+	//		{
+	//			occupiedChairs.Add(chair);
+	//			return chair;
+	//		}
+	//	}
+
+	//	// 若沒有空椅子，回傳 null
+	//	return null;
+	//}
 
 	/// 當客人離席時釋放椅子。
 	public void ReleaseChair(Transform targetChair)
@@ -85,10 +82,21 @@ public class ChairGroupManager : MonoBehaviour
 		}
 	}
 
+	public void EnablePullDishSignal(Transform chair, GameObject handItem, bool onEnable)
+	{
+		if (chair == null || chair.childCount < 2) return;
+
+		Transform chairItem = chair.transform.GetChild(0);
+		Sprite foodSprite = handItem?.transform?.GetComponent<SpriteRenderer>()?.sprite;
+		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
+
+		npc?.EnablePullIcon(foodSprite, onEnable);
+	}
+
 	public void PullDownChairItem(Transform chair, GameObject handItem)
 	{
 		Transform chairItem = chair.transform.GetChild(0); 
-		Sprite foodSprite = handItem.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>().sprite;
 
 		if (chair.childCount < 2) return;
 		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
@@ -96,6 +104,8 @@ public class ChairGroupManager : MonoBehaviour
 		// 回報已上餐
 		if (npc.IsReceiveFood(foodSprite))
 		{
+			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pullDownDish, transform.position);
+
 			// 放置餐點
 			//handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
 			//handItem.transform.localPosition = Vector3.zero;
@@ -107,7 +117,7 @@ public class ChairGroupManager : MonoBehaviour
 			newItem.transform.localPosition = Vector3.zero;
 
 			// 上餐成功增加熱度
-			roundManager.PullDownDishSuccess();
+			RoundManager.Instance.PullDownDishSuccess();
 		}
 	}
 

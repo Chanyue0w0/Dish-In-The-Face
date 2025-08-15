@@ -6,16 +6,21 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
 	[Header("-------- Move Setting ---------")]
+	[SerializeField] private bool isSlideAutoPullDish = false;
 	[SerializeField] private float moveSpeed = 5f;
 	[SerializeField] private int holdItemCount = 10;
+
 	[Header("Dash")]
-	[SerializeField] private float dashSpeed = 10f;           // 閃避時的速度
-	[SerializeField] private float dashDistance = 2f;         // 閃避距離（位移距離 = dashSpeed * dashDuration）
-	[SerializeField] private float dashCooldown = 0.1f;       // 閃避冷卻時間
+	[SerializeField] private float dashSpeed = 10f;
+	[SerializeField] private float dashDistance = 2f;
+	[SerializeField] private float dashCooldown = 0.1f;
 	[SerializeField] private float dashVirbation = 0.7f;
-	[SerializeField] private List<string> passThroughTags;    // 閃避時可穿過的 tag
-	[Header("Slide")]
-	[SerializeField] private float slideSpeed = 5f; // 玩家滑過桌子的速度，可調整
+	[SerializeField] private List<string> passThroughTags;
+
+	// === 新增：滑行中斷設定 ===
+	[Header("Slide Interrupt")]
+	[SerializeField] private bool canInterruptSlide = true;           // 是否可中斷滑行
+	[SerializeField, Min(0f)] private float slideInterruptDelay = 0f; // 開始滑行後多久才可中斷（秒）
 
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
@@ -27,46 +32,47 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private PlayerAttackController attackController;
 	[SerializeField] private HandItemUI handItemUI;
 	[Header("Object")]
-	[SerializeField] private GameObject handItemNow; // 玩家手上的道具顯示
+	[SerializeField] private GameObject handItemNow;
 
-	private Collider2D currentFoodTrigger;   // 當前接觸到的食物
-	private Collider2D currentTableCollider; // 當前接觸到的桌子
-	private List<Collider2D> currentChairTriggers = new List<Collider2D>(); // 當前接觸到的椅子
+	private Collider2D currentTableCollider;
+	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
 
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
-	private Animator animator;
 	private PlayerInput playerInput;
+	private PlayerAnimationManager animationManager;
 
-	private Vector2 slideDirection;
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
 
-	//private float dashTimer = 0f;
 	private float dashDuration;
 	private float lastDashTime = -999f;
+
+	// 輸送帶滑行進度
+	private float slideS;
+	private int slideDir;
+	private bool slideCancelRequested = false; // 滑行中再次按 Dash => 要離開
+	private float slideStartTime;              // ★ 新增：紀錄開始滑行的時間
 
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
-		animator = GetComponent<Animator>();
 		playerInput = GetComponent<PlayerInput>();
+		animationManager = GetComponent<PlayerAnimationManager>();
 	}
 	void Start()
 	{
 		isDashing = false;
-		// 計算持續時間 = 跑完 dashDistance 所需時間
 		dashDuration = dashDistance / dashSpeed;
-		handItemUI.ChangeHandItemUI();
+		if (handItemUI) handItemUI.ChangeHandItemUI();
 	}
 
 	void Update()
 	{
-		//InputManager_Old();
-		UpdateAnimatorStates();
+		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
 	void FixedUpdate()
@@ -76,88 +82,61 @@ public class PlayerMovement : MonoBehaviour
 
 	void HandleMovementInput(float moveX, float moveY)
 	{
-		//Debug.Log(moveX.ToString() + " " + moveY.ToString());
 		moveInput = new Vector2(moveX, moveY).normalized;
 
-		if (isDashing)
-		{
-			//Debug.Log("is dashing");
-			moveVelocity = moveInput * dashSpeed;
-		}
-		else
-		{
-			moveVelocity = moveInput * moveSpeed;
-		}
-
+		if (isDashing) moveVelocity = moveInput * dashSpeed;
+		else moveVelocity = moveInput * moveSpeed;
 
 		if (moveX != 0)
-		{
 			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
-		}
 	}
 
 	void Move()
 	{
+		if (isSlide) return; // 滑行由 Slide() 接管
 		rb.velocity = moveVelocity;
 	}
 
-	void InputManager_Old()
-	{
-		HandleMovementInput(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
-		// 撿取物品或使用
-		if (Input.GetButtonDown("Interact"))
-		{
-			Interact();
-		}
-
-		// 攻擊或投擲
-		if (Input.GetButtonDown("Fire1"))
-		{
-			Attack();
-		}
-
-		// 閃避：加速並穿過 Table
-		if ((Input.GetAxis("Dash") > 0f || Input.GetButtonDown("Dash")))
-		{
-			StartDash();
-		}
-	}
-
-	// new Input System
+	// ===== New Input System =====
 	public void InputMovement(InputAction.CallbackContext context)
 	{
-		//Debug.Log(context);
 		Vector2 move = context.ReadValue<Vector2>();
 		HandleMovementInput(move.x, move.y);
 	}
 	public void InputAttack(InputAction.CallbackContext context)
 	{
-		//Debug.Log(context);
-		if (context.started)
-			Attack();
+		if (context.started) Attack();
 	}
 	public void InputDash(InputAction.CallbackContext context)
 	{
-		//Debug.Log(context);
-		if (context.started)
-			StartDash();
+		if (context.started) StartDash();
 	}
 	public void InputInteract(InputAction.CallbackContext context)
 	{
-		//Debug.Log(context);
-		if (context.started)
-			Interact();
+		if (context.started) Interact();
 	}
+
+	// ===== Actions =====
 	void Attack()
 	{
-		handItemUI.ChangeHandItemUI();
+		if (handItemUI) handItemUI.ChangeHandItemUI();
 		attackController.IsAttackSuccess();
 	}
+
 	void StartDash()
 	{
-		if (isDashing || Time.time - lastDashTime < dashCooldown) return;
+		// ★ 若正在滑行：依允許與延遲判斷是否能中斷
+		if (isSlide)
+		{
+			if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
+			{
+				slideCancelRequested = true;
+			}
+			// 不允許或尚未到可中斷時間 → 直接忽略這次按鍵
+			return;
+		}
 
+		if (isDashing || Time.time - lastDashTime < dashCooldown) return;
 		StartCoroutine(PerformDash());
 	}
 
@@ -167,51 +146,22 @@ public class PlayerMovement : MonoBehaviour
 		lastDashTime = Time.time;
 		RumbleManager.Instance.RumbleContinuous(dashVirbation, dashVirbation);
 
-		//// 開始穿越指定的 tag
-		//Collider2D[] colliders = GameObject.FindObjectsOfType<Collider2D>();
-		//foreach (var col in colliders)
-		//{
-		//	foreach (string tag in passThroughTags)
-		//	{
-		//		if (col.CompareTag(tag))
-		//		{
-		//			Physics2D.IgnoreCollision(playerCollider, col, true);
-		//		}
-		//	}
-		//}
-
-
-		// Dash 持續時間內保持 dash 速度
 		float elapsed = 0f;
 		while (elapsed < dashDuration)
 		{
 			moveVelocity = moveInput * dashSpeed;
 
-			// 偵測碰撞到桌子
+			// 撞到桌面 + 有輸送帶 => 轉入滑行
 			if (currentTableCollider != null)
 			{
-				yield return StartCoroutine(Slide(currentTableCollider));
-				break; // 結束 dash
+				yield return StartCoroutine(Slide());
+				break;
 			}
 
 			ShadowPool.instance.GetFormPool();
 			yield return null;
 			elapsed += Time.deltaTime;
 		}
-
-
-
-		//// Dash 結束，恢復碰撞
-		//foreach (var col in colliders)
-		//{
-		//	foreach (string tag in passThroughTags)
-		//	{
-		//		if (col != null && col.CompareTag(tag))
-		//		{
-		//			Physics2D.IgnoreCollision(playerCollider, col, false);
-		//		}
-		//	}
-		//}
 
 		isDashing = false;
 		RumbleManager.Instance.StopRumble();
@@ -221,124 +171,128 @@ public class PlayerMovement : MonoBehaviour
 	// 撿取物品或使用裝置
 	void Interact()
 	{
-		handItemUI.ChangeHandItemUI();
+		if (handItemUI) handItemUI.ChangeHandItemUI();
 
-		if (currentFoodTrigger != null)
+		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
+		if (currentFood != null)
 		{
-			//Debug.Log("get foood");
-
-			// 清空手上已有物品
 			foreach (Transform child in handItemNow.transform)
-			{
 				Destroy(child.gameObject);
-			}
 
-			// 生成撿到的物品並附加到 handItemNow
 			for (int i = 0; i < holdItemCount; i++)
 			{
-				GameObject newItem = Instantiate(currentFoodTrigger.gameObject, handItemNow.transform.position, Quaternion.identity);
+				GameObject newItem = Instantiate(currentFood, handItemNow.transform.position, Quaternion.identity);
 				newItem.transform.SetParent(handItemNow.transform);
-				newItem.transform.localScale = new Vector3(0.8f, 0.8f, 1);
-				newItem.GetComponent<Collider2D>().enabled = false; // 關閉碰撞避免干擾
+				newItem.GetComponent<Collider2D>().enabled = false;
 			}
 		}
-
 		PullDownDish();
 	}
-
 
 	private void PullDownDish()
 	{
 		if (currentChairTriggers.Count > 0 && handItemNow.transform.childCount > 0)
 		{
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
-
 			foreach (var chair in currentChairTriggers)
-			{
 				chairGroupManager.PullDownChairItem(chair.transform, item);
-			}
 		}
 	}
 
-	private IEnumerator Slide(Collider2D tableCol)
+	/// 沿輸送帶滑行（手動下車需符合允許 & 延遲；不取消移動）
+	private IEnumerator Slide()
 	{
 		isSlide = true;
 		isDashing = false;
+		slideCancelRequested = false;     // 進入滑行先清旗標
+		slideStartTime = Time.time;       // ★ 紀錄滑行開始時間
 		RumbleManager.Instance.StopRumble();
 
-		Physics2D.IgnoreCollision(playerCollider, tableCol, true);
+		TableConveyorBelt belt = currentTableCollider.GetComponent<TableConveyorBelt>();
 
-		Bounds bounds = tableCol.bounds;
-		Vector2 start, end;
+		// 滑行期間避免卡邊
+		if (belt.BoardCollider && playerCollider)
+			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, true);
 
-		if (transform.position.y >= bounds.center.y)
+		// 初始起點與方向（靠近頭/尾）
+		belt.DecideStartAndDirection(transform.position, out slideS, out slideDir);
+
+		// 吸附起點
+		if (belt.SnapOnStart)
 		{
-			start = new Vector2(bounds.center.x, bounds.max.y);
-			end = new Vector2(bounds.center.x, bounds.min.y);
-		}
-		else
-		{
-			start = new Vector2(bounds.center.x, bounds.min.y);
-			end = new Vector2(bounds.center.x, bounds.max.y);
-		}
-
-		slideDirection = (end - start).normalized;
-		float distance = Vector2.Distance(start, end);
-		float duration = distance / slideSpeed;
-		float elapsedTime = 0f;
-
-		while (elapsedTime < duration)
-		{
-			PullDownDish();
-			elapsedTime += Time.deltaTime;
-			transform.position = Vector2.Lerp(start, end, elapsedTime / duration);
-			yield return null;
+			Vector3 snap = belt.EvaluatePositionByDistance(slideS);
+			rb.position = snap;
+			rb.velocity = Vector2.zero;
+			rb.angularVelocity = 0f;
 		}
 
-		Physics2D.IgnoreCollision(playerCollider, tableCol, false);
+		var waiter = new WaitForFixedUpdate();
+		bool stop = false;
+
+		while (!stop)
+		{
+			// ★ 手動下車：需同時符合「允許中斷」與「達到延遲」才會執行
+			if (slideCancelRequested)
+			{
+				slideCancelRequested = false; // consume 一次
+				if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
+				{
+					// 用當前 moveInput 作為方向鍵，傳入 s 與 slideDir
+					bool cancelled = belt.TryCancelSlideAndEject(rb, slideS, slideDir, moveInput);
+					if (cancelled)
+					{
+						// 已經瞬移到桌外，不要再跑滑行，直接收尾
+						break;
+					}
+					// 未取消（方向同向）→ 繼續滑行
+				}
+				// 不允許或未到時間 → 繼續滑行
+			}
+
+			if (isSlideAutoPullDish) PullDownDish();
+
+			// 推進並移動
+			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
+			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
+			rb.MovePosition(nextPos);
+
+			// 面向（可選）
+			Vector3 tan = belt.EvaluateTangentByDistance(slideS);
+			if (tan.x != 0f)
+				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+
+			// 非 loop：端點自動下車
+			if (!belt.Loop && (Mathf.Approximately(slideS, 0f) || Mathf.Approximately(slideS, belt.TotalLength)))
+				stop = true;
+
+			yield return waiter;
+		}
+
+		// 恢復碰撞
+		if (belt.BoardCollider && playerCollider)
+			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, false);
 
 		isSlide = false;
-		moveVelocity = Vector2.zero;
+
+		// 收尾維持玩家當前輸入的移動
+		moveVelocity = moveInput * moveSpeed;
 	}
 
-
-
-
-	void UpdateAnimatorStates()
+	// ===== 椅子觸發維護 =====
+	void OnTriggerEnter2D(Collider2D other)
 	{
-		if (isSlide)
+		if (other.CompareTag("Chair"))
 		{
-			animator.SetBool("isSlide", true);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isWalk", false);
-		}
-		else if (isDashing)
-		{
-			animator.SetBool("isDash", true);
-			animator.SetBool("isWalk", false);
-			animator.SetBool("isSlide", false);
-		}
-		else if (moveInput != Vector2.zero)
-		{
-			animator.SetBool("isWalk", true);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isSlide", false);
-		}
-		else
-		{
-			animator.SetBool("isWalk", false);
-			animator.SetBool("isDash", false);
-			animator.SetBool("isSlide", false);
+			if (handItemNow.transform.childCount > 0)
+			{
+				GameObject item = handItemNow.transform.GetChild(0).gameObject;
+				chairGroupManager.EnablePullDishSignal(other.transform, item, true);
+			}
 		}
 	}
-
 	void OnTriggerStay2D(Collider2D other)
 	{
-		if (other.CompareTag("Foods"))
-		{
-			currentFoodTrigger = other;
-		}
-		else if (other.CompareTag("Chair"))
+		if (other.CompareTag("Chair"))
 		{
 			if (!currentChairTriggers.Contains(other))
 				currentChairTriggers.Add(other);
@@ -346,17 +300,15 @@ public class PlayerMovement : MonoBehaviour
 	}
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (other == currentFoodTrigger)
+		if (other.CompareTag("Chair"))
 		{
-			currentFoodTrigger = null;
-		}
-		else if (currentChairTriggers.Contains(other))
-		{
-			currentChairTriggers.Remove(other);
+			chairGroupManager.EnablePullDishSignal(other.transform, null, false);
+			if (currentChairTriggers.Contains(other))
+				currentChairTriggers.Remove(other);
 		}
 	}
 
-
+	// ===== 桌面/輸送帶接觸維護（方式 A：實體碰撞）=====
 	void OnCollisionStay2D(Collision2D collision)
 	{
 		if (collision.collider.CompareTag("Table"))
@@ -372,51 +324,34 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	// 公開方法：設定 dashSpeed
-	public void SetDashSpeed(float newSpeed)
-	{
-		dashSpeed = newSpeed;
-		dashDuration = dashDistance / dashSpeed; // 更新持續時間
-	}
-
-	// 公開方法：設定 dashDistance
-	public void SetDashDistance(float newDistance)
-	{
-		dashDistance = newDistance;
-		dashDuration = dashDistance / dashSpeed; // 更新持續時間
-	}
-
-	// 公開方法：設定 dashCooldown
-	public void SetDashCooldown(float newCooldown)
-	{
-		dashCooldown = newCooldown;
-	}
+	// ===== 對外 API =====
+	public void SetDashSpeed(float newSpeed) { dashSpeed = newSpeed; dashDuration = dashDistance / dashSpeed; }
+	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
+	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
 
 	public void DestoryFirstItem()
 	{
-		Destroy(handItemNow.transform.GetChild(0).gameObject);
+		if (handItemNow.transform.childCount > 0)
+			Destroy(handItemNow.transform.GetChild(0).gameObject);
 	}
 
-	/// 回傳滑行方向
+	/// 以當前切線 y 判斷上/下（維持原有 API）
 	public int GetSlideDirection()
 	{
-		if (!isSlide) return 0;
-
-		if (slideDirection.y > 0.1f)
-			return 1;   // 往上滑
-		else if (slideDirection.y < -0.1f)
-			return -1;  // 往下滑
-		else
-			return 0;   // 水平滑 or 幾乎沒動
+		TableConveyorBelt belt = currentTableCollider?.GetComponent<TableConveyorBelt>();
+		if (!isSlide || belt == null) return 0;
+		Vector3 t = belt.EvaluateTangentByDistance(slideS);
+		if (t.y > 0.1f) return 1;
+		if (t.y < -0.1f) return -1;
+		return 0;
 	}
 
-	public bool IsPlayerSlide()
-	{
-		return isSlide;
-	}
+	public bool IsPlayerSlide() => isSlide;
+	public bool IsPlayerDash() => isDashing;
 
-	public bool IsPlayerDash()
+	// （可選）對外讀取目前是否可中斷
+	public bool IsSlideInterruptibleNow()
 	{
-		return isDashing;
+		return isSlide && canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay;
 	}
 }

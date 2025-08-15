@@ -10,15 +10,10 @@ public class CoinOnTable : MonoBehaviour
 	[Header("Reference")]
 	[SerializeField] private GameObject coinVFXPrefab; // 爆金幣特效 prefab
 
-	[SerializeField] private RoundManager roundManager;
 	private bool isCollected = false; // 防止多次觸發
 
 	private int coinCount;
 
-	public void Awake()
-	{
-		roundManager = GameObject.Find("Rround Manager").GetComponent<RoundManager>();
-	}
 
 	/// 在生成後設定金幣數量
 	public void SetCoinCount(int value)
@@ -33,6 +28,8 @@ public class CoinOnTable : MonoBehaviour
 
 		if (coinVFXPrefab != null)
 		{
+			// 生成音效
+			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.coinCollected, transform.position);
 			// 生成特效
 			GameObject vfx = Instantiate(coinVFXPrefab, transform.position, Quaternion.identity);
 
@@ -46,7 +43,7 @@ public class CoinOnTable : MonoBehaviour
 			Destroy(vfx, vfxDuration);
 		}
 
-		roundManager.GetCoin(coinCount);
+		RoundManager.Instance.GetCoin(coinCount);
 		// 刪除本物件
 		Destroy(gameObject);
 	}

@@ -759,6 +759,7 @@ MonoBehaviour:
   attackHitBox: {fileID: 399954064}
   cakeVFX: {fileID: 351022916506592422, guid: ec4a11eff311a00478211208a5ed3f37, type: 3}
   BeerVFX: {fileID: 4818930366549204378, guid: a0a7a86f411893f4eb7dd8ae5ef9d357, type: 3}
+  playerMovement: {fileID: 0}
 --- !u!114 &168717647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,7 +774,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHP: 3
   attackPower: 1
-  endPane: {fileID: 0}
   healthPointUIControl: {fileID: 0}
   getHurtVFX: {fileID: 1734798603044744806, guid: 5529b62ea6c622e45bd67dc98f9fb860, type: 3}
 --- !u!114 &168717648
@@ -788,17 +788,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9331e650fc46340408c41a7ce0453a3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isSlideAutoPullDish: 0
   moveSpeed: 5
+  holdItemCount: 10
   dashSpeed: 15
   dashDistance: 5
   dashCooldown: 1
+  dashVirbation: 0.7
   passThroughTags:
   - Table
   - Enemy
   - NormalGuest
+  slideSpeed: 5
   isDashing: 0
-  tableGroupManager: {fileID: 0}
+  isSlide: 0
+  chairGroupManager: {fileID: 0}
   attackController: {fileID: 168717646}
+  handItemUI: {fileID: 0}
   handItemNow: {fileID: 1783707412}
 --- !u!212 &168717649
 SpriteRenderer:
@@ -839,7 +845,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1636660765
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 72de0c64f2c6a498096698322c976a67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -19018,7 +19024,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -897089489
-  m_SortingLayer: 5
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -682,8 +682,8 @@ MonoBehaviour:
   switchSettingsMigration: 1
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: ../../../../Documents/FMOD Studio/DishInTheFace/DishInTheFace.fspro
-  sourceBankPath: ../../../../Documents/FMOD Studio/DishInTheFace/Build
+  sourceProjectPath: FMODProject/FMODProject.fspro
+  sourceBankPath: FMODProject/Build
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 1
   ShowBankRefreshWindow: 1
@@ -692,8 +692,8 @@ MonoBehaviour:
   AutomaticSampleLoading: 0
   EncryptionKey: 
   ImportType: 0
-  TargetAssetPath: FMODBanks
-  TargetBankFolder: 
+  TargetAssetPath: ../FMODProject/Build/Desktop
+  TargetBankFolder: Assest/StreamingAssets
   EventLinkage: 0
   LoggingLevel: 2
   SpeakerModeSettings: []

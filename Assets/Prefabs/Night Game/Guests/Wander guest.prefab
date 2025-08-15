@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4605954416490134240}
   - component: {fileID: 2274923271906761723}
   - component: {fileID: 5464492851791182571}
+  - component: {fileID: 5630417034037897178}
   m_Layer: 0
   m_Name: Wander guest
   m_TagString: NormalGuest
@@ -32,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.28, y: -5.27, z: 0}
-  m_LocalScale: {x: 0.25130385, y: 0.25130385, z: 0.25130385}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -76,9 +77,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -50557067
-  m_SortingLayer: 3
+  m_SortingLayer: 5
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2a20ae481af6131439f913866a241852, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fc7220ef8a9915b48b1f9953c806675c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -108,6 +109,8 @@ MonoBehaviour:
   stuckCheckInterval: 1.5
   stuckThreshold: 0.05
   retryDelay: 2
+  minStayDuration: 15
+  maxStayDuration: 30
   obstacles:
   - {fileID: 875495723434509806, guid: 39902337e0f57de42adf0ecc5092b9be, type: 3}
   - {fileID: 184884488866778669, guid: cabb475c59a24af4a87d2805342699ba, type: 3}
@@ -174,7 +177,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.21, y: 5.93}
+    oldSize: {x: 3.45, y: 2.64}
     newSize: {x: 5.13, y: 5.91}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -240,3 +243,15 @@ NavMeshAgent:
   m_BaseOffset: 2.9549997
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &5630417034037897178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7515934212084511566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f75fa76dd766cde4295c0e52d221951a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
