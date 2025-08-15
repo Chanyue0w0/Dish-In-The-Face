@@ -279,6 +279,17 @@ public class PlayerMovement : MonoBehaviour
 	}
 
 	// ===== 椅子觸發維護 =====
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.CompareTag("Chair"))
+		{
+			if (handItemNow.transform.childCount > 0)
+			{
+				GameObject item = handItemNow.transform.GetChild(0).gameObject;
+				chairGroupManager.EnablePullDishSignal(other.transform, item, true);
+			}
+		}
+	}
 	void OnTriggerStay2D(Collider2D other)
 	{
 		if (other.CompareTag("Chair"))
@@ -289,8 +300,12 @@ public class PlayerMovement : MonoBehaviour
 	}
 	void OnTriggerExit2D(Collider2D other)
 	{
-		if (currentChairTriggers.Contains(other))
-			currentChairTriggers.Remove(other);
+		if (other.CompareTag("Chair"))
+		{
+			chairGroupManager.EnablePullDishSignal(other.transform, null, false);
+			if (currentChairTriggers.Contains(other))
+				currentChairTriggers.Remove(other);
+		}
 	}
 
 	// ===== 桌面/輸送帶接觸維護（方式 A：實體碰撞）=====

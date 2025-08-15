@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,7 +16,11 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private float attackRange = 1.5f;
 	[SerializeField] private LayerMask playerLayer;
 
+
+	[Header("-------- Appearance --------")]
+	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
 	[Header("----- Reference -----")]
+	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
@@ -47,6 +52,13 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void OnEnable()
 	{
+		// 隨機外觀
+		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
+		{
+			int idx = Random.Range(0, guestAppearanceList.Count);
+			guestSpriteRenderer.sprite = guestAppearanceList[idx];
+		}
+
 		// 每次從物件池取出時重置狀態
 		player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
