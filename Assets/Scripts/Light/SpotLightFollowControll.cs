@@ -9,6 +9,9 @@ public class SpotlightFollower : MonoBehaviour
 	[SerializeField] private bool followPosition = true;
 
 	[Header("Offset")]
+	[Tooltip("始終維持在目標上方多少距離（世界座標的 +Y 方向）。若停用，則使用 initialLocalPosition + positionOffset。")]
+	[SerializeField] private bool useAboveDistance = true;
+	[SerializeField] private float aboveDistance = 1f;     // 距離目標上方多少距離（世界座標）
 	[SerializeField] private Vector3 positionOffset = Vector3.zero;
 
 	private Light2D light2D;
@@ -21,16 +24,29 @@ public class SpotlightFollower : MonoBehaviour
 	private void Awake()
 	{
 		light2D = GetComponent<Light2D>();
+
 		if (target != null)
 		{
-			initialLocalPosition = transform.position - target.position;
+			// 若使用上方距離，預設 initialLocalPosition 以 aboveDistance 為主；
+			// 否則記錄與目標當下的相對位置。
+			initialLocalPosition = useAboveDistance
+				? Vector3.up * aboveDistance
+				: (transform.position - target.position);
+
 			targetSprite = target.GetComponent<SpriteRenderer>();
 		}
+
 		initialRotation = transform.rotation;
 
 		// 記錄啟動時 Outer - Inner 半徑差距
 		outerOffsetDistance = light2D.pointLightOuterRadius - light2D.pointLightInnerRadius;
 		outerOffsetDistance = Mathf.Max(outerOffsetDistance, 0.01f); // 避免為 0
+	}
+
+	private void OnEnable()
+	{
+		// 啟用時立即重置到目標位置（包含上方距離/自訂 offset），並更新一次角度與半徑
+		ResetToTargetImmediate();
 	}
 
 	private void LateUpdate()
@@ -40,8 +56,31 @@ public class SpotlightFollower : MonoBehaviour
 		// 跟隨位置
 		if (followPosition)
 		{
-			transform.position = target.position + initialLocalPosition + positionOffset;
+			Vector3 baseOffset = useAboveDistance ? (Vector3.up * aboveDistance) : initialLocalPosition;
+			transform.position = target.position + baseOffset + positionOffset;
 		}
+
+		UpdateAimAndRadius();
+	}
+
+	private void ResetToTargetImmediate()
+	{
+		if (target == null) return;
+
+		// 以目前設定計算基礎 offset
+		Vector3 baseOffset = useAboveDistance ? (Vector3.up * aboveDistance) : initialLocalPosition;
+
+		// 立即把位置對齊到目標
+		transform.position = target.position + baseOffset + positionOffset;
+
+		// 立即更新角度與半徑，避免啟用當下閃爍
+		if (targetSprite == null) targetSprite = target.GetComponent<SpriteRenderer>();
+		UpdateAimAndRadius();
+	}
+
+	private void UpdateAimAndRadius()
+	{
+		if (target == null || light2D == null || targetSprite == null) return;
 
 		// 面向玩家
 		Vector2 toPlayer = target.position - transform.position;
@@ -59,4 +98,18 @@ public class SpotlightFollower : MonoBehaviour
 		// Outer Radius = inner + 固定差距
 		light2D.pointLightOuterRadius = light2D.pointLightInnerRadius + outerOffsetDistance;
 	}
+
+#if UNITY_EDITOR
+	private void OnValidate()
+	{
+		// 避免設定為負值
+		aboveDistance = Mathf.Max(0f, aboveDistance);
+
+		// 若編輯器內切換 useAboveDistance，更新 initialLocalPosition 的基準
+		if (target != null)
+		{
+			initialLocalPosition = useAboveDistance ? Vector3.up * aboveDistance : (transform.position - target.position);
+		}
+	}
+#endif
 }
