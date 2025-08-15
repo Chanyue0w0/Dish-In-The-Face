@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,13 +16,19 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float stuckThreshold = 0.05f;
 	[SerializeField] private float retryDelay = 2f;
 
+
+	[Header("-------- Appearance --------")]
+	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
+
 	[Header("-------- Reference --------")]
 	[SerializeField] private Transform startPosition;
 	[SerializeField] private Transform endPosition;
-	[SerializeField] private GameObject orderIconObject;
-	[SerializeField] private SpriteRenderer foodSpriteRenderer;
-	[SerializeField] private GameObject patienceBar;
 	[SerializeField] private Transform barFill;
+	[SerializeField] private GameObject patienceBar;
+	[SerializeField] private GameObject orderIconObject;
+	[SerializeField] private GameObject rawBtnIcon;
+	[SerializeField] private SpriteRenderer foodSpriteRenderer;
+	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 
 	private Transform targetChair;
 	private float patienceTime;
@@ -51,6 +58,14 @@ public class NormalGuestController : MonoBehaviour
 
 	private void OnEnable()
 	{
+		// 隨機外觀
+		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
+		{
+			int idx = Random.Range(0, guestAppearanceList.Count);
+			guestSpriteRenderer.sprite = guestAppearanceList[idx];
+		}
+		rawBtnIcon.SetActive(false);
+
 		// 重置狀態
 		patienceTime = Random.Range(minPatience, maxPatience);
 		isSeated = false;
@@ -140,6 +155,13 @@ public class NormalGuestController : MonoBehaviour
 		RoundManager.Instance.StartCoroutine(EatAndLeave());
 
 		return true;
+	}
+
+	public void EnablePullIcon(Sprite food, bool isEnable)
+	{
+		if (!isSeated || isEating || food != orderFoodSprite)
+			rawBtnIcon.SetActive(false);
+		else rawBtnIcon.SetActive(isEnable);
 	}
 
 	private IEnumerator EatAndLeave()

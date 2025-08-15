@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{1228e65c-226f-4d48-858b-e83ba15b9ac4}">
+		<property name="assetPath">
+			<value>Music/night-fever-from-saturday-night-fever-soundtrack.mp3</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>211.34399999999999</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{b4f14da5-e5c1-4ff7-9767-d98b7cc9629f}</destination>
+		</relationship>
+	</object>
+</objects>

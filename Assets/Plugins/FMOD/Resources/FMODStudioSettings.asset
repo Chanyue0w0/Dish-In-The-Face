@@ -692,7 +692,7 @@ MonoBehaviour:
   AutomaticSampleLoading: 0
   EncryptionKey: 
   ImportType: 0
-  TargetAssetPath: FMODBanks
+  TargetAssetPath: ../FMODProject/Build/Desktop
   TargetBankFolder: Assest/StreamingAssets
   EventLinkage: 0
   LoggingLevel: 2

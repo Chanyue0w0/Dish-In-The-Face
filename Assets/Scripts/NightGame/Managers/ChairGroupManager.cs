@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class ChairGroupManager : MonoBehaviour
 {
@@ -79,6 +80,17 @@ public class ChairGroupManager : MonoBehaviour
 		{
 			occupiedChairs.Remove(targetChair);
 		}
+	}
+
+	public void EnablePullDishSignal(Transform chair, GameObject handItem, bool onEnable)
+	{
+		if (chair == null || chair.childCount < 2) return;
+
+		Transform chairItem = chair.transform.GetChild(0);
+		Sprite foodSprite = handItem?.transform?.GetComponent<SpriteRenderer>()?.sprite;
+		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
+
+		npc?.EnablePullIcon(foodSprite, onEnable);
 	}
 
 	public void PullDownChairItem(Transform chair, GameObject handItem)
