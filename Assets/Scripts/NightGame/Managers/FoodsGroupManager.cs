@@ -114,7 +114,10 @@ public class FoodsGroupManager : MonoBehaviour
 		{
 			isPlayerInsideTrigger = false;
 			if (yellowFrame.activeSelf)
+			{
 				yellowFrame.SetActive(false);
+				currentFoodTarget = null;
+			}
 		}
 	}
 
