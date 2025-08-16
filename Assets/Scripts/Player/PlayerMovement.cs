@@ -28,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
 
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
-	[SerializeField] private ChairGroupManager chairGroupManager;
 	[SerializeField] private PlayerAttackController attackController;
 	[SerializeField] private HandItemUI handItemUI;
 	[Header("Object")]
@@ -195,7 +194,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 			foreach (var chair in currentChairTriggers)
-				chairGroupManager.PullDownChairItem(chair.transform, item);
+				RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item);
 		}
 	}
 
@@ -286,7 +285,7 @@ public class PlayerMovement : MonoBehaviour
 			if (handItemNow.transform.childCount > 0)
 			{
 				GameObject item = handItemNow.transform.GetChild(0).gameObject;
-				chairGroupManager.EnablePullDishSignal(other.transform, item, true);
+				RoundManager.Instance.chairGroupManager.EnablePullDishSignal(other.transform, item, true);
 			}
 		}
 	}
@@ -302,7 +301,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (other.CompareTag("Chair"))
 		{
-			chairGroupManager.EnablePullDishSignal(other.transform, null, false);
+			RoundManager.Instance.chairGroupManager.EnablePullDishSignal(other.transform, null, false);
 			if (currentChairTriggers.Contains(other))
 				currentChairTriggers.Remove(other);
 		}
