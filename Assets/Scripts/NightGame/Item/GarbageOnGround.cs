@@ -2,13 +2,14 @@ using UnityEngine;
 
 public class GarbageOnGround : MonoBehaviour
 {
-    [Header("設定 Player 的 Tag")]
     [SerializeField] private string playerTag = "Player"; // 預設 Tag 名稱
 
     private PlayerMovement player;
 
     void Start()
     {
+        transform.SetParent(RoundManager.Instance.ObstaclesGroup);
+
         // 找到場景中帶有特定 tag 的玩家，並取得其 PlayerMovement 腳本
         GameObject playerObj = GameObject.FindGameObjectWithTag(playerTag);
         if (playerObj != null)
