@@ -22,6 +22,11 @@ public class NightGameUIButtonController : MonoBehaviour
 		RoundManager.Instance.GameContinue();
 	}
 
+	public void OnClickEndNext()
+	{
+		SceneManager.LoadScene("Day Scene");
+	}
+
 	public void InputESC(InputAction.CallbackContext context)
 	{
 		if (context.started)
