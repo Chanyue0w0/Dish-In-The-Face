@@ -21,6 +21,7 @@ public class RoundManager : MonoBehaviour
 	[Header("GameObject")]
 	[SerializeField] private GameObject endPane;
 	[SerializeField] private GameObject stopPanel;
+	public Transform ObstaclesGroup;
 
 	private void Awake()
 	{

@@ -452,7 +452,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 06857483714a3764b8641b0c0c2eafcd, type: 3}
   - {fileID: 21300000, guid: 8fdb1eba859b1104b84db269b2828978, type: 3}
   - {fileID: 21300000, guid: 513b228cdc4b19d43994c63c5f50acb2, type: 3}
-  - {fileID: 21300000, guid: fc7220ef8a9915b48b1f9953c806675c, type: 3}
   startPosition: {fileID: 0}
   endPosition: {fileID: 0}
   barFill: {fileID: 2536191069096849125}
