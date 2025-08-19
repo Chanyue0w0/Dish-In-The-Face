@@ -114,7 +114,7 @@ public class NormalGuestController : MonoBehaviour
 
 			if (timer >= patienceTime)
 			{
-				Leave();
+				BecomeTroubleGuest();
 			}
 		}
 
@@ -263,4 +263,31 @@ public class NormalGuestController : MonoBehaviour
 		stuckTimer = 0f;
 		isRetrying = false;
 	}
+
+	private void BecomeTroubleGuest()
+	{
+		// 先處理座位釋放與桌面清理（如果此時在座位上）
+		if (targetChair != null)
+		{
+			// 脫離椅子父子關係，避免 TroubleGuest 繼承到
+			transform.SetParent(RoundManager.Instance.guestGroupManager.transform);
+
+			// 釋放椅子與清桌
+			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
+			RoundManager.Instance.chairGroupManager.ClearChairItem(targetChair);
+			targetChair = null;
+		}
+
+		// 記下現在位置與外觀
+		Vector3 pos = transform.position;
+		Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
+
+		// 叫 GuestGroupManager 生成 TroubleGuest，沿用臉
+		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, face);
+
+		// 回收自己
+		if (poolHandler != null) poolHandler.Release();
+		else Destroy(gameObject);
+	}
+
 }
