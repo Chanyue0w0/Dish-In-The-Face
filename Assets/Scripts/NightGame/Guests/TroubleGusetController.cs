@@ -67,6 +67,14 @@ public class TroubleGusetController : MonoBehaviour
 
 		lastAttackTime = -Mathf.Infinity;
 		isCharging = false;
+
+		TryEnsureOnNavMesh(2f);
+	}
+	private void OnDisable()
+	{
+		// 取消尚未執行的 Invoke，避免回收後仍呼叫 EndAttack()
+		CancelInvoke(nameof(EndAttack));
+		isCharging = false;
 	}
 
 	private void Update()
@@ -136,7 +144,7 @@ public class TroubleGusetController : MonoBehaviour
 		}
 
 		// 3) 後備：用設定值
-		return 0;
+		return 2f;
 	}
 
 	/// <summary>
@@ -185,15 +193,40 @@ public class TroubleGusetController : MonoBehaviour
 				playerStatus.TakeDamage(atk);
 		}
 
+		// 這裡可能之後 0.2 秒內物件被回收 → 由 OnDisable() 的 CancelInvoke 保護
 		Invoke(nameof(EndAttack), 0.2f);
 	}
 
 	private void EndAttack()
 	{
+		// 物件可能已被回收/停用：先做安全檢查
+		if (this == null || !gameObject.activeInHierarchy) return;
+		if (agent == null || !agent.isActiveAndEnabled) return;
+
+		// 若不在 NavMesh，嘗試就近放回 NavMesh；失敗就別恢復移動
+		if (!agent.isOnNavMesh && !TryEnsureOnNavMesh(2f))
+			return;
+
 		if (attackHitBox != null) attackHitBox.SetActive(false);
 		if (attackRangeBox != null) attackRangeBox.SetActive(false);
+
 		agent.isStopped = false;
 	}
+
+	/// <summary>嘗試把 Agent 放回最近的 NavMesh 位置。</summary>
+	private bool TryEnsureOnNavMesh(float searchRadius = 2f)
+	{
+		if (agent == null || !agent.isActiveAndEnabled) return false;
+		if (agent.isOnNavMesh) return true;
+
+		NavMeshHit hit;
+		if (NavMesh.SamplePosition(transform.position, out hit, searchRadius, NavMesh.AllAreas))
+		{
+			return agent.Warp(hit.position);
+		}
+		return false;
+	}
+
 
 	public void SetSprite(Sprite sprite = null)
 	{

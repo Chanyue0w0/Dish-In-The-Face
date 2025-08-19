@@ -19,10 +19,13 @@ public class RoundManager : MonoBehaviour
 	public GlobalLightManager globalLightManager;
 	public TimeLimitCounter timeLimitCounter;
 
+	[Header("Public GameObject")]
+	public Transform Player;
+	public Transform ObstaclesGroup;
+
 	[Header("GameObject")]
 	[SerializeField] private GameObject endPane;
 	[SerializeField] private GameObject stopPanel;
-	public Transform ObstaclesGroup;
 
 	private void Awake()
 	{
