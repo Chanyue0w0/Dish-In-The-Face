@@ -40,7 +40,9 @@ public class PlayerMovement : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
 	private PlayerInput playerInput;
-	private PlayerAnimationManager animationManager;
+
+	// ======= 只改這一行：Animator 管理 → Spine 管理 =======
+	private PlayerSpineAnimationManager animationManager;
 
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
@@ -60,7 +62,9 @@ public class PlayerMovement : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
 		playerInput = GetComponent<PlayerInput>();
-		animationManager = GetComponent<PlayerAnimationManager>();
+
+		// ======= 只改這一行：抓取新版 Spine 動畫管理器 =======
+		animationManager = GetComponent<PlayerSpineAnimationManager>();
 	}
 	void Start()
 	{
@@ -71,7 +75,9 @@ public class PlayerMovement : MonoBehaviour
 
 	void Update()
 	{
-		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
+		// ======= 只改這一行：呼叫新版 Spine 動畫（其餘不動） =======
+		if (animationManager != null)
+			animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
 	void FixedUpdate()
@@ -87,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
 		else moveVelocity = moveInput * moveSpeed;
 
 		if (moveX != 0)
-			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 	}
 
 	void Move()
@@ -157,7 +163,7 @@ public class PlayerMovement : MonoBehaviour
 				break;
 			}
 
-			ShadowPool.instance.GetFormPool();
+			//ShadowPool.instance.GetFormPool();
 			yield return null;
 			elapsed += Time.deltaTime;
 		}
@@ -258,7 +264,7 @@ public class PlayerMovement : MonoBehaviour
 			// 面向（可選）
 			Vector3 tan = belt.EvaluateTangentByDistance(slideS);
 			if (tan.x != 0f)
-				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 
 			// 非 loop：端點自動下車
 			if (!belt.Loop && (Mathf.Approximately(slideS, 0f) || Mathf.Approximately(slideS, belt.TotalLength)))

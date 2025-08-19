@@ -135,4 +135,34 @@ public class GuestGroupManager : MonoBehaviour
 			return Vector3.zero;
 		}
 	}
+
+	public GameObject SpawnTroubleGuestAt(Vector3 pos, Sprite copySprite = null)
+	{
+		// 取出 TroubleGuest
+		GameObject guest = null;
+		if (troubleGuestPool != null)
+		{
+			guest = troubleGuestPool.Get();
+			guest.transform.SetParent(transform);
+			guest.transform.position = pos;
+
+			// 綁定物件池處理器（回收用）
+			var handler = guest.GetComponent<GuestPoolHandler>();
+			if (handler != null) handler.Init(troubleGuestPool);
+
+			// 設定外觀（若給了要複製的 sprite，就沿用）
+			var ctrl = guest.GetComponent<TroubleGusetController>();
+			if (ctrl != null && copySprite != null)
+			{
+				// 下方第(3)點會把 SetSprite 改成 public，這裡就能直接呼叫
+				ctrl.SetSprite(copySprite);
+			}
+		}
+		else
+		{
+			Debug.LogError("troubleGuestPool 尚未初始化，無法生成 TroubleGuest");
+		}
+
+		return guest;
+	}
 }
