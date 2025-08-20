@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+
+// ===== Localization =====
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class SettingMenu : MonoBehaviour
 {
@@ -48,6 +52,11 @@ public class SettingMenu : MonoBehaviour
 
 	private bool isOpened = false;
 
+	// ===== Localization 快取（只找這兩個 Locale）=====
+	private AsyncOperationHandle m_LocInitOp;
+	private Locale _localeZhTw;   // Chinese (Traditional) (zh-TW)
+	private Locale _localeEnUs;   // English (United States) (en-US)
+
 	private void Start()
 	{
 		// Root 分頁面板清單（一般 / 員工 / 按鍵）
@@ -69,6 +78,33 @@ public class SettingMenu : MonoBehaviour
 
 		settingPanel.SetActive(false);
 		isOpened = false;
+
+		// ===== Localization 初始化與快取 =====
+		m_LocInitOp = LocalizationSettings.SelectedLocaleAsync;
+		if (m_LocInitOp.IsDone)
+			CacheLocales();
+		else
+			m_LocInitOp.Completed += _ => CacheLocales();
+	}
+
+	private void CacheLocales()
+	{
+		var locales = LocalizationSettings.AvailableLocales.Locales;
+		foreach (var loc in locales)
+		{
+			// 以 Identifier.Code 優先，保底比對 LocaleName
+			if (loc.Identifier.Code == "zh-TW" || loc.LocaleName == "Chinese (Traditional) (zh-TW)")
+				_localeZhTw = loc;
+
+			if (loc.Identifier.Code == "en-US" || loc.LocaleName == "English (United States) (en-US)")
+				_localeEnUs = loc;
+		}
+
+		// 沒找到就提醒一下（避免專案沒把該 Locale 加進來）
+		if (_localeZhTw == null)
+			Debug.LogWarning("[SettingMenu] Locale zh-TW not found in Available Locales.");
+		if (_localeEnUs == null)
+			Debug.LogWarning("[SettingMenu] Locale en-US not found in Available Locales.");
 	}
 
 	private void Update()
@@ -117,7 +153,7 @@ public class SettingMenu : MonoBehaviour
 		string refreshRate = PlayerPrefsManager.GetRefreshRate();
 		if (refreshRateMainText != null) refreshRateMainText.text = refreshRate;
 
-		// 語言
+		// 語言（顯示字串；實際切換在 OnClickSelectLanguage）
 		string language = PlayerPrefsManager.GetLanguage();
 		if (languageMainText != null) languageMainText.text = language;
 
@@ -186,7 +222,6 @@ public class SettingMenu : MonoBehaviour
 	{
 		OpenOnlyThisOptionPanel(panel);
 	}
-
 	#endregion
 
 	#region 選單面板內：實際套用 + 更新主按鈕文字 + 關閉選單
@@ -232,12 +267,45 @@ public class SettingMenu : MonoBehaviour
 	}
 
 	// -------- Language --------
+	/// <summary>
+	/// lang 來自你的 UI，例如 "English" / "中文" / "en-US" / "zh-TW"
+	/// 僅支援兩個 Locale：zh-TW 與 en-US
+	/// </summary>
 	public void OnClickSelectLanguage(string lang)
 	{
+		// 顯示紀錄（維持你原本的習慣）
 		PlayerPrefsManager.SetLanguage(lang);
 		if (languageMainText != null) languageMainText.text = lang;
-		// TODO: 依語言載入字典
-		languagePanel.SetActive(false);
+
+		// 尚未初始化就先結束（避免 NRE）
+		if (!m_LocInitOp.IsDone)
+		{
+			Debug.LogWarning("[SettingMenu] Localization not initialized yet.");
+			if (languagePanel != null) languagePanel.SetActive(false);
+			return;
+		}
+
+		// 決定目標 Locale
+		Locale target = null;
+
+		// 允許多種輸入（字眼或代碼）
+		if (lang == "zh-TW" || lang.Contains("中文") || lang.Contains("Chinese"))
+			target = _localeZhTw;
+		else if (lang == "en-US" || lang.Contains("English"))
+			target = _localeEnUs;
+
+		// 找不到就不切（但提示）
+		if (target == null)
+		{
+			Debug.LogWarning($"[SettingMenu] Target locale not resolved for '{lang}'.");
+		}
+		else if (LocalizationSettings.SelectedLocale != target)
+		{
+			LocalizationSettings.Instance.SetSelectedLocale(target);
+		}
+
+		// 關閉面板
+		if (languagePanel != null) languagePanel.SetActive(false);
 	}
 	#endregion
 

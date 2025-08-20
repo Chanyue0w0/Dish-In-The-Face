@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI Table_en-US
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en-US
+  m_SharedData: {fileID: 11400000, guid: ae577dd305472f84fb545fc7b8ccd937, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 110031532032
+    m_Localized: Option
+    m_Metadata:
+      m_Items: []
+  - m_Id: 362818039808
+    m_Localized: Stuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 480363409408
+    m_Localized: Key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 543772897280
+    m_Localized: Master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703932395520
+    m_Localized: Display Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 749834858496
+    m_Localized: Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 635347136512
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 638337675264
+    m_Localized: SFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304422510592
+    m_Localized: V-Sync
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1307845062656
+    m_Localized: Refresh Rate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1309422120960
+    m_Localized: Controller Vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1310936264704
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1589396107264
+    m_Localized: Borderless Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1592017547264
+    m_Localized: Windowed Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1593632354304
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1824256159744
+    m_Localized: 'Unlimited '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106624410972160
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106728454877184
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107621308952576
+    m_Localized: Next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106836735029248
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107616305147904
+    m_Localized: Game Over
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
