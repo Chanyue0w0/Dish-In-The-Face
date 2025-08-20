@@ -8,11 +8,11 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[SerializeField] private int baseTrack = 0;              // 主要動作 Track（一般用 0）
 
 	[Header("Animation Names")]
-	[SerializeField] private string idleFront = "idle/idle";
-	[SerializeField] private string idleBack = "idle/idle_back";
-	[SerializeField] private string runFront = "run/run";
-	[SerializeField] private string runBack = "run/run_back";
-	[SerializeField] private string runSide = "run/run_side";
+	public string IdleFront = "idle/idle";
+	public string IdleBack = "idle/idle_back";
+	public string RunFront = "run/run";
+	public string RunBack = "run/run_back";
+	public string RunSide = "run/run_side";
 
 	[Header("Movement Judge")]
 	[SerializeField] private float idleDeadzone = 0.05f;   // 視為靜止門檻（向量長度）
@@ -48,7 +48,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// ===== Idle =====
 		if (!isMoving)
 		{
-			string idleName = (moveInput.y > 0f) ? idleBack : idleFront;
+			string idleName = (moveInput.y > 0f) ? IdleBack : IdleFront;
 			SetAnimIfChanged(idleName, true, snap: true);
 			return;
 		}
@@ -56,7 +56,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// ===== 優先側向（只要 |x| 超過門檻就視為側向）=====
 		if (Mathf.Abs(moveInput.x) >= sideXThreshold)
 		{
-			SetAnimIfChanged(runSide, true, snap: true);
+			SetAnimIfChanged(RunSide, true, snap: true);
 			SetFlipByX(moveInput.x); // 左右翻轉
 			return;
 		}
@@ -64,12 +64,12 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// ===== 非側向：只在純往後才用 back；否則用前視 run =====
 		if (moveInput.y > 0f) // 純往後
 		{
-			SetAnimIfChanged(runBack, true, snap: true);
+			SetAnimIfChanged(RunBack, true, snap: true);
 			ResetFlipX();
 		}
 		else // 往前或斜前(此時 |x| < threshold)，一律視為前視 run
 		{
-			SetAnimIfChanged(runFront, true, snap: true);
+			SetAnimIfChanged(RunFront, true, snap: true);
 			ResetFlipX();
 		}
 	}
