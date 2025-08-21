@@ -20979,7 +20979,7 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: 
+  _animationName: dash/tabledash
   loop: 1
   timeScale: 1
 --- !u!23 &435292531
@@ -30903,6 +30903,7 @@ GameObject:
   - component: {fileID: 632101733}
   - component: {fileID: 632101738}
   - component: {fileID: 632101732}
+  - component: {fileID: 632101744}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -31005,6 +31006,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSlideAutoPullDish: 0
   moveSpeed: 10
+  defaultMoveSpeed: 5
   holdItemCount: 1
   dashSpeed: 30
   dashDistance: 6
@@ -31019,6 +31021,7 @@ MonoBehaviour:
   slideInterruptDelay: 0.25
   isDashing: 0
   isSlide: 0
+  isEnableMoveControll: 1
   attackController: {fileID: 632101740}
   handItemUI: {fileID: 1796851951}
   handItemNow: {fileID: 1126725959}
@@ -31095,8 +31098,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5252283a812c19b49bccb7876c41a737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDuration: 0.4
-  beerVFXDuration: 2
+  attackMoveDistance: 1
+  attackMoveSpeed: 1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -31105,6 +31108,7 @@ MonoBehaviour:
   cakeVFX: {fileID: 351022916506592422, guid: ec4a11eff311a00478211208a5ed3f37, type: 3}
   BeerVFX: {fileID: 4818930366549204378, guid: a0a7a86f411893f4eb7dd8ae5ef9d357, type: 3}
   playerMovement: {fileID: 632101737}
+  animationManager: {fileID: 0}
 --- !u!114 &632101741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31234,8 +31238,13 @@ MonoBehaviour:
   RunFront: run/run
   RunBack: run/run_back
   RunSide: run/run_side
+  DashNormal: dash/dash_normal  eye
+  DashSlide: dash/tabledash
+  DrumStick1: battle/drumstick_1
+  DrumStick2: battle/drumstick_2
   idleDeadzone: 0.05
   sideXThreshold: 0.05
+  playerMovement: {fileID: 632101737}
 --- !u!212 &632101743
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31288,6 +31297,62 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &632101744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632101730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjects:
+  - rid: 7992027250912133286
+  references:
+    version: 2
+    RefIds:
+    - rid: 7992027250912133286
+      type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
+      data:
+        m_Target: {fileID: 632101740}
+        m_TrackedProperties:
+          items:
+          - rid: 7992027250912133287
+          - rid: 7992027254953869315
+          - rid: 7992027254953869320
+        m_UpdateType: 0
+        m_Changed:
+          m_PersistentCalls:
+            m_Calls: []
+    - rid: 7992027250912133287
+      type: {class: UnityObjectProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
+      data:
+        m_PropertyPath: animationManager
+        m_TypeString: PlayerSpineAnimationManager, Assembly-CSharp, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: zh-TW
+          value: {fileID: 0}
+    - rid: 7992027254953869315
+      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
+      data:
+        m_PropertyPath: attackMoveSpeed
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: zh-TW
+          value: 1
+    - rid: 7992027254953869320
+      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
+      data:
+        m_PropertyPath: attackMoveDistance
+        m_VariantData:
+        - localeIdentifier:
+            m_Code: zh-TW
+          value: 1
 --- !u!1 &632510562
 GameObject:
   m_ObjectHideFlags: 0
@@ -71536,7 +71601,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -72949,7 +73014,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1256561645
 RectTransform:
   m_ObjectHideFlags: 0
@@ -104143,6 +104208,10 @@ MonoBehaviour:
     maxSize: 100
   - key: Attack
     prefab: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: CoinFountain
+    prefab: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
     defaultCapacity: 10
     maxSize: 100
   - key: CoinFountain
