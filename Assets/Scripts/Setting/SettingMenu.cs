@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
+
+// ===== Localization =====
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class SettingMenu : MonoBehaviour
 {
-	[Header("Panels")]
+	[Header("Panels (Root)")]
 	[SerializeField] private GameObject settingPanel;
 	[SerializeField] private GameObject normalPanel;
 	[SerializeField] private GameObject staffPanel;
@@ -23,73 +27,156 @@ public class SettingMenu : MonoBehaviour
 	[SerializeField] private Slider sfxSlider;
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 
-	[Header("Buttons")]
+	[Header("Main Buttons Text (顯示當前設定值)")]
+	[SerializeField] private TextMeshProUGUI displayModeMainText;
+	[SerializeField] private TextMeshProUGUI resolutionMainText;
+	[SerializeField] private TextMeshProUGUI refreshRateMainText;
+	[SerializeField] private TextMeshProUGUI languageMainText;
+	[SerializeField] private TextMeshProUGUI vsyncMainText;       // x / v
+	[SerializeField] private TextMeshProUGUI vibrationMainText;   // x / v
+
+	[Header("選項面板 (點主按鈕後打開)")]
+	[SerializeField] private GameObject displayModePanel;   // 放 displayModeButtons
+	[SerializeField] private GameObject resolutionPanel;    // 放 resolutionButtons
+	[SerializeField] private GameObject refreshRatePanel;   // 放 refreshRateButtons
+	[SerializeField] private GameObject languagePanel;      // 放 languageButtons
+
+	[Header("Buttons (保留原本的群組按鈕陣列)")]
 	[SerializeField] private Image[] displayModeButtons;
 	[SerializeField] private Image[] resolutionButtons;
-	[SerializeField] private Image[] vsyncButtons;
 	[SerializeField] private Image[] refreshRateButtons;
-	[SerializeField] private Image[] vibrationButtons;
 	[SerializeField] private Image[] languageButtons;
 
-	private List<GameObject> panels = new List<GameObject>();
+	private List<GameObject> rootPanels = new List<GameObject>();
+	private List<GameObject> optionPanels = new List<GameObject>();
+
+	private bool isOpened = false;
+
+	// ===== Localization 快取（只找這兩個 Locale）=====
+	private AsyncOperationHandle m_LocInitOp;
+	private Locale _localeZhTw;   // Chinese (Traditional) (zh-TW)
+	private Locale _localeEnUs;   // English (United States) (en-US)
+
 	private void Start()
 	{
-		settingPanel.SetActive(false);
-		panels.Add(normalPanel);
-		panels.Add(staffPanel);
-		panels.Add(keyPanel);
+		// Root 分頁面板清單（一般 / 員工 / 按鍵）
+		rootPanels.Add(normalPanel);
+		rootPanels.Add(staffPanel);
+		rootPanels.Add(keyPanel);
 
+		// 選項面板清單（顯示模式 / 解析度 / 更新率 / 語言）
+		optionPanels.Add(displayModePanel);
+		optionPanels.Add(resolutionPanel);
+		optionPanels.Add(refreshRatePanel);
+		optionPanels.Add(languagePanel);
+
+		// 預設顯示一般分頁
 		OnClickPanel(normalPanel);
-		InitSetting();
+
+		// 音量初始化（音量邏輯不動）
+		InitVolumeSetting();
+
+		settingPanel.SetActive(false);
+		isOpened = false;
+
+		// ===== Localization 初始化與快取 =====
+		m_LocInitOp = LocalizationSettings.SelectedLocaleAsync;
+		if (m_LocInitOp.IsDone)
+			CacheLocales();
+		else
+			m_LocInitOp.Completed += _ => CacheLocales();
 	}
 
-	private void InitSetting()
+	private void CacheLocales()
 	{
-		// 音量設定
+		var locales = LocalizationSettings.AvailableLocales.Locales;
+		foreach (var loc in locales)
+		{
+			// 以 Identifier.Code 優先，保底比對 LocaleName
+			if (loc.Identifier.Code == "zh-TW" || loc.LocaleName == "Chinese (Traditional) (zh-TW)")
+				_localeZhTw = loc;
+
+			if (loc.Identifier.Code == "en-US" || loc.LocaleName == "English (United States) (en-US)")
+				_localeEnUs = loc;
+		}
+
+		// 沒找到就提醒一下（避免專案沒把該 Locale 加進來）
+		if (_localeZhTw == null)
+			Debug.LogWarning("[SettingMenu] Locale zh-TW not found in Available Locales.");
+		if (_localeEnUs == null)
+			Debug.LogWarning("[SettingMenu] Locale en-US not found in Available Locales.");
+	}
+
+	private void Update()
+	{
+		// 每次 Setting 面板被啟用時，同步顯示文字與切換狀態
+		if (settingPanel.activeInHierarchy && !isOpened)
+		{
+			isOpened = true;
+			SyncMainTextsAndTogglesFromPrefs();
+			OnClickCloseAllOptionPanels();
+		}
+	}
+
+	#region 初始化：音量（不動）
+	private void InitVolumeSetting()
+	{
+		// Master
 		float master = PlayerPrefsManager.GetMasterVolume();
 		masterSlider.value = master;
 		OnValueChangedMasterVolume();
 
+		// Music
 		float music = PlayerPrefsManager.GetMusicVolume();
 		musicSlider.value = music;
 		OnValueChangedMusicVolume();
 
+		// SFX
 		float sfx = PlayerPrefsManager.GetSFXVolume();
 		sfxSlider.value = sfx;
 		OnValueChangedSFXVolume();
+	}
+	#endregion
 
+	#region OnEnable 時同步主按鈕文字與切換
+	private void SyncMainTextsAndTogglesFromPrefs()
+	{
 		// 顯示模式
 		string displayMode = PlayerPrefsManager.GetDisplayMode();
-		OnClickSetDisplayMode(displayMode);
+		if (displayModeMainText != null) displayModeMainText.text = displayMode;
 
 		// 解析度
 		string resolution = PlayerPrefsManager.GetResolution();
-		OnClickSetResolution(resolution);
-
-		// VSync
-		bool vsync = PlayerPrefsManager.GetVSync();
-		OnClickSetVSync(vsync);
+		if (resolutionMainText != null) resolutionMainText.text = resolution;
 
 		// 更新率
 		string refreshRate = PlayerPrefsManager.GetRefreshRate();
-		OnClickSetRefreshRate(refreshRate);
+		if (refreshRateMainText != null) refreshRateMainText.text = refreshRate;
 
-		// 控制器震動
-		bool vibration = PlayerPrefsManager.GetControllerVibration();
-		OnClickSetControllerVibration(vibration);
-
-		// 語言
+		// 語言（顯示字串；實際切換在 OnClickSelectLanguage）
 		string language = PlayerPrefsManager.GetLanguage();
-		OnClickSetLanguage(language);
-	}
+		if (languageMainText != null) languageMainText.text = language;
 
-	// Exit
+		// VSync（x / v）
+		bool vsync = PlayerPrefsManager.GetVSync();
+		if (vsyncMainText != null) vsyncMainText.text = vsync ? "v" : "x";
+		QualitySettings.vSyncCount = vsync ? 1 : 0;
+
+		// 控制器震動（x / v）
+		bool vibration = PlayerPrefsManager.GetControllerVibration();
+		if (vibrationMainText != null) vibrationMainText.text = vibration ? "v" : "x";
+		if (RumbleManager.Instance != null) RumbleManager.Instance.SetEnableRumble(vibration);
+	}
+	#endregion
+
+	#region Exit
 	public void OnClickExit()
 	{
 		settingPanel.SetActive(false);
 	}
+	#endregion
 
-	// -------- Master Volume --------
+	#region 音量（保持原樣）
 	public void OnValueChangedMasterVolume()
 	{
 		masterVolumeText.text = ((int)(masterSlider.value * 100f)).ToString();
@@ -103,7 +190,6 @@ public class SettingMenu : MonoBehaviour
 		OnValueChangedMasterVolume();
 	}
 
-	// -------- Music Volume --------
 	public void OnValueChangedMusicVolume()
 	{
 		musicVolumeText.text = ((int)(musicSlider.value * 100f)).ToString();
@@ -117,7 +203,6 @@ public class SettingMenu : MonoBehaviour
 		OnValueChangedMusicVolume();
 	}
 
-	// -------- SFX Volume --------
 	public void OnValueChangedSFXVolume()
 	{
 		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
@@ -130,73 +215,141 @@ public class SettingMenu : MonoBehaviour
 		sfxSlider.value = Mathf.Clamp(sfxSlider.value, 0f, 1f);
 		OnValueChangedSFXVolume();
 	}
+	#endregion
 
-	// -------- Display Mode --------
-	public void OnClickSetDisplayMode(string mode)
+	#region 顯示模式 / 解析度 / 更新率 / 語言：主按鈕 -> 打開選單
+	public void OnClickOpenOptionPanel(GameObject panel)
 	{
-		HighlightButtonGroup(displayModeButtons, EventSystem.current.currentSelectedGameObject);
+		OpenOnlyThisOptionPanel(panel);
+	}
+	#endregion
+
+	#region 選單面板內：實際套用 + 更新主按鈕文字 + 關閉選單
+	// -------- Display Mode --------
+	public void OnClickSelectDisplayMode(string mode)
+	{
 		PlayerPrefsManager.SetDisplayMode(mode);
+
+		if (displayModeMainText != null) displayModeMainText.text = mode;
+
 		if (mode == "Borderless Windowed") Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
 		else if (mode == "Windowed Mode") Screen.fullScreenMode = FullScreenMode.Windowed;
 		else if (mode == "Fullscreen") Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+
+		displayModePanel.SetActive(false);
 	}
 
 	// -------- Resolution --------
-	public void OnClickSetResolution(string resolution)
+	public void OnClickSelectResolution(string resolution)
 	{
-		HighlightButtonGroup(resolutionButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetResolution(resolution);
-		string[] parts = resolution.Split('x');
-		Screen.SetResolution(int.Parse(parts[0]), int.Parse(parts[1]), Screen.fullScreenMode);
-	}
 
-	// -------- V-Sync --------
-	public void OnClickSetVSync(bool isOn)
-	{
-		HighlightButtonGroup(vsyncButtons, EventSystem.current.currentSelectedGameObject);
-		PlayerPrefsManager.SetVSync(isOn);
-		QualitySettings.vSyncCount = isOn ? 1 : 0;
+		if (resolutionMainText != null) resolutionMainText.text = resolution;
+
+		string[] parts = resolution.Split('x');
+		if (parts.Length == 2 &&
+			int.TryParse(parts[0], out int w) &&
+			int.TryParse(parts[1], out int h))
+		{
+			Screen.SetResolution(w, h, Screen.fullScreenMode);
+		}
+
+		resolutionPanel.SetActive(false);
 	}
 
 	// -------- Refresh Rate --------
-	public void OnClickSetRefreshRate(string rate)
+	public void OnClickSelectRefreshRate(string rate)
 	{
-		HighlightButtonGroup(refreshRateButtons, EventSystem.current.currentSelectedGameObject);
 		PlayerPrefsManager.SetRefreshRate(rate);
-		// 功能應與解析度一併實作
+		if (refreshRateMainText != null) refreshRateMainText.text = rate;
+		// 真正套用更新率通常需要搭配解析度或在啟動時設定，這裡僅保存與顯示
+		refreshRatePanel.SetActive(false);
 	}
 
-	// -------- Controller Vibration --------
-	public void OnClickSetControllerVibration(bool isOn)
+	// -------- Language --------
+	/// <summary>
+	/// lang 來自你的 UI，例如 "English" / "中文" / "en-US" / "zh-TW"
+	/// 僅支援兩個 Locale：zh-TW 與 en-US
+	/// </summary>
+	public void OnClickSelectLanguage(string lang)
 	{
-		HighlightButtonGroup(vibrationButtons, EventSystem.current.currentSelectedGameObject);
-		PlayerPrefsManager.SetControllerVibration(isOn);
-		RumbleManager.Instance.SetEnableRumble(isOn);
-	}
-
-	// -------- Language（保留功能區） --------
-	public void OnClickSetLanguage(string lang)
-	{
-		HighlightButtonGroup(languageButtons, EventSystem.current.currentSelectedGameObject);
+		// 顯示紀錄（維持你原本的習慣）
 		PlayerPrefsManager.SetLanguage(lang);
-		// TODO: 載入語言字典
-	}
+		if (languageMainText != null) languageMainText.text = lang;
 
-	// -------- 按鈕高亮 --------
-	private void HighlightButtonGroup(Image[] buttonImages, GameObject currentButtonOgj)
-	{
-		for (int i = 0; i < buttonImages.Length; i++)
+		// 尚未初始化就先結束（避免 NRE）
+		if (!m_LocInitOp.IsDone)
 		{
-			buttonImages[i].color = (buttonImages[i].gameObject == currentButtonOgj) ? Color.red : Color.white;
+			Debug.LogWarning("[SettingMenu] Localization not initialized yet.");
+			if (languagePanel != null) languagePanel.SetActive(false);
+			return;
 		}
+
+		// 決定目標 Locale
+		Locale target = null;
+
+		// 允許多種輸入（字眼或代碼）
+		if (lang == "zh-TW" || lang.Contains("中文") || lang.Contains("Chinese"))
+			target = _localeZhTw;
+		else if (lang == "en-US" || lang.Contains("English"))
+			target = _localeEnUs;
+
+		// 找不到就不切（但提示）
+		if (target == null)
+		{
+			Debug.LogWarning($"[SettingMenu] Target locale not resolved for '{lang}'.");
+		}
+		else if (LocalizationSettings.SelectedLocale != target)
+		{
+			LocalizationSettings.Instance.SetSelectedLocale(target);
+		}
+
+		// 關閉面板
+		if (languagePanel != null) languagePanel.SetActive(false);
+	}
+	#endregion
+
+	#region VSync / 震動：單一切換（x <-> v）
+	public void OnClickToggleVSync()
+	{
+		bool current = PlayerPrefsManager.GetVSync();
+		bool next = !current;
+
+		PlayerPrefsManager.SetVSync(next);
+		QualitySettings.vSyncCount = next ? 1 : 0;
+
+		if (vsyncMainText != null) vsyncMainText.text = next ? "v" : "x";
 	}
 
+	public void OnClickToggleVibration()
+	{
+		bool current = PlayerPrefsManager.GetControllerVibration();
+		bool next = !current;
+
+		PlayerPrefsManager.SetControllerVibration(next);
+		if (RumbleManager.Instance != null) RumbleManager.Instance.SetEnableRumble(next);
+
+		if (vibrationMainText != null) vibrationMainText.text = next ? "v" : "x";
+	}
+	#endregion
+
+	#region 共同：分頁/面板開關（無顏色變換）
 	public void OnClickPanel(GameObject panel)
 	{
-		foreach(GameObject p in panels)
-		{
-			if (panel == p) p.SetActive(true);
-			else p.SetActive(false);
-		}
+		foreach (GameObject p in rootPanels)
+			p.SetActive(panel == p);
 	}
+
+	private void OpenOnlyThisOptionPanel(GameObject target)
+	{
+		foreach (var p in optionPanels)
+			p.SetActive(p == target);
+	}
+
+	public void OnClickCloseAllOptionPanels()
+	{
+		foreach (var p in optionPanels)
+			if (p != null) p.SetActive(false);
+	}
+	#endregion
 }

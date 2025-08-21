@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Table Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI Table
+  m_TableCollectionNameGuidString: ae577dd305472f84fb545fc7b8ccd937
+  m_Entries:
+  - m_Id: 110031532032
+    m_Key: Option/Option
+    m_Metadata:
+      m_Items: []
+  - m_Id: 362818039808
+    m_Key: Option/Stuff
+    m_Metadata:
+      m_Items: []
+  - m_Id: 480363409408
+    m_Key: Option/Key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 543772897280
+    m_Key: Option/Master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 635347136512
+    m_Key: Option/Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 638337675264
+    m_Key: Option/SFX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 703932395520
+    m_Key: Option/Display_Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 749834858496
+    m_Key: Option/Resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1304422510592
+    m_Key: Option/V_Sync
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1307845062656
+    m_Key: Option/Refresh_Rate
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1309422120960
+    m_Key: Option/Controller_Vibration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1310936264704
+    m_Key: Option/Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1589396107264
+    m_Key: Option/Borderless_Windowed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1592017547264
+    m_Key: Option/Windowed_Mode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1593632354304
+    m_Key: Option/Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1824256159744
+    m_Key: Option/Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106624410972160
+    m_Key: Pause/Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106728454877184
+    m_Key: Pause/Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106836735029248
+    m_Key: Pause/Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107616305147904
+    m_Key: End/Game_Over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 107621308952576
+    m_Key: End/Next
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 7992027224220631040
+  references:
+    version: 2
+    RefIds:
+    - rid: 7992027224220631040
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1755668411867
