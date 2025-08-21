@@ -693,7 +693,7 @@ MonoBehaviour:
   EncryptionKey: 
   ImportType: 0
   TargetAssetPath: ../FMODProject/Build/Desktop
-  TargetBankFolder: Assest/StreamingAssets
+  TargetBankFolder: 
   EventLinkage: 0
   LoggingLevel: 2
   SpeakerModeSettings: []
@@ -707,8 +707,11 @@ MonoBehaviour:
   MasterBanks:
   - Master
   Banks:
+  - Master.assets
   - Music
+  - Music.assets
   - SFX
+  - SFX.assets
   BanksToLoad: []
   LiveUpdatePort: 9264
   EnableMemoryTracking: 0

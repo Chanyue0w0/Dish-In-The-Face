@@ -17,6 +17,11 @@ public class RoundManager : MonoBehaviour
 	public ChairGroupManager chairGroupManager;
 	public CoinUIController coinUIController;
 	public GlobalLightManager globalLightManager;
+	public TimeLimitCounter timeLimitCounter;
+
+	[Header("Public GameObject")]
+	public Transform Player;
+	public Transform ObstaclesGroup;
 
 	[Header("GameObject")]
 	[SerializeField] private GameObject endPane;
@@ -89,12 +94,14 @@ public class RoundManager : MonoBehaviour
 			return;
 		}
 
+		timeLimitCounter.PauseCountdown();
 		stopPanel.SetActive(true);
 		Time.timeScale = 0f;
 	}
 
 	public void GameContinue()
 	{
+		timeLimitCounter.StartCountdown();
 		stopPanel.SetActive(false);
 		Time.timeScale = 1f;
 	}
