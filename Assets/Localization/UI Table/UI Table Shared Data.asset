@@ -99,6 +99,10 @@ MonoBehaviour:
     m_Key: End/Next
     m_Metadata:
       m_Items: []
+  - m_Id: 472058423406592
+    m_Key: Game Scene/GameObjects Groups/Player/Spine GameObject (Spine_)
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private bool isSlideAutoPullDish = false;
 	[SerializeField] private float moveSpeed = 5f;
+	[SerializeField] private float defaultMoveSpeed = 5f;
 	[SerializeField] private int holdItemCount = 10;
 
 	[Header("Dash")]
@@ -25,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 	[SerializeField] private bool isSlide = false;
-
+	[SerializeField] private bool isEnableMoveControll = true;
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private PlayerAttackController attackController;
@@ -88,6 +89,8 @@ public class PlayerMovement : MonoBehaviour
 	void HandleMovementInput(float moveX, float moveY)
 	{
 		moveInput = new Vector2(moveX, moveY).normalized;
+		if (!isEnableMoveControll) return;
+
 
 		if (isDashing) moveVelocity = moveInput * dashSpeed;
 		else moveVelocity = moveInput * moveSpeed;
@@ -130,7 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void StartDash()
 	{
-		// ★ 若正在滑行：依允許與延遲判斷是否能中斷
+		// 若正在滑行：依允許與延遲判斷是否能中斷
 		if (isSlide)
 		{
 			if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
@@ -283,6 +286,32 @@ public class PlayerMovement : MonoBehaviour
 		moveVelocity = moveInput * moveSpeed;
 	}
 
+	// 持續移動一段距離
+	private IEnumerator MoveDistanceCoroutine(float distance, float speed, Vector2 direction)
+	{
+		if (direction == Vector2.zero) direction = moveInput;
+
+		direction = direction.normalized;
+		float duration = distance / speed;
+		float elapsed = 0f;
+
+		// 鎖定初始位置，避免移動過程方向被打斷
+		Vector2 start = rb.position;
+		Vector2 target = start + direction * distance;
+
+		while (elapsed < duration)
+		{
+			// 線性插值到目標點
+			Vector2 nextPos = Vector2.Lerp(start, target, elapsed / duration);
+			rb.MovePosition(nextPos);
+
+			elapsed += Time.fixedDeltaTime;
+			yield return new WaitForFixedUpdate();
+		}
+		// 確保最後停在目標位置
+		rb.MovePosition(target);
+	}
+
 	// ===== 椅子觸發維護 =====
 	void OnTriggerEnter2D(Collider2D other)
 	{
@@ -333,13 +362,24 @@ public class PlayerMovement : MonoBehaviour
 	public void SetDashSpeed(float newSpeed) { dashSpeed = newSpeed; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
-
+	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
+	public void SetEnableMoveControll(bool isEnable) { isEnableMoveControll = isEnable; }
 	public void DestoryFirstItem()
 	{
 		if (handItemNow.transform.childCount > 0)
 			Destroy(handItemNow.transform.GetChild(0).gameObject);
 	}
 
+	/// <summary>
+	/// 讓玩家朝當前 moveInput 的方向移動一段距離
+	/// </summary>
+	public void MoveDistance(float distance, float speed, Vector2 direction)
+	{
+		if (speed <= 0f) speed = moveSpeed;
+		StartCoroutine(MoveDistanceCoroutine(distance, speed, direction));
+	}
+
+	public float GetMoveSpeed() => moveSpeed;
 	/// 以當前切線 y 判斷上/下（維持原有 API）
 	public int GetSlideDirection()
 	{
