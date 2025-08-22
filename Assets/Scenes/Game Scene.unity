@@ -19067,7 +19067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodsArray:
   - {fileID: 2087422595}
-  - {fileID: 8483285277002832011, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+  - {fileID: 2076704532}
   barFill: {fileID: 0}
   DishLoadingBar: {fileID: 0}
   yellowFrame: {fileID: 1714105293}
@@ -114549,6 +114549,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074136904}
   m_CullTransparentMesh: 1
+--- !u!1 &2076704532 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+  m_PrefabInstance: {fileID: 6469181496321932461}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2077217503
 GameObject:
   m_ObjectHideFlags: 0
