@@ -3,8 +3,8 @@ using FoodsGroup;
 public class PlayerAttackController : MonoBehaviour
 {
 	[Header("--------- Setting -----------")]
-	//[SerializeField] private float attackMoveDistance = 5f;
-	//[SerializeField] private float attackMoveSpeed = 1f;
+	[SerializeField] private float attackMoveDistance = 5f;
+	[SerializeField] private float attackMoveDuration = 0.5f;
 	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItem;
@@ -32,25 +32,34 @@ public class PlayerAttackController : MonoBehaviour
 		switch (foodType)
 		{
 			case FoodType.Beer:
-			case FoodType.Pie:
+			case FoodType.Drumstick:
 				{
 					if (animationManager.IsBusy())
 						return false;
-					
+
 					// 攻擊成功
+					playerMovement.DestoryFirstItem(); // 使用掉第一個食物
 					handItem.gameObject.SetActive(false);
 					playerMovement.SetEnableMoveControll(false);
 					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-					//playerMovement.MoveDistance(attackMoveDistance, attackMoveSpeed, Vector2.zero);
+					playerMovement.MoveDistance(attackMoveDistance, attackMoveDuration, playerMovement.GetMoveInput());
 
 					// 交替播放 DrumStick1 / DrumStick2
 					string anim = (cakeComboIndex % 2 == 0)
 						? animationManager.DrumStick1
 						: animationManager.DrumStick2;
 
+					// 對應特效名稱
+					string vfxName = (cakeComboIndex % 2 == 0)
+						? "DrumStick_NormalAttack_1"
+						: "DrumStick_NormalAttack_2";
+
 					// 撥放一次；HitBox 與 VFX 交給 Spine 事件：
 					animationManager.PlayAnimationOnce(anim, attackHitBox, "Cake", () =>
 					{
+						// 生成 VFX
+						VFXPool.Instance.SpawnVFX(vfxName, attackHitBox.transform.position, Quaternion.identity);
+
 						// 動畫播完：切換 combo index
 						cakeComboIndex = 1 - cakeComboIndex;
 
@@ -58,20 +67,10 @@ public class PlayerAttackController : MonoBehaviour
 						handItem.gameObject.SetActive(true);
 						animationManager.UpdateFromMovement(Vector2.zero);
 						playerMovement.SetEnableMoveControll(true);
-
 					});
 
 					break;
 				}
-
-			//case FoodType.Beer:
-			//	{
-			//		// 保持原行為（VFX 立刻生成 + 時間窗 HitBox）
-			//		VFXPool.Instance.SpawnVFX("Beer", attackHitBox.transform.position, Quaternion.identity, beerVFXDuration);
-			//		AudioManager.Instance.PlayOneShot(FMODEvents.Instance.beerAttack, transform.position);
-			//		StartCoroutine(PerformAttack());
-			//		break;
-			//	}
 
 			default:
 				Debug.Log("This food has not attack");
@@ -80,6 +79,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		return true;
 	}
+
 
 
 	//private IEnumerator PerformAttack()

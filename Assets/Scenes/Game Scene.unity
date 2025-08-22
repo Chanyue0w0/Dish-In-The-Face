@@ -19048,7 +19048,7 @@ Transform:
   - {fileID: 580758480}
   - {fileID: 1714105294}
   - {fileID: 1299758988}
-  - {fileID: 1286979656}
+  - {fileID: 6469181496321932462}
   - {fileID: 2087422596}
   - {fileID: 2147442524}
   m_Father: {fileID: 806111023}
@@ -19067,7 +19067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodsArray:
   - {fileID: 2087422595}
-  - {fileID: 1286979655}
+  - {fileID: 8483285277002832011, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
   barFill: {fileID: 0}
   DishLoadingBar: {fileID: 0}
   yellowFrame: {fileID: 1714105293}
@@ -31138,7 +31138,6 @@ MonoBehaviour:
   isSlideAutoPullDish: 0
   moveSpeed: 10
   defaultMoveSpeed: 10
-  holdItemCount: 1
   dashSpeed: 30
   dashDistance: 6
   dashCooldown: 0.3
@@ -31229,6 +31228,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5252283a812c19b49bccb7876c41a737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackMoveDistance: 2
+  attackMoveDuration: 0.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -31283,8 +31284,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 632101737}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-        m_MethodName: StartDash
-        m_Mode: 1
+        m_MethodName: InputDash
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -31299,8 +31300,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 632101737}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-        m_MethodName: Attack
-        m_Mode: 1
+        m_MethodName: InputAttack
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -31315,8 +31316,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 632101737}
         m_TargetAssemblyTypeName: PlayerMovement, Assembly-CSharp
-        m_MethodName: Interact
-        m_Mode: 1
+        m_MethodName: InputInteract
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -31482,7 +31483,7 @@ MonoBehaviour:
         m_VariantData:
         - localeIdentifier:
             m_Code: zh-TW
-          value: 5
+          value: 3
     - rid: 7992027270100811786
       type: {class: TrackedMonoBehaviourObject, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
       data:
@@ -31514,9 +31515,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5609a5673db1cc43a081c3e9f4326a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  getFoodCount: 1
   movement: {fileID: 632101737}
   handItemUI: {fileID: 1796851951}
-  handItemRoot: {fileID: 1126725959}
+  handItemRoot: {fileID: 1126725960}
 --- !u!1 &632510562
 GameObject:
   m_ObjectHideFlags: 0
@@ -43525,8 +43527,8 @@ MonoBehaviour:
   minWanderGuests: 1
   maxWanderGuests: 3
   isSpawnTroubleGuest: 0
-  minTroubleGuests: 0
-  maxTroubleGuests: 2
+  minTroubleGuests: 2
+  maxTroubleGuests: 4
   doorPosition: {fileID: 506713175}
   normalGuestPrefab: {fileID: 6060541895779928030, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
   wanderGuestPrefab: {fileID: 7515934212084511566, guid: 493cd2c31a9f26946a0264fc6e39f21d, type: 3}
@@ -74276,16 +74278,6 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!1 &1286979655 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8350812427501041870, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
-  m_PrefabInstance: {fileID: 6400924548965188489}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1286979656 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
-  m_PrefabInstance: {fileID: 6400924548965188489}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1287402142
 GameObject:
   m_ObjectHideFlags: 0
@@ -104677,8 +104669,16 @@ MonoBehaviour:
     prefab: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
     defaultCapacity: 10
     maxSize: 100
+  - key: DrumStick_NormalAttack_1
+    prefab: {fileID: 3820275065737676581, guid: 354b1d19c2805f248aba9c64d11e3ca6, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
   - key: CoinFountain
     prefab: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: DrumStick_NormalAttack_2
+    prefab: {fileID: 9028555385303058240, guid: a30ecfb390f33e3409b1a6b1ef5b6d36, type: 3}
     defaultCapacity: 10
     maxSize: 100
 --- !u!4 &1971629645
@@ -118595,7 +118595,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
---- !u!1001 &6400924548965188489
+--- !u!1001 &6469181496321932461
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -118603,47 +118603,47 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 381182769}
     m_Modifications:
-    - target: {fileID: 8350812427501041870, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_Name
-      value: Pie
+      value: Drumstick
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1
+      value: 0.837
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.85
+      value: 1.896
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalRotation.x
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalRotation.y
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8827932462545088671, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+    - target: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
@@ -118652,6 +118652,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+--- !u!4 &6469181496321932462 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5771540734136124930, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
+  m_PrefabInstance: {fileID: 6469181496321932461}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8705637243948851545
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -9,12 +9,12 @@ public class PlayerInteraction : MonoBehaviour
 {
 
 	[Header("-------- Setting ---------")]
-	[SerializeField] private int holdItemCount = 10;
+	[SerializeField] private int getFoodCount = 1;
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] private PlayerMovement movement; // 由 Movement 綁定或 Inspector 指定
 	[SerializeField] private HandItemUI handItemUI;   // 更新手上物品UI
-	[SerializeField] private GameObject handItemRoot; // 放玩家手上物件的父物件
+	[SerializeField] private Transform handItemRoot; // 放玩家手上物件的父物件
 
 	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
 
@@ -22,20 +22,22 @@ public class PlayerInteraction : MonoBehaviour
 	/// 初始化綁定（可由 PlayerMovement 呼叫）
 	public void BindMovement(PlayerMovement mv) => movement = mv;
 	public void SetHandItemUI(HandItemUI ui) => handItemUI = ui;
-	public void SetHandItemRoot(GameObject root) => handItemRoot = root;
+	public void SetHandItemRoot(Transform root) => handItemRoot = root;
 
 	/// 對外：在 InputInteract 時呼叫
-	public void Interact()
+	public bool Interact()
 	{
-		Debug.Log("Interact");
+		//Debug.Log("Interact");
 		// 先撿餐，成功即結束
-		if (TryGetFood()) return;
+		if (TryGetFood()) return true;
 
 		// 幫附近客人確認點餐，成功即結束
-		if (TryConfirmOrderForNearbyGuests()) return;
+		if (TryConfirmOrderForNearbyGuests()) return true;
 
 		// 嘗試放餐，成功即結束
-		if (TryPullDownDish()) return;
+		if (TryPullDownDish()) return true;
+		
+		return false;
 	}
 
 	/// 嘗試從目前可撿取的來源拿餐到手上
@@ -46,15 +48,34 @@ public class PlayerInteraction : MonoBehaviour
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
 		if (currentFood != null)
 		{
-			foreach (Transform child in handItemRoot.transform)
-				Destroy(child.gameObject);
-
-			for (int i = 0; i < holdItemCount; i++)
+			if (handItemRoot.childCount > 0)
 			{
-				GameObject newItem = Instantiate(currentFood, handItemRoot.transform.position, Quaternion.identity);
-				newItem.transform.SetParent(handItemRoot.transform);
-				newItem.GetComponent<Collider2D>().enabled = false;
+				Sprite handItemSprite = handItemRoot.GetComponentInChildren<SpriteRenderer>().sprite;
+				if (currentFood.GetComponent<SpriteRenderer>().sprite != handItemSprite)
+				{
+					// 手上餐點與選擇餐點不同
+					foreach (Transform child in handItemRoot)
+						Destroy(child.gameObject);
+				}
 			}
+
+			if (handItemRoot.childCount > 4)
+			{
+				// 相同疊加至上限
+				//Debug.Log("hand item max limit!!!!!!!!!");
+				return false;
+			}
+
+			for (int i = 0; i < getFoodCount; i++)
+			{
+				GameObject newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+				newItem.transform.SetParent(handItemRoot);
+				newItem.GetComponent<Collider2D>().enabled = false;
+
+				newItem.transform.SetAsFirstSibling();
+			}
+
+			if (handItemUI) handItemUI.ChangeHandItemUI();
 			return true;
 		}
 
@@ -64,7 +85,7 @@ public class PlayerInteraction : MonoBehaviour
 	/// 嘗試幫附近座位上的客人確認點餐
 	private bool TryConfirmOrderForNearbyGuests()
 	{
-		Debug.Log("TryConfirmOrderForNearbyGuests");
+		//Debug.Log("TryConfirmOrderForNearbyGuests");
 		// 從目前偵測到的椅子 trigger 找客人（NormalGuestController 是坐下後被設為椅子子物件）
 		foreach (var chair in currentChairTriggers)
 			if (RoundManager.Instance.chairGroupManager.ConfirmOrderChair(chair.transform))
@@ -76,10 +97,10 @@ public class PlayerInteraction : MonoBehaviour
 	/// 嘗試把手上第一個物品放到附近任一張椅子
 	public bool TryPullDownDish()
 	{
-		Debug.Log("TryPullDownDish");
-		if (currentChairTriggers.Count > 0 && handItemRoot.transform.childCount > 0)
+		//Debug.Log("TryPullDownDish");
+		if (currentChairTriggers.Count > 0 && handItemRoot.childCount > 0)
 		{
-			GameObject item = handItemRoot.transform.GetChild(0).gameObject;
+			GameObject item = handItemRoot.GetChild(0).gameObject;
 			foreach (var chair in currentChairTriggers)
 				if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
 					return true;
@@ -94,9 +115,9 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		if (other.CompareTag("Chair"))
 		{
-			if (handItemRoot && handItemRoot.transform.childCount > 0)
+			if (handItemRoot && handItemRoot.childCount > 0)
 			{
-				GameObject item = handItemRoot.transform.GetChild(0).gameObject;
+				GameObject item = handItemRoot.GetChild(0).gameObject;
 				RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
 			}
 		}
