@@ -63,8 +63,6 @@ public class PlayerMovement : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
 		playerInput = GetComponent<PlayerInput>();
-
-		// ======= 只改這一行：抓取新版 Spine 動畫管理器 =======
 		animationManager = GetComponent<PlayerSpineAnimationManager>();
 	}
 	void Start()
@@ -76,9 +74,8 @@ public class PlayerMovement : MonoBehaviour
 
 	void Update()
 	{
-		// ======= 只改這一行：呼叫新版 Spine 動畫（其餘不動） =======
-		if (animationManager != null)
-			animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
+		// 呼叫新版 Spine 動畫
+		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
 	void FixedUpdate()
@@ -89,8 +86,6 @@ public class PlayerMovement : MonoBehaviour
 	void HandleMovementInput(float moveX, float moveY)
 	{
 		moveInput = new Vector2(moveX, moveY).normalized;
-		if (!isEnableMoveControll) return;
-
 
 		if (isDashing) moveVelocity = moveInput * dashSpeed;
 		else moveVelocity = moveInput * moveSpeed;
@@ -102,6 +97,12 @@ public class PlayerMovement : MonoBehaviour
 	void Move()
 	{
 		if (isSlide) return; // 滑行由 Slide() 接管
+		if (!isEnableMoveControll)
+		{
+			rb.velocity = Vector2.zero;
+			return;
+		}
+
 		rb.velocity = moveVelocity;
 	}
 
@@ -289,6 +290,7 @@ public class PlayerMovement : MonoBehaviour
 	// 持續移動一段距離
 	private IEnumerator MoveDistanceCoroutine(float distance, float speed, Vector2 direction)
 	{
+		SetEnableMoveControll(false);
 		if (direction == Vector2.zero) direction = moveInput;
 
 		direction = direction.normalized;
@@ -301,6 +303,8 @@ public class PlayerMovement : MonoBehaviour
 
 		while (elapsed < duration)
 		{
+			if (isEnableMoveControll) break;
+
 			// 線性插值到目標點
 			Vector2 nextPos = Vector2.Lerp(start, target, elapsed / duration);
 			rb.MovePosition(nextPos);
@@ -308,8 +312,10 @@ public class PlayerMovement : MonoBehaviour
 			elapsed += Time.fixedDeltaTime;
 			yield return new WaitForFixedUpdate();
 		}
-		// 確保最後停在目標位置
-		rb.MovePosition(target);
+
+		// 回復操控
+		SetEnableMoveControll(true);
+		//rb.MovePosition(target);
 	}
 
 	// ===== 椅子觸發維護 =====

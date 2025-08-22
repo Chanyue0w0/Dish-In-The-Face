@@ -41,8 +41,8 @@ public class PlayerAttackController : MonoBehaviour
 					
 					// 攻擊成功
 					handItem.gameObject.SetActive(false);
-					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 					playerMovement.SetEnableMoveControll(false);
+					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 					playerMovement.MoveDistance(attackMoveDistance, attackMoveSpeed, Vector2.zero);
 
 					// 交替播放 DrumStick1 / DrumStick2
@@ -57,9 +57,10 @@ public class PlayerAttackController : MonoBehaviour
 						cakeComboIndex = 1 - cakeComboIndex;
 
 						// 播完後再顯示 handItem
-						playerMovement.SetEnableMoveControll(true);
 						handItem.gameObject.SetActive(true);
 						animationManager.UpdateFromMovement(Vector2.zero);
+						playerMovement.SetEnableMoveControll(true);
+
 					});
 
 					break;
