@@ -36,6 +36,7 @@ public class FoodsGroupManager : MonoBehaviour
 		{
 			if (yellowFrame.activeSelf)
 				yellowFrame.SetActive(false);
+			currentFoodTarget = null;
 			return;
 		}
 

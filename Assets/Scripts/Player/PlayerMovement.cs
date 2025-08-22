@@ -7,8 +7,8 @@ public class PlayerMovement : MonoBehaviour
 {
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private bool isSlideAutoPullDish = false;
-	[SerializeField] private float moveSpeed = 5f;
-	[SerializeField] private float defaultMoveSpeed = 5f;
+	[SerializeField] private float moveSpeed = 10f;
+	[SerializeField] private float defaultMoveSpeed = 10f;
 	[SerializeField] private int holdItemCount = 10;
 
 	[Header("Dash")]
@@ -67,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
 	}
 	void Start()
 	{
+		moveSpeed = defaultMoveSpeed;
 		isDashing = false;
 		dashDuration = dashDistance / dashSpeed;
 		if (handItemUI) handItemUI.ChangeHandItemUI();
@@ -180,6 +181,18 @@ public class PlayerMovement : MonoBehaviour
 	// 撿取物品或使用裝置
 	void Interact()
 	{
+		// 先撿餐 成功就結束
+		if (GetFood()) return;
+
+		// 最後才幫客人點餐
+		if (ConfirmOrderForNearbyGuests()) return;
+		
+		// 再試著放餐 成功就結束
+		if (PullDownDish()) return;
+	}
+
+	private bool GetFood()
+	{
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
@@ -194,18 +207,33 @@ public class PlayerMovement : MonoBehaviour
 				newItem.transform.SetParent(handItemNow.transform);
 				newItem.GetComponent<Collider2D>().enabled = false;
 			}
+			return true;
 		}
-		PullDownDish();
+
+		return false;
 	}
 
-	private void PullDownDish()
+	private bool PullDownDish()
 	{
 		if (currentChairTriggers.Count > 0 && handItemNow.transform.childCount > 0)
 		{
 			GameObject item = handItemNow.transform.GetChild(0).gameObject;
 			foreach (var chair in currentChairTriggers)
-				RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item);
+				if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
+					return true;
 		}
+
+		return false;
+	}
+
+	private bool ConfirmOrderForNearbyGuests()
+	{
+		// 從目前偵測到的椅子 trigger 找客人（NormalGuestController 是坐下後被設為椅子子物件）
+		foreach (var chair in currentChairTriggers)
+			if (RoundManager.Instance.chairGroupManager.ConfirmOrderChair(chair.transform))
+				return true;
+
+		return false;
 	}
 
 	/// 沿輸送帶滑行（手動下車需符合允許 & 延遲；不取消移動）
@@ -326,7 +354,7 @@ public class PlayerMovement : MonoBehaviour
 			if (handItemNow.transform.childCount > 0)
 			{
 				GameObject item = handItemNow.transform.GetChild(0).gameObject;
-				RoundManager.Instance.chairGroupManager.EnablePullDishSignal(other.transform, item, true);
+				RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
 			}
 		}
 	}
@@ -342,7 +370,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (other.CompareTag("Chair"))
 		{
-			RoundManager.Instance.chairGroupManager.EnablePullDishSignal(other.transform, null, false);
+			RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, null, false);
 			if (currentChairTriggers.Contains(other))
 				currentChairTriggers.Remove(other);
 		}
@@ -379,11 +407,11 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary>
 	/// 讓玩家朝當前 moveInput 的方向移動一段距離
 	/// </summary>
-	public void MoveDistance(float distance, float speed, Vector2 direction)
-	{
-		if (speed <= 0f) speed = moveSpeed;
-		StartCoroutine(MoveDistanceCoroutine(distance, speed, direction));
-	}
+	//public void MoveDistance(float distance, float speed, Vector2 direction)
+	//{
+	//	if (speed <= 0f) speed = moveSpeed;
+	//	StartCoroutine(MoveDistanceCoroutine(distance, speed, direction));
+	//}
 
 	public float GetMoveSpeed() => moveSpeed;
 	/// 以當前切線 y 判斷上/下（維持原有 API）

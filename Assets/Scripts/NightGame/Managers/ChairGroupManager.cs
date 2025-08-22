@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class ChairGroupManager : MonoBehaviour
 {
@@ -82,7 +81,7 @@ public class ChairGroupManager : MonoBehaviour
 		}
 	}
 
-	public void EnablePullDishSignal(Transform chair, GameObject handItem, bool onEnable)
+	public void EnableInteracSignal(Transform chair, GameObject handItem, bool onEnable)
 	{
 		if (chair == null || chair.childCount < 2) return;
 
@@ -90,16 +89,16 @@ public class ChairGroupManager : MonoBehaviour
 		Sprite foodSprite = handItem?.transform?.GetComponent<SpriteRenderer>()?.sprite;
 		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
 
-		npc?.EnablePullIcon(foodSprite, onEnable);
+		npc?.EnableInteractIcon(foodSprite, onEnable);
 	}
 
-	public void PullDownChairItem(Transform chair, GameObject handItem)
+	public bool PullDownChairItem(Transform chair, GameObject handItem)
 	{
 		Transform chairItem = chair.transform.GetChild(0); 
 		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>().sprite;
 
-		if (chair.childCount < 2) return;
-		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
+		if (chair.childCount < 2) return false;
+		NormalGuestController npc = chair.GetComponentInChildren<NormalGuestController>();
 
 		// 回報已上餐
 		if (npc.IsReceiveFood(foodSprite))
@@ -118,7 +117,28 @@ public class ChairGroupManager : MonoBehaviour
 
 			// 上餐成功增加熱度
 			RoundManager.Instance.PullDownDishSuccess();
+			return true;
 		}
+
+		return false;
+	}
+
+	public bool ConfirmOrderChair(Transform chair)
+	{
+		if (chair == null) return false;
+
+		// 在椅子子層級找客人（包含停用物件之外的 active & enabled）
+		NormalGuestController guest = chair.GetComponentInChildren<NormalGuestController>();
+		if (guest == null || !guest.isActiveAndEnabled) return false;
+
+		// 嘗試幫客人確認點單（只有 WaitingOrder 狀態會成功）
+		if (guest.ConfirmOrderByPlayer())
+		{
+			// 可選：一點回饋
+			return true;
+		}
+
+		return false;
 	}
 
 	public void PullDownCoin(Transform chair, int coinCount)
