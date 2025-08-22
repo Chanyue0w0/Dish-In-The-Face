@@ -106,14 +106,14 @@ public class ChairGroupManager : MonoBehaviour
 			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pullDownDish, transform.position);
 
 			// 放置餐點
-			//handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
-			//handItem.transform.localPosition = Vector3.zero;
+			handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
+			handItem.transform.localPosition = Vector3.zero;
 
-			// 生成 handItem 的複製品（Instantiate 一份新物件）
-			GameObject newItem = Instantiate(handItem); // 複製餐點放到桌子上，玩家手上餐點不變
-			newItem.transform.localScale = handItem.transform.lossyScale;
-			newItem.transform.SetParent(chairItem.transform);
-			newItem.transform.localPosition = Vector3.zero;
+			//// 生成 handItem 的複製品（Instantiate 一份新物件）
+			//GameObject newItem = Instantiate(handItem); // 複製餐點放到桌子上，玩家手上餐點不變
+			//newItem.transform.localScale = handItem.transform.lossyScale;
+			//newItem.transform.SetParent(chairItem.transform);
+			//newItem.transform.localPosition = Vector3.zero;
 
 			// 上餐成功增加熱度
 			RoundManager.Instance.PullDownDishSuccess();

@@ -84,6 +84,26 @@ public class PlayerMovement : MonoBehaviour
 		Move();
 	}
 
+	// ===== New Input System =====
+	public void InputMovement(InputAction.CallbackContext context)
+	{
+		Vector2 move = context.ReadValue<Vector2>();
+		HandleMovementInput(move.x, move.y);
+	}
+	public void InputAttack(InputAction.CallbackContext context)
+	{
+		if (context.performed) Attack();
+	}
+	public void InputDash(InputAction.CallbackContext context)
+	{
+		if (context.performed) StartDash();
+	}
+	public void InputInteract(InputAction.CallbackContext context)
+	{
+		if (context.performed) playerInteraction.Interact();
+	}
+
+	// ===== Actions =====
 	void HandleMovementInput(float moveX, float moveY)
 	{
 		moveInput = new Vector2(moveX, moveY).normalized;
@@ -106,27 +126,6 @@ public class PlayerMovement : MonoBehaviour
 
 		rb.velocity = moveVelocity;
 	}
-
-	// ===== New Input System =====
-	public void InputMovement(InputAction.CallbackContext context)
-	{
-		Vector2 move = context.ReadValue<Vector2>();
-		HandleMovementInput(move.x, move.y);
-	}
-	public void InputAttack(InputAction.CallbackContext context)
-	{
-		if (context.started) Attack();
-	}
-	public void InputDash(InputAction.CallbackContext context)
-	{
-		if (context.started) StartDash();
-	}
-	public void InputInteract(InputAction.CallbackContext context)
-	{
-		if (context.started) Interact();
-	}
-
-	// ===== Actions =====
 	void Attack()
 	{
 		if (handItemUI) handItemUI.ChangeHandItemUI();
@@ -178,12 +177,7 @@ public class PlayerMovement : MonoBehaviour
 		moveVelocity = moveInput * moveSpeed;
 	}
 
-	// 撿取物品或使用裝置
-	void Interact()
-	{
-		Debug.Log("interact");
-		playerInteraction.Interact();
-	}
+	
 
 	/// 沿輸送帶滑行（手動下車需符合允許 & 延遲；不取消移動）
 	private IEnumerator Slide()
@@ -265,13 +259,18 @@ public class PlayerMovement : MonoBehaviour
 	}
 
 	// 持續移動一段距離
-	private IEnumerator MoveDistanceCoroutine(float distance, float speed, Vector2 direction)
+	private IEnumerator MoveDistanceCoroutine(float distance, float duration, Vector2 direction)
 	{
 		SetEnableMoveControll(false);
-		if (direction == Vector2.zero) direction = moveInput;
+
+		// 決定移動方向
+		if (direction == Vector2.zero)
+		{
+			if (transform.rotation.y >= 0) direction = new Vector2(-1, 0);
+			else direction = new Vector2(1, 0);
+		}
 
 		direction = direction.normalized;
-		float duration = distance / speed;
 		float elapsed = 0f;
 
 		// 鎖定初始位置，避免移動過程方向被打斷
@@ -282,18 +281,23 @@ public class PlayerMovement : MonoBehaviour
 		{
 			if (isEnableMoveControll) break;
 
-			// 線性插值到目標點
-			Vector2 nextPos = Vector2.Lerp(start, target, elapsed / duration);
+			// 計算插值比例 (0 → 1)
+			float t = elapsed / duration;
+			Vector2 nextPos = Vector2.Lerp(start, target, t);
 			rb.MovePosition(nextPos);
 
 			elapsed += Time.fixedDeltaTime;
 			yield return new WaitForFixedUpdate();
 		}
 
+		// 確保最後到達目標點
+		if (!isEnableMoveControll)
+			rb.MovePosition(target);
+
 		// 回復操控
 		SetEnableMoveControll(true);
-		//rb.MovePosition(target);
 	}
+
 
 	// ===== 桌面/輸送帶接觸維護（方式 A：實體碰撞）=====
 	void OnCollisionStay2D(Collision2D collision)
@@ -320,19 +324,21 @@ public class PlayerMovement : MonoBehaviour
 	public void DestoryFirstItem()
 	{
 		if (handItemNow.transform.childCount > 0)
+		{
 			Destroy(handItemNow.transform.GetChild(0).gameObject);
+			handItemUI.ChangeHandItemUI();
+		}
 	}
 
-	/// <summary>
 	/// 讓玩家朝當前 moveInput 的方向移動一段距離
-	/// </summary>
-	//public void MoveDistance(float distance, float speed, Vector2 direction)
-	//{
-	//	if (speed <= 0f) speed = moveSpeed;
-	//	StartCoroutine(MoveDistanceCoroutine(distance, speed, direction));
-	//}
+	public void MoveDistance(float distance, float duration, Vector2 direction)
+	{
+		StartCoroutine(MoveDistanceCoroutine(distance, duration, direction));
+	}
 
 	public float GetMoveSpeed() => moveSpeed;
+
+	public Vector2 GetMoveInput() => moveInput;
 	/// 以當前切線 y 判斷上/下（維持原有 API）
 	public int GetSlideDirection()
 	{

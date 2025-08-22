@@ -259,6 +259,7 @@ public class NormalGuestController : MonoBehaviour
 		if (!isSeated || state != GuestState.WaitingOrder)
 			return false;
 
+		//EnterWaitingDish();
 		Invoke(nameof(EnterWaitingDish), stateTransitionDelay);
 		return true;
 	}
