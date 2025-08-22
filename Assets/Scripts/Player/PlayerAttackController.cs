@@ -3,10 +3,8 @@ using FoodsGroup;
 public class PlayerAttackController : MonoBehaviour
 {
 	[Header("--------- Setting -----------")]
-	//[SerializeField] private float attackDuration = 0.4f; // 可調整攻擊持續時間
-	//[SerializeField] private float beerVFXDuration = 2f;
-	[SerializeField] private float attackMoveDistance = 5f;
-	[SerializeField] private float attackMoveSpeed = 1f;
+	//[SerializeField] private float attackMoveDistance = 5f;
+	//[SerializeField] private float attackMoveSpeed = 1f;
 	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItem;
@@ -43,7 +41,7 @@ public class PlayerAttackController : MonoBehaviour
 					handItem.gameObject.SetActive(false);
 					playerMovement.SetEnableMoveControll(false);
 					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-					playerMovement.MoveDistance(attackMoveDistance, attackMoveSpeed, Vector2.zero);
+					//playerMovement.MoveDistance(attackMoveDistance, attackMoveSpeed, Vector2.zero);
 
 					// 交替播放 DrumStick1 / DrumStick2
 					string anim = (cakeComboIndex % 2 == 0)

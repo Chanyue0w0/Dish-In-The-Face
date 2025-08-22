@@ -5,17 +5,35 @@ using UnityEngine.AI;
 
 public class NormalGuestController : MonoBehaviour
 {
-	[Header("-------- Setting --------")]
-	[SerializeField] private float minPatience = 10f;
-	[SerializeField] private float maxPatience = 20f;
-	[SerializeField] private float eatTime = 10f;
+	#region Inspector
+
+	[Header("-------- Base Setting --------")]
 	[SerializeField] private float moveSpeed = 2f;
+
+	[Header("-------- Patience / Timing --------")]
+	[Tooltip("步驟1：思考點餐時間（秒）")]
+	[SerializeField] private float thinkOrderTime = 10f;
+
+	[Tooltip("步驟2：等待玩家來點餐的耐心時間（秒）")]
+	[SerializeField] private float waitForOrderTime = 20f;
+
+	[Tooltip("步驟3：等待餐點的固定耐心（秒）")]
+	[SerializeField] private float waitForDishTime = 25f;
+	
+	[Header("-------- Flow Setting --------")]
+	[SerializeField] private float stateTransitionDelay = 0.3f; // 狀態切換延遲（秒）
+
+	[Header("-------- Eat / Reorder --------")]
+	[Tooltip("吃飯時間（秒）")]
+	[SerializeField] private float eatTime = 10f;
+
+	[Tooltip("吃完後，再次點餐的機率（0~1）")]
+	[SerializeField, Range(0f, 1f)] private float reorderProbability = 0.3f;
 
 	[Header("-------- Stuck Retry Setting --------")]
 	[SerializeField] private float stuckCheckInterval = 1.5f;
 	[SerializeField] private float stuckThreshold = 0.05f;
 	[SerializeField] private float retryDelay = 2f;
-
 
 	[Header("-------- Appearance --------")]
 	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
@@ -25,18 +43,34 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private Transform endPosition;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject patienceBar;
-	[SerializeField] private GameObject orderIconObject;
-	[SerializeField] private GameObject rawBtnIcon;
+	[SerializeField] private GameObject chatBoxIconObj;
+	[SerializeField] private GameObject rawBtnIconObj;
+	[SerializeField] private GameObject questionIconObj;
 	[SerializeField] private SpriteRenderer foodSpriteRenderer;
 	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 
+	#endregion
+
+	#region Runtime State
+
+	private enum GuestState
+	{
+		WalkingToChair,
+		Thinking,      // 步驟1：思考點餐
+		WaitingOrder,  // 步驟2：等待玩家來點餐（按下互動確認）
+		WaitingDish,   // 步驟3：等待餐點（固定耐心）
+		Eating,
+		Leaving
+	}
+
+	private GuestState state = GuestState.WalkingToChair;
+
 	private Transform targetChair;
-	private float patienceTime;
-	private float timer;
+	private float timer;           // 通用倒數（依狀態詮釋）
 	private bool isSeated;
-	private bool isEating;
-	private bool isLeaving;
 	private bool isRetrying;
+	private bool isLeaving;
+
 	private Sprite orderFoodSprite = null;
 	private NavMeshAgent agent;
 
@@ -45,6 +79,10 @@ public class NormalGuestController : MonoBehaviour
 
 	// 物件池
 	private GuestPoolHandler poolHandler;
+
+	#endregion
+
+	#region Unity Lifecycle
 
 	private void Awake()
 	{
@@ -64,36 +102,39 @@ public class NormalGuestController : MonoBehaviour
 			int idx = Random.Range(0, guestAppearanceList.Count);
 			guestSpriteRenderer.sprite = guestAppearanceList[idx];
 		}
-		rawBtnIcon.SetActive(false);
 
 		// 重置狀態
-		patienceTime = Random.Range(minPatience, maxPatience);
 		isSeated = false;
-		isEating = false;
 		isLeaving = false;
 		isRetrying = false;
 		stuckTimer = 0f;
 		timer = 0f;
+		state = GuestState.WalkingToChair;
+
+		chatBoxIconObj.SetActive(false);
+		rawBtnIconObj.SetActive(false);
+		questionIconObj.SetActive(false);
+		patienceBar.SetActive(false);
+		barFill.localScale = new Vector3(1f, 1f, 1f);
+		foodSpriteRenderer.sprite = null;
 
 		// 起點與出口
 		startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 		endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 
-		// 嘗試找座位
+		// 找座位
 		targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
 		if (targetChair != null)
 			agent.SetDestination(targetChair.position);
 		else
 			Leave();
 
-		orderIconObject.SetActive(false);
-		patienceBar.SetActive(false);
-
 		lastPosition = transform.position;
 	}
 
 	private void Update()
 	{
+		// 椅子被搶走就離開
 		if (!isSeated && targetChair != null && targetChair.childCount > 1)
 		{
 			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
@@ -101,26 +142,22 @@ public class NormalGuestController : MonoBehaviour
 			Leave();
 		}
 
-		if (!isSeated && targetChair != null && !agent.pathPending && agent.remainingDistance <= 0.05f)
+		// 抵達座位
+		if (state == GuestState.WalkingToChair && targetChair != null && !agent.pathPending && agent.remainingDistance <= 0.05f)
 		{
 			ArriveAtChair();
 		}
 
-		if (isSeated && !isEating)
-		{
-			timer += Time.deltaTime;
-			float ratio = Mathf.Clamp01(1f - (timer / patienceTime));
-			barFill.localScale = new Vector3(ratio, 1f, 1f);
-
-			if (timer >= patienceTime)
-			{
-				BecomeTroubleGuest();
-			}
-		}
+		// 狀態驅動的計時與 UI
+		TickStateTimers();
 
 		CheckStuckAndRetry();
 		FlipSpriteByVelocity();
 	}
+
+	#endregion
+
+	#region Flow States
 
 	private void ArriveAtChair()
 	{
@@ -128,56 +165,203 @@ public class NormalGuestController : MonoBehaviour
 		isSeated = true;
 		transform.SetParent(targetChair);
 
-		OrderDish();
+		// 進入「思考點餐」
+		EnterThinking();
+	}
 
-		patienceBar.SetActive(true);
+	private void EnterThinking()
+	{
+		state = GuestState.Thinking;
+
+		chatBoxIconObj.SetActive(false);
+		patienceBar.SetActive(false);
+		foodSpriteRenderer.sprite = null; // 思考時不顯示食物
+
+		// 思考完「決定」餐點，但尚未讓玩家看到；等玩家來互動才顯示訂單圖示
+		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
+		timer = thinkOrderTime;
 		barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
-	private void OrderDish()
+	private void EnterWaitingOrder()
 	{
-		orderIconObject.SetActive(true);
-		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
-		foodSpriteRenderer.sprite = orderFoodSprite;
+		state = GuestState.WaitingOrder;
+
+		// 顯示玩家可互動之提示（例如 X/Raw 按鍵）
+		rawBtnIconObj.SetActive(false);     
+		chatBoxIconObj.SetActive(true);
+		questionIconObj.SetActive(true);// 問號可互動（確認點單）
+
+		// 用相同耐心值 UI
+		patienceBar.SetActive(true);
+		timer = waitForOrderTime;
+		barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
-	public bool IsReceiveFood(Sprite foods)
+	private void EnterWaitingDish()
 	{
-		if (!isSeated || isEating || foods != orderFoodSprite)
-			return false;
+		state = GuestState.WaitingDish;
 
-		isEating = true;
-		orderIconObject.SetActive(false);
+		rawBtnIconObj.SetActive(false);
+		chatBoxIconObj.SetActive(true);    // 顯示餐點訊息框
+		questionIconObj.SetActive(false);
+
+		// 在對話框上展示餐點圖
+		foodSpriteRenderer.sprite = orderFoodSprite;
+
+		// 固定耐心時間
+		patienceBar.SetActive(true);
+		timer = waitForDishTime;
+		barFill.localScale = new Vector3(1f, 1f, 1f);
+	}
+
+	private void EnterEating()
+	{
+		state = GuestState.Eating;
+
+		chatBoxIconObj.SetActive(false);
 		patienceBar.SetActive(false);
-		StopAllCoroutines();
 
 		// 由 RoundManager 啟動協程，避免 Inactive 物件報錯
-		RoundManager.Instance.StartCoroutine(EatAndLeave());
+		RoundManager.Instance.StartCoroutine(EatAndThenDecide());
+	}
 
+	private IEnumerator EatAndThenDecide()
+	{
+		yield return new WaitForSeconds(eatTime);
+
+		// 結帳（一次餐點）
+		RoundManager.Instance.FinishDishSuccess(targetChair, 10);
+
+		// 是否再點一次？
+		if (Random.value < reorderProbability)
+		{
+			// 回到思考 → 等待玩家點餐 → 等待餐點
+			EnterThinking();
+		}
+		else
+		{
+			Leave();
+		}
+	}
+
+	#endregion
+
+	#region Public Interactions
+
+	/// <summary>
+	/// 供玩家呼叫：確認客人的訂單。
+	/// 僅在 WaitingOrder 狀態有效。成功會切至 WaitingDish 並開始固定耐心倒數。
+	/// </summary>
+	/// <returns>是否確認成功</returns>
+	public bool ConfirmOrderByPlayer()
+	{
+		if (!isSeated || state != GuestState.WaitingOrder)
+			return false;
+
+		Invoke(nameof(EnterWaitingDish), stateTransitionDelay);
 		return true;
 	}
 
-	public void EnablePullIcon(Sprite food, bool isEnable)
+	/// <summary>
+	/// 玩家送餐。僅在 WaitingDish 狀態且餐點正確時成立，並進入 Eating。
+	/// </summary>
+	public bool IsReceiveFood(Sprite foods)
 	{
-		if (!isSeated || isEating || food != orderFoodSprite)
-			rawBtnIcon.SetActive(false);
-		else rawBtnIcon.SetActive(isEnable);
+		if (!isSeated || state != GuestState.WaitingDish || foods != orderFoodSprite)
+			return false;
+
+		EnterEating();
+		return true;
 	}
 
-	private IEnumerator EatAndLeave()
+	/// <summary>
+	/// WaitingOrder直接顯示。在 WaitingDish 階段，若玩家手上是正確餐點才顯示互動提示。
+	/// </summary>
+	public void EnableInteractIcon(Sprite food, bool isEnable)
 	{
-		yield return new WaitForSeconds(eatTime);
-		RoundManager.Instance.FinishDishSuccess(targetChair, 10);
-		Leave();
+		// 若是等待玩家來點餐 rawBtn 顯示
+		if (state == GuestState.WaitingOrder)
+		{
+			rawBtnIconObj.SetActive(isEnable);
+			return;
+		}
+
+		// 僅在等待餐點、且食物正確時顯示可交付提示
+		if (!isSeated || state != GuestState.WaitingDish || food != orderFoodSprite)
+		{
+			rawBtnIconObj.SetActive(false);
+		}
+		else
+		{
+			rawBtnIconObj.SetActive(isEnable);
+		}
+	}
+
+
+	#endregion
+
+	#region Utilities
+
+	private void TickStateTimers()
+	{
+		switch (state)
+		{
+			case GuestState.Thinking:
+				// 思考中只倒數，不顯示耐心條
+				timer -= Time.deltaTime;
+				if (timer <= 0f)
+				{
+					// 思考完成，進入「等待玩家來點餐」
+					EnterWaitingOrder();
+				}
+				break;
+
+			case GuestState.WaitingOrder:
+				// 顯示耐心條
+				timer -= Time.deltaTime;
+				UpdatePatienceBar(timer, waitForOrderTime);
+
+				if (timer <= 0f)
+				{
+					BecomeTroubleGuest();
+				}
+				break;
+
+			case GuestState.WaitingDish:
+				// 顯示耐心條
+				timer -= Time.deltaTime;
+				UpdatePatienceBar(timer, waitForDishTime);
+
+				if (timer <= 0f)
+				{
+					BecomeTroubleGuest();
+				}
+				break;
+
+			case GuestState.WalkingToChair:
+			case GuestState.Eating:
+			case GuestState.Leaving:
+			default:
+				// no-op
+				break;
+		}
+	}
+
+	private void UpdatePatienceBar(float remain, float total)
+	{
+		if (!patienceBar.activeSelf) patienceBar.SetActive(true);
+		float ratio = Mathf.Clamp01(Mathf.Max(remain, 0f) / Mathf.Max(total, 0.0001f));
+		barFill.localScale = new Vector3(ratio, 1f, 1f);
 	}
 
 	private void Leave()
 	{
 		if (isLeaving) return;
 		isLeaving = true;
+		state = GuestState.Leaving;
 
-		orderIconObject.SetActive(false);
-		patienceBar.SetActive(false);
+		chatBoxIconObj.SetActive(false);
 
 		if (targetChair != null)
 		{
@@ -190,14 +374,13 @@ public class NormalGuestController : MonoBehaviour
 		Vector3 exitPos = endPosition.position;
 		agent.SetDestination(exitPos);
 
-		// 同樣用 RoundManager 啟動協程
 		RoundManager.Instance.StartCoroutine(CheckExitReached(exitPos));
 	}
 
 	private IEnumerator CheckExitReached(Vector3 exitPos)
 	{
 		float waitTime = 0f;
-		float timeout = 25f;
+		const float timeout = 25f;
 
 		while (Vector2.Distance(transform.position, exitPos) > 2f && waitTime < timeout)
 		{
@@ -209,10 +392,8 @@ public class NormalGuestController : MonoBehaviour
 		}
 
 		// 回收到物件池
-		if (poolHandler != null)
-			poolHandler.Release();
-		else
-			gameObject.SetActive(false);
+		if (poolHandler != null) poolHandler.Release();
+		else gameObject.SetActive(false);
 	}
 
 	private void FlipSpriteByVelocity()
@@ -228,7 +409,7 @@ public class NormalGuestController : MonoBehaviour
 		float moved = Vector3.Distance(transform.position, lastPosition);
 		lastPosition = transform.position;
 
-		if (!isSeated && targetChair != null)
+		if (state == GuestState.WalkingToChair && targetChair != null)
 		{
 			if (moved < stuckThreshold)
 			{
@@ -254,7 +435,7 @@ public class NormalGuestController : MonoBehaviour
 		float moved = Vector3.Distance(transform.position, lastPosition);
 		lastPosition = transform.position;
 
-		if (!isSeated && !isLeaving && moved < stuckThreshold)
+		if (state == GuestState.WalkingToChair && !isLeaving && moved < stuckThreshold)
 		{
 			if (targetChair != null)
 				agent.SetDestination(targetChair.position);
@@ -290,4 +471,5 @@ public class NormalGuestController : MonoBehaviour
 		else Destroy(gameObject);
 	}
 
+	#endregion
 }
