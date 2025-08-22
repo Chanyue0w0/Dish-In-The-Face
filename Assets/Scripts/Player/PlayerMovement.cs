@@ -9,7 +9,6 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private bool isSlideAutoPullDish = false;
 	[SerializeField] private float moveSpeed = 10f;
 	[SerializeField] private float defaultMoveSpeed = 10f;
-	[SerializeField] private int holdItemCount = 10;
 
 	[Header("Dash")]
 	[SerializeField] private float dashSpeed = 10f;
@@ -35,12 +34,12 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private GameObject handItemNow;
 
 	private Collider2D currentTableCollider;
-	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
 
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
 	private PlayerInput playerInput;
+	private PlayerInteraction playerInteraction;
 
 	// ======= 只改這一行：Animator 管理 → Spine 管理 =======
 	private PlayerSpineAnimationManager animationManager;
@@ -63,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
 		playerInput = GetComponent<PlayerInput>();
+		playerInteraction = GetComponent<PlayerInteraction>();
 		animationManager = GetComponent<PlayerSpineAnimationManager>();
 	}
 	void Start()
@@ -181,59 +181,8 @@ public class PlayerMovement : MonoBehaviour
 	// 撿取物品或使用裝置
 	void Interact()
 	{
-		// 先撿餐 成功就結束
-		if (GetFood()) return;
-
-		// 最後才幫客人點餐
-		if (ConfirmOrderForNearbyGuests()) return;
-		
-		// 再試著放餐 成功就結束
-		if (PullDownDish()) return;
-	}
-
-	private bool GetFood()
-	{
-		if (handItemUI) handItemUI.ChangeHandItemUI();
-
-		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
-		if (currentFood != null)
-		{
-			foreach (Transform child in handItemNow.transform)
-				Destroy(child.gameObject);
-
-			for (int i = 0; i < holdItemCount; i++)
-			{
-				GameObject newItem = Instantiate(currentFood, handItemNow.transform.position, Quaternion.identity);
-				newItem.transform.SetParent(handItemNow.transform);
-				newItem.GetComponent<Collider2D>().enabled = false;
-			}
-			return true;
-		}
-
-		return false;
-	}
-
-	private bool PullDownDish()
-	{
-		if (currentChairTriggers.Count > 0 && handItemNow.transform.childCount > 0)
-		{
-			GameObject item = handItemNow.transform.GetChild(0).gameObject;
-			foreach (var chair in currentChairTriggers)
-				if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
-					return true;
-		}
-
-		return false;
-	}
-
-	private bool ConfirmOrderForNearbyGuests()
-	{
-		// 從目前偵測到的椅子 trigger 找客人（NormalGuestController 是坐下後被設為椅子子物件）
-		foreach (var chair in currentChairTriggers)
-			if (RoundManager.Instance.chairGroupManager.ConfirmOrderChair(chair.transform))
-				return true;
-
-		return false;
+		Debug.Log("interact");
+		playerInteraction.Interact();
 	}
 
 	/// 沿輸送帶滑行（手動下車需符合允許 & 延遲；不取消移動）
@@ -286,7 +235,7 @@ public class PlayerMovement : MonoBehaviour
 				// 不允許或未到時間 → 繼續滑行
 			}
 
-			if (isSlideAutoPullDish) PullDownDish();
+			if (isSlideAutoPullDish) playerInteraction.TryPullDownDish();
 
 			// 推進並移動
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
@@ -344,36 +293,6 @@ public class PlayerMovement : MonoBehaviour
 		// 回復操控
 		SetEnableMoveControll(true);
 		//rb.MovePosition(target);
-	}
-
-	// ===== 椅子觸發維護 =====
-	void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.CompareTag("Chair"))
-		{
-			if (handItemNow.transform.childCount > 0)
-			{
-				GameObject item = handItemNow.transform.GetChild(0).gameObject;
-				RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
-			}
-		}
-	}
-	void OnTriggerStay2D(Collider2D other)
-	{
-		if (other.CompareTag("Chair"))
-		{
-			if (!currentChairTriggers.Contains(other))
-				currentChairTriggers.Add(other);
-		}
-	}
-	void OnTriggerExit2D(Collider2D other)
-	{
-		if (other.CompareTag("Chair"))
-		{
-			RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, null, false);
-			if (currentChairTriggers.Contains(other))
-				currentChairTriggers.Remove(other);
-		}
 	}
 
 	// ===== 桌面/輸送帶接觸維護（方式 A：實體碰撞）=====

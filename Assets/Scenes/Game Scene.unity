@@ -31025,6 +31025,7 @@ GameObject:
   m_Component:
   - component: {fileID: 632101736}
   - component: {fileID: 632101743}
+  - component: {fileID: 632101745}
   - component: {fileID: 632101737}
   - component: {fileID: 632101739}
   - component: {fileID: 632101740}
@@ -31501,6 +31502,21 @@ MonoBehaviour:
         - localeIdentifier:
             m_Code: zh-TW
           value: 10
+--- !u!114 &632101745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632101730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5609a5673db1cc43a081c3e9f4326a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movement: {fileID: 632101737}
+  handItemUI: {fileID: 1796851951}
+  handItemRoot: {fileID: 1126725959}
 --- !u!1 &632510562
 GameObject:
   m_ObjectHideFlags: 0
