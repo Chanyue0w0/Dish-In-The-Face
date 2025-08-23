@@ -136,13 +136,10 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 			{
 				if (hitBox) hitBox.SetActive(true);
 			}
-			else if (evtName == "FX_Show")
+			else if (evtName == "FX_Show" && vfxName != "")
 			{
-				if (VFXPool.Instance != null)
-				{
-					var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
-					VFXPool.Instance.SpawnVFX(vfxName, pos, Quaternion.identity, 2f);
-				}
+				var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
+				VFXPool.Instance.SpawnVFX(vfxName, pos, transform.rotation, 2f);
 			}
 		};
 
