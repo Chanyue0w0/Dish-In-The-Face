@@ -18,6 +18,7 @@ public class PlayerInteraction : MonoBehaviour
 
 	private List<Collider2D> currentChairTriggers;
 
+<<<<<<< HEAD
 	private bool isEnableUseDessert = false;
 
 
@@ -25,6 +26,8 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		currentChairTriggers = new List<Collider2D>();
 	}
+=======
+>>>>>>> c190c84ff4ba86faa42c77a779bc65984f51fa6f
 	/// 對外：在 InputInteract 時呼叫
 	public bool Interact()
 	{
