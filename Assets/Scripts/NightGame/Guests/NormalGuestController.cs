@@ -99,6 +99,18 @@ public class NormalGuestController : MonoBehaviour
 		poolHandler = GetComponent<GuestPoolHandler>();
 	}
 
+	private void Start()
+	{
+		// 起點與出口
+		if (RoundManager.Instance)
+		{
+			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
+			// 找座位
+			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
+		}
+	}
+
 	private void OnEnable()
 	{
 		// 隨機外觀
@@ -128,11 +140,14 @@ public class NormalGuestController : MonoBehaviour
 		foodSpriteRenderer.sprite = null;
 
 		// 起點與出口
-		startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
-		endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
+		if (RoundManager.Instance)
+		{
+			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
+			// 找座位
+			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
+		}
 
-		// 找座位
-		targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
 		if (targetChair != null)
 			agent.SetDestination(targetChair.position);
 		else

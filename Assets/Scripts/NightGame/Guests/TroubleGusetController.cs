@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,6 +16,10 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private float chargeTime = 1f;     // 蓄力時間(秒)
 	[SerializeField] private LayerMask playerLayer;     // 玩家圖層
 	[SerializeField] private Transform attackOrigin;    // 由 attackRangeBox 自動帶入
+
+	[Header("----- Knockback Setting -----")]
+	[SerializeField] private float knockbackForce = 5f;     // 擊退力度
+	[SerializeField] private float knockbackDuration = 0.2f; // 擊退持續時間
 
 	[Header("-------- Appearance --------")]
 	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
@@ -35,6 +40,8 @@ public class TroubleGusetController : MonoBehaviour
 	private bool isCharging;
 	private float chargeStartTime;
 
+	private bool isKnockback = false;
+
 	// 物件池處理器
 	private GuestPoolHandler poolHandler;
 
@@ -52,11 +59,15 @@ public class TroubleGusetController : MonoBehaviour
 			attackOrigin = attackRangeBox.transform; // 以 attackRangeBox 為中心:contentReference[oaicite:2]{index=2}
 	}
 
+	private void Start()
+	{
+		if (RoundManager.Instance) player = RoundManager.Instance.Player;
+	}
 	private void OnEnable()
 	{
 		SetSprite(); // 初始外觀或沿用外觀:contentReference[oaicite:3]{index=3}
 
-		player = RoundManager.Instance.Player;
+		if (RoundManager.Instance) player = RoundManager.Instance.Player;
 
 		maxHp = Random.Range(1, 4);
 		currentHp = maxHp;
@@ -263,11 +274,37 @@ public class TroubleGusetController : MonoBehaviour
 		}
 	}
 
+
+	private IEnumerator ApplyKnockback(Vector2 direction)
+	{
+		if (agent == null) yield break;
+
+		isKnockback = true;
+		agent.isStopped = true; // 暫停 NavMeshAgent 控制
+
+		float elapsed = 0f;
+		while (elapsed < knockbackDuration)
+		{
+			// 直接位移
+			transform.position += (Vector3)(direction * knockbackForce * Time.deltaTime);
+
+			elapsed += Time.deltaTime;
+			yield return null;
+		}
+
+		// 擊退結束，恢復追蹤
+		agent.isStopped = false;
+		isKnockback = false;
+	}
+
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("AttackObject"))
 		{
 			TakeDamage(1);
+			// 擊退效果
+			//Vector2 knockDir = (transform.position - other.transform.position).normalized;
+			//StartCoroutine(ApplyKnockback(knockDir));
 		}
 	}
 

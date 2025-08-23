@@ -4,19 +4,55 @@
             "sceneName": "Game Scene",
             "components": [
                 {
-                    "path": "Player",
-                    "type": "PlayerMovement, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
-                },
-                {
-                    "path": "Guests Group",
-                    "type": "GuestGroupManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
-                },
-                {
                     "path": "Managers/Rround Manager",
                     "type": "RoundManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
                 },
                 {
-                    "path": "Canvas/Game Info Panel/Hot Point Manager",
+                    "path": "GameObjects Groups/Foods Group",
+                    "type": "FoodsGroupManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Guests Group",
+                    "type": "GuestGroupManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "PlayerInteraction, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "PlayerMovement, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "PlayerStatus, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "PlayerAttackController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "PlayerSpineAnimationManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "GameObjects Groups/Player",
+                    "type": "UnityEngine.InputSystem.PlayerInput, Unity.InputSystem, Version=1.7.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "UI Canvas/Game Info Panel/Hot Point Manager",
+                    "type": "UnityEngine.RectTransform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "UI Canvas/Game Info Panel/Hot Point Manager",
+                    "type": "UnityEngine.CanvasRenderer, UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "UI Canvas/Game Info Panel/Hot Point Manager",
+                    "type": "UnityEngine.UI.Image, UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                {
+                    "path": "UI Canvas/Game Info Panel/Hot Point Manager",
                     "type": "HotPointManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
                 }
             ]

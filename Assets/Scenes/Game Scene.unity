@@ -19141,7 +19141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f94174b522f852448b52dfa5a48687c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dessertCooldownSeconds: 5
+  dessertColdownSeconds: 15
   hideBarWhenReady: 1
   foodsArray:
   - {fileID: 2087422595}
@@ -21187,7 +21187,7 @@ MonoBehaviour:
   physicsMovementRelativeTo: {fileID: 0}
   updateTiming: 1
   unscaledTime: 0
-  _animationName: dash/tabledash
+  _animationName: run/run
   loop: 1
   timeScale: 1
 --- !u!23 &435292531
@@ -31257,7 +31257,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skeletonAnim: {fileID: 435292530}
   baseTrack: 0
-  overlayTrack: 1
   IdleFront: idle/idle
   IdleBack: idle/idle_back
   RunFront: run/run
@@ -38740,6 +38739,7 @@ GameObject:
   m_Component:
   - component: {fileID: 761160830}
   - component: {fileID: 761160831}
+  - component: {fileID: 761160832}
   m_Layer: 0
   m_Name: Guests Group
   m_TagString: Untagged
@@ -38777,23 +38777,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33234bcc0b2b59440b3e69e25c4a9412, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minSpawnColdTime: 5
+  minSpawnColdTime: 10
   maxSpawnColdTime: 10
   isSpawnNormalGuest: 1
   minNormalGuests: 3
-  maxNormalGuests: 5
+  maxNormalGuests: 3
   isSpawnWanderGuest: 1
-  minWanderGuests: 1
-  maxWanderGuests: 3
+  minWanderGuests: 0
+  maxWanderGuests: 1
   isSpawnTroubleGuest: 0
   minTroubleGuests: 2
   maxTroubleGuests: 4
   doorPosition: {fileID: 506713175}
-  normalGuestPrefab: {fileID: 6060541895779928030, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
-  wanderGuestPrefab: {fileID: 7515934212084511566, guid: 493cd2c31a9f26946a0264fc6e39f21d, type: 3}
-  troubleGuestPrefab: {fileID: 7394560797054130701, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
   enterPoistion: {fileID: 506713175}
   exitPoistion: {fileID: 1829105584}
+  normalGuestKey: NormalGuest
+  wanderGuestKey: WanderGuest
+  troubleGuestKey: TroubleGuest
+--- !u!114 &761160832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 761160829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc64edfe801e686499787ae6a8ec1fe0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guestGroupParent: {fileID: 761160830}
+  guestPrefabs:
+  - key: NormalGuest
+    prefab: {fileID: 6060541895779928030, guid: 7dae04962db36f54bb4bb92417965de5, type: 3}
+    defaultCapacity: 50
+    maxSize: 100
+  - key: TroubleGuest
+    prefab: {fileID: 7394560797054130701, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+    defaultCapacity: 50
+    maxSize: 100
+  - key: WanderGuest
+    prefab: {fileID: 7515934212084511566, guid: 493cd2c31a9f26946a0264fc6e39f21d, type: 3}
+    defaultCapacity: 50
+    maxSize: 100
 --- !u!1 &761658582
 GameObject:
   m_ObjectHideFlags: 0
@@ -48050,6 +48076,63 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!1001 &979297041
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3.0328
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1.9962
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7394560797054130701, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
+      propertyPath: m_Name
+      value: Trouble guest
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
 --- !u!1 &980801601
 GameObject:
   m_ObjectHideFlags: 0
@@ -99877,3 +99960,4 @@ SceneRoots:
   - {fileID: 2063143629}
   - {fileID: 1814491289}
   - {fileID: 309499588}
+  - {fileID: 979297041}

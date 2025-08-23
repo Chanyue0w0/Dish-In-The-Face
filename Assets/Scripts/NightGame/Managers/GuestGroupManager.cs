@@ -1,12 +1,10 @@
 using UnityEngine;
-using UnityEngine.Pool;
-using static UnityEngine.ParticleSystem;
 
 public class GuestGroupManager : MonoBehaviour
 {
 	[Header("-------------------- Settings --------------------")]
-	[SerializeField] private float minSpawnColdTime;
-	[SerializeField] private float maxSpawnColdTime;
+	[SerializeField] private float minSpawnColdTime = 3f;
+	[SerializeField] private float maxSpawnColdTime = 6f;
 
 	[Header("Normal Guest Settings")]
 	[SerializeField] private bool isSpawnNormalGuest = true;
@@ -25,56 +23,23 @@ public class GuestGroupManager : MonoBehaviour
 
 	[Header("-------------------- Reference --------------------")]
 	[SerializeField] private Transform doorPosition;
-	[SerializeField] private GameObject normalGuestPrefab;
-	[SerializeField] private GameObject wanderGuestPrefab;
-	[SerializeField] private GameObject troubleGuestPrefab;
 	public Transform enterPoistion;
 	public Transform exitPoistion;
+
+	[Header("-------------------- Guest Pool Keys --------------------")]
+	[SerializeField] private string normalGuestKey = "NormalGuest";
+	[SerializeField] private string wanderGuestKey = "WanderGuest";
+	[SerializeField] private string troubleGuestKey = "TroubleGuest";
 
 	private float timer;
 	private float nextSpawnTime;
 
-	// 內建物件池
-	private ObjectPool<GameObject> normalGuestPool;
-	private ObjectPool<GameObject> wanderGuestPool;
-	private ObjectPool<GameObject> troubleGuestPool;
-
-	void Start()
+	private void Start()
 	{
-		normalGuestPool = new ObjectPool<GameObject>(
-			createFunc: () => Instantiate(normalGuestPrefab, transform),
-			actionOnGet: obj => obj.SetActive(true),
-			actionOnRelease: obj => obj.SetActive(false),
-			actionOnDestroy: obj => Destroy(obj),
-			collectionCheck: false,
-			defaultCapacity: 20,
-			maxSize: 200
-		);
-
-		wanderGuestPool = new ObjectPool<GameObject>(
-			createFunc: () => Instantiate(wanderGuestPrefab, transform),
-			actionOnGet: obj => obj.SetActive(true),
-			actionOnRelease: obj => obj.SetActive(false),
-			actionOnDestroy: obj => Destroy(obj),
-			collectionCheck: false,
-			defaultCapacity: 20,
-			maxSize: 200
-		);
-
-		troubleGuestPool = new ObjectPool<GameObject>(
-			createFunc: () => Instantiate(troubleGuestPrefab, transform),
-			actionOnGet: obj => obj.SetActive(true),
-			actionOnRelease: obj => obj.SetActive(false),
-			actionOnDestroy: obj => Destroy(obj),
-			collectionCheck: false,
-			defaultCapacity: 20,
-			maxSize: 200
-		);
-
 		SetNextSpawnTime();
 	}
 
-	void Update()
+	private void Update()
 	{
 		timer += Time.deltaTime;
 		if (timer >= nextSpawnTime)
@@ -85,96 +50,98 @@ public class GuestGroupManager : MonoBehaviour
 		}
 	}
 
-	void SetNextSpawnTime()
+	private void SetNextSpawnTime()
 	{
 		nextSpawnTime = Random.Range(minSpawnColdTime, maxSpawnColdTime);
 	}
 
-	void SpawnGuestWave()
+	private void SpawnGuestWave()
 	{
+		if (GuestPool.Instance == null)
+		{
+			Debug.LogError("[GuestGroupManager] GuestPool.Instance 為空，請先放置並設定 GuestPool！");
+			return;
+		}
+
+		Vector3 pos = GetSpawnPosition();
+
 		if (isSpawnNormalGuest)
 		{
 			int count = Random.Range(minNormalGuests, maxNormalGuests + 1);
 			for (int i = 0; i < count; i++)
-			{
-				GameObject guest = normalGuestPool.Get();
-				guest.transform.position = GetSpawnPosition();
-				guest.GetComponent<GuestPoolHandler>().Init(normalGuestPool);
-			}
+				SpawnOne(normalGuestKey, pos);
 		}
 
 		if (isSpawnWanderGuest)
 		{
 			int count = Random.Range(minWanderGuests, maxWanderGuests + 1);
 			for (int i = 0; i < count; i++)
-			{
-				GameObject guest = wanderGuestPool.Get();
-				guest.transform.position = GetSpawnPosition();
-				guest.GetComponent<GuestPoolHandler>().Init(wanderGuestPool);
-			}
+				SpawnOne(wanderGuestKey, pos);
 		}
 
 		if (isSpawnTroubleGuest)
 		{
 			int count = Random.Range(minTroubleGuests, maxTroubleGuests + 1);
 			for (int i = 0; i < count; i++)
-			{
-				GameObject guest = troubleGuestPool.Get();
-				guest.transform.position = GetSpawnPosition();
-				guest.GetComponent<GuestPoolHandler>().Init(troubleGuestPool);
-			}
+				SpawnOne(troubleGuestKey, pos);
 		}
 	}
 
-	Vector3 GetSpawnPosition()
+	private void SpawnOne(string key, Vector3 pos)
 	{
-		if (doorPosition != null)
-			return doorPosition.position;
-		else
-		{
-			Debug.LogWarning("spawnPosition 未指定，使用預設位置 (0,0,0)");
-			return Vector3.zero;
-		}
+		var go = GuestPool.Instance.SpawnGuest(key, pos, Quaternion.identity);
+		if (go == null) return;
+
+		// 綁定回收資訊
+		var handler = go.GetComponent<GuestPoolHandler>();
+		if (handler != null) handler.Init(key);
+
+		// 這裡如需初始化 controller 狀態、進場導航等，也可在此設定
 	}
 
+	private Vector3 GetSpawnPosition()
+	{
+		if (doorPosition != null) return doorPosition.position;
+		Debug.LogWarning("[GuestGroupManager] doorPosition 未指定，使用 (0,0,0)");
+		return Vector3.zero;
+	}
+
+	/// <summary>
+	/// 在指定位置生成 TroubleGuest（可選擇複製外觀 sprite）
+	/// </summary>
 	public GameObject SpawnTroubleGuestAt(Vector3 pos, Sprite copySprite = null)
 	{
-		// 取出 TroubleGuest
-		GameObject guest = null;
-		if (troubleGuestPool != null)
+		if (GuestPool.Instance == null)
 		{
-			guest = troubleGuestPool.Get();
-			guest.transform.SetParent(transform);
-			guest.transform.position = pos;
-
-			// 綁定物件池處理器（回收用）
-			var handler = guest.GetComponent<GuestPoolHandler>();
-			if (handler != null) handler.Init(troubleGuestPool);
-
-			// 設定外觀（若給了要複製的 sprite，就沿用）
-			var ctrl = guest.GetComponent<TroubleGusetController>();
-			if (ctrl != null && copySprite != null)
-			{
-				// 下方第(3)點會把 SetSprite 改成 public，這裡就能直接呼叫
-				ctrl.SetSprite(copySprite);
-			}
+			Debug.LogError("[GuestGroupManager] GuestPool.Instance 為空，無法生成 TroubleGuest");
+			return null;
 		}
-		else
+
+		var guest = GuestPool.Instance.SpawnGuest(troubleGuestKey, pos, Quaternion.identity);
+		if (guest == null) return null;
+
+		var handler = guest.GetComponent<GuestPoolHandler>();
+		if (handler != null) handler.Init(troubleGuestKey);
+
+		// 若你的 TroubleGusetController 有 SetSprite(Sprite) 的公開方法，可在這裡做外觀複製
+		var ctrl = guest.GetComponent<TroubleGusetController>();
+		if (ctrl != null && copySprite != null)
 		{
-			Debug.LogError("troubleGuestPool 尚未初始化，無法生成 TroubleGuest");
+			ctrl.SetSprite(copySprite);
 		}
 
 		return guest;
 	}
 
+	/// <summary>
+	/// 範例：重置場上所有 NormalGuest 的耐心
+	/// </summary>
 	public void ResetAllGuestsPatience()
 	{
-		foreach (Transform guest in transform) //得到所有子物件
+		foreach (Transform child in transform) // 視你的層級結構而定（如果 Guest 都放在 GuestPool 的 parent 下，可改掃 GuestPool 的 parent）
 		{
-			NormalGuestController controller = guest.GetComponent<NormalGuestController>();
+			var controller = child.GetComponent<NormalGuestController>();
 			if (controller == null) continue;
-
-			Debug.Log("ResetAllGuestsPatience");
 			controller.ResetPatience();
 		}
 	}
