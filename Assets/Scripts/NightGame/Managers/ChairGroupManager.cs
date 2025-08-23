@@ -9,12 +9,12 @@ public class ChairGroupManager : MonoBehaviour
 
 	[Header("Reference")]
 	[SerializeField] private GameObject coinPrefab;
-	private HashSet<Transform> occupiedChairs = new HashSet<Transform>(); // 正在被使用的椅子集合
+	private HashSet<Transform> occupiedChairs;// 正在被使用的椅子集合
 
 	private void Awake()
 	{
 		chairList.Clear();
-
+		occupiedChairs = new HashSet<Transform>();
 		GameObject[] allChairs = GameObject.FindGameObjectsWithTag("Chair");
 		foreach (GameObject chairObj in allChairs)
 		{
@@ -83,10 +83,10 @@ public class ChairGroupManager : MonoBehaviour
 
 	public void EnableInteracSignal(Transform chair, GameObject handItem, bool onEnable)
 	{
-		if (chair == null || chair.childCount < 2) return;
+		if (chair == null || handItem == null | chair.childCount < 2) return;
 
-		Transform chairItem = chair.transform.GetChild(0);
-		Sprite foodSprite = handItem?.transform?.GetComponent<SpriteRenderer>()?.sprite;
+		//Transform chairItem = chair.transform.GetChild(0);
+		Sprite foodSprite = handItem.transform?.GetComponent<SpriteRenderer>()?.sprite;
 		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
 
 		npc?.EnableInteractIcon(foodSprite, onEnable);
@@ -178,5 +178,17 @@ public class ChairGroupManager : MonoBehaviour
 			Vector3.Distance(a.position, guestEnterPoistion.position)
 			.CompareTo(Vector3.Distance(b.position, guestEnterPoistion.position))
 		);
+	}
+
+
+	public void ResetAllSetGuestsPatience()
+	{
+		foreach (Transform chair in chairList) //得到所有子物件
+		{
+			NormalGuestController guestController = chair.GetComponentInChildren<NormalGuestController>();
+			if (guestController == null) continue;
+
+			guestController.ResetPatience();
+		}
 	}
 }

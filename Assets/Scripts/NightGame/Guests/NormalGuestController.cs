@@ -15,11 +15,11 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float thinkOrderTime = 10f;
 
 	[Tooltip("步驟2：等待玩家來點餐的耐心時間（秒）")]
-	[SerializeField] private float waitForOrderTime = 20f;
+	[SerializeField] private float maxOrderPatience = 20f;
 
 	[Tooltip("步驟3：等待餐點的固定耐心（秒）")]
-	[SerializeField] private float waitForDishTime = 25f;
-	
+	[SerializeField] private float maxDishPatience = 25f;
+
 	[Header("-------- Flow Setting --------")]
 	[SerializeField] private float stateTransitionDelay = 0.3f; // 狀態切換延遲（秒）
 
@@ -66,7 +66,12 @@ public class NormalGuestController : MonoBehaviour
 	private GuestState state = GuestState.WalkingToChair;
 
 	private Transform targetChair;
-	private float timer;           // 通用倒數（依狀態詮釋）
+
+	// 取代舊 timer 的三個剩餘時間變數
+	private float thinkTimeLeft = 0f;
+	private float orderPatienceLeft = 0f;
+	private float dishPatienceLeft = 0f;
+
 	private bool isSeated;
 	private bool isRetrying;
 	private bool isLeaving;
@@ -108,14 +113,18 @@ public class NormalGuestController : MonoBehaviour
 		isLeaving = false;
 		isRetrying = false;
 		stuckTimer = 0f;
-		timer = 0f;
 		state = GuestState.WalkingToChair;
+
+		// 重置各剩餘時間
+		thinkTimeLeft = 0f;
+		orderPatienceLeft = 0f;
+		dishPatienceLeft = 0f;
 
 		chatBoxIconObj.SetActive(false);
 		rawBtnIconObj.SetActive(false);
 		questionIconObj.SetActive(false);
 		patienceBar.SetActive(false);
-		barFill.localScale = new Vector3(1f, 1f, 1f);
+		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 		foodSpriteRenderer.sprite = null;
 
 		// 起點與出口
@@ -179,8 +188,9 @@ public class NormalGuestController : MonoBehaviour
 
 		// 思考完「決定」餐點，但尚未讓玩家看到；等玩家來互動才顯示訂單圖示
 		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
-		timer = thinkOrderTime;
-		barFill.localScale = new Vector3(1f, 1f, 1f);
+		thinkTimeLeft = thinkOrderTime;
+
+		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
 	private void EnterWaitingOrder()
@@ -188,14 +198,14 @@ public class NormalGuestController : MonoBehaviour
 		state = GuestState.WaitingOrder;
 
 		// 顯示玩家可互動之提示（例如 X/Raw 按鍵）
-		rawBtnIconObj.SetActive(false);     
+		rawBtnIconObj.SetActive(false);
 		chatBoxIconObj.SetActive(true);
 		questionIconObj.SetActive(true);// 問號可互動（確認點單）
 
 		// 用相同耐心值 UI
 		patienceBar.SetActive(true);
-		timer = waitForOrderTime;
-		barFill.localScale = new Vector3(1f, 1f, 1f);
+		orderPatienceLeft = maxOrderPatience;
+		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
 	private void EnterWaitingDish()
@@ -211,8 +221,8 @@ public class NormalGuestController : MonoBehaviour
 
 		// 固定耐心時間
 		patienceBar.SetActive(true);
-		timer = waitForDishTime;
-		barFill.localScale = new Vector3(1f, 1f, 1f);
+		dishPatienceLeft = maxDishPatience;
+		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 	}
 
 	private void EnterEating()
@@ -259,7 +269,6 @@ public class NormalGuestController : MonoBehaviour
 		if (!isSeated || state != GuestState.WaitingOrder)
 			return false;
 
-		//EnterWaitingDish();
 		Invoke(nameof(EnterWaitingDish), stateTransitionDelay);
 		return true;
 	}
@@ -299,7 +308,6 @@ public class NormalGuestController : MonoBehaviour
 		}
 	}
 
-
 	#endregion
 
 	#region Utilities
@@ -309,9 +317,8 @@ public class NormalGuestController : MonoBehaviour
 		switch (state)
 		{
 			case GuestState.Thinking:
-				// 思考中只倒數，不顯示耐心條
-				timer -= Time.deltaTime;
-				if (timer <= 0f)
+				thinkTimeLeft -= Time.deltaTime;
+				if (thinkTimeLeft <= 0f)
 				{
 					// 思考完成，進入「等待玩家來點餐」
 					EnterWaitingOrder();
@@ -319,22 +326,20 @@ public class NormalGuestController : MonoBehaviour
 				break;
 
 			case GuestState.WaitingOrder:
-				// 顯示耐心條
-				timer -= Time.deltaTime;
-				UpdatePatienceBar(timer, waitForOrderTime);
+				orderPatienceLeft -= Time.deltaTime;
+				UpdatePatienceBar(orderPatienceLeft, maxOrderPatience);
 
-				if (timer <= 0f)
+				if (orderPatienceLeft <= 0f)
 				{
 					BecomeTroubleGuest();
 				}
 				break;
 
 			case GuestState.WaitingDish:
-				// 顯示耐心條
-				timer -= Time.deltaTime;
-				UpdatePatienceBar(timer, waitForDishTime);
+				dishPatienceLeft -= Time.deltaTime;
+				UpdatePatienceBar(dishPatienceLeft, maxDishPatience);
 
-				if (timer <= 0f)
+				if (dishPatienceLeft <= 0f)
 				{
 					BecomeTroubleGuest();
 				}
@@ -353,7 +358,7 @@ public class NormalGuestController : MonoBehaviour
 	{
 		if (!patienceBar.activeSelf) patienceBar.SetActive(true);
 		float ratio = Mathf.Clamp01(Mathf.Max(remain, 0f) / Mathf.Max(total, 0.0001f));
-		barFill.localScale = new Vector3(ratio, 1f, 1f);
+		if (barFill != null) barFill.localScale = new Vector3(ratio, 1f, 1f);
 	}
 
 	private void Leave()
@@ -473,4 +478,16 @@ public class NormalGuestController : MonoBehaviour
 	}
 
 	#endregion
+
+	#region Public Properties
+
+	// NormalGuestController.cs
+	public void ResetPatience()
+	{
+		orderPatienceLeft = maxOrderPatience;
+		dishPatienceLeft = maxDishPatience;
+	}
+
+	#endregion
+
 }

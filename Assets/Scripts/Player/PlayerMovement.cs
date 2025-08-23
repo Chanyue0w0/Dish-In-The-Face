@@ -36,10 +36,10 @@ public class PlayerMovement : MonoBehaviour
 	private Collider2D currentTableCollider;
 
 	private Rigidbody2D rb;
-	private SpriteRenderer spriteRenderer;
 	private Collider2D playerCollider;
-	private PlayerInput playerInput;
 	private PlayerInteraction playerInteraction;
+	//private PlayerInput playerInput;
+	//private SpriteRenderer spriteRenderer;
 
 	// ======= 只改這一行：Animator 管理 → Spine 管理 =======
 	private PlayerSpineAnimationManager animationManager;
@@ -59,9 +59,9 @@ public class PlayerMovement : MonoBehaviour
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		//spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
-		playerInput = GetComponent<PlayerInput>();
+		//playerInput = GetComponent<PlayerInput>();
 		playerInteraction = GetComponent<PlayerInteraction>();
 		animationManager = GetComponent<PlayerSpineAnimationManager>();
 	}

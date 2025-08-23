@@ -56,7 +56,7 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		SetSprite(); // 初始外觀或沿用外觀:contentReference[oaicite:3]{index=3}
 
-		player = GameObject.FindGameObjectWithTag("Player")?.transform;
+		player = RoundManager.Instance.Player;
 
 		maxHp = Random.Range(1, 4);
 		currentHp = maxHp;
@@ -219,8 +219,7 @@ public class TroubleGusetController : MonoBehaviour
 		if (agent == null || !agent.isActiveAndEnabled) return false;
 		if (agent.isOnNavMesh) return true;
 
-		NavMeshHit hit;
-		if (NavMesh.SamplePosition(transform.position, out hit, searchRadius, NavMesh.AllAreas))
+		if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
 		{
 			return agent.Warp(hit.position);
 		}

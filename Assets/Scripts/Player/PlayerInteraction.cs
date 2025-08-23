@@ -16,10 +16,15 @@ public class PlayerInteraction : MonoBehaviour
 	[SerializeField] private HandItemUI handItemUI;   // 更新手上物品UI
 	[SerializeField] private Transform handItemRoot; // 放玩家手上物件的父物件
 
-	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
+	private List<Collider2D> currentChairTriggers;
 
 	private bool isEnableUseDessert = false;
 
+
+	private void Start()
+	{
+		currentChairTriggers = new List<Collider2D>();
+	}
 	/// 對外：在 InputInteract 時呼叫
 	public bool Interact()
 	{

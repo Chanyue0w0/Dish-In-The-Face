@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Pool;
+using static UnityEngine.ParticleSystem;
 
 public class GuestGroupManager : MonoBehaviour
 {
@@ -164,5 +165,17 @@ public class GuestGroupManager : MonoBehaviour
 		}
 
 		return guest;
+	}
+
+	public void ResetAllGuestsPatience()
+	{
+		foreach (Transform guest in transform) //得到所有子物件
+		{
+			NormalGuestController controller = guest.GetComponent<NormalGuestController>();
+			if (controller == null) continue;
+
+			Debug.Log("ResetAllGuestsPatience");
+			controller.ResetPatience();
+		}
 	}
 }
