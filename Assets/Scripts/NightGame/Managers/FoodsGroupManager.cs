@@ -9,7 +9,8 @@ public class FoodsGroupManager : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodsArray;
 	[SerializeField] private Transform barFill;
-	[SerializeField] private Transform DishLoadingBar;
+	[SerializeField] private Transform dishLoadingBar;
+	[SerializeField] private Animator dessertAnimator;
 
 	[Header("-------- Highlight ---------")]
 	[SerializeField] private GameObject yellowFrame;
@@ -139,5 +140,14 @@ public class FoodsGroupManager : MonoBehaviour
 	public GameObject GetCurrentDishObject()
 	{
 		return currentFoodTarget != null ? currentFoodTarget.gameObject : null;
+	}
+
+	// 使用發點心
+	public bool UseDessert()
+	{
+		// cold down finish
+
+		dessertAnimator.Play("DessertEffect");
+		return true;
 	}
 }

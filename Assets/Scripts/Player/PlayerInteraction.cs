@@ -18,6 +18,8 @@ public class PlayerInteraction : MonoBehaviour
 
 	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
 
+	private bool isEnableUseDessert = false;
+
 	/// 對外：在 InputInteract 時呼叫
 	public bool Interact()
 	{
@@ -25,12 +27,14 @@ public class PlayerInteraction : MonoBehaviour
 		// 先撿餐，成功即結束
 		if (TryGetFood()) return true;
 
+		if (TryUseDessert()) return true;
+
 		// 幫附近客人確認點餐，成功即結束
 		if (TryConfirmOrderForNearbyGuests()) return true;
 
 		// 嘗試放餐，成功即結束
 		if (TryPullDownDish()) return true;
-		
+
 		return false;
 	}
 
@@ -40,40 +44,37 @@ public class PlayerInteraction : MonoBehaviour
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
-		if (currentFood != null)
+		if (currentFood == null) return false;
+
+		// 相同疊加至上限
+		if (handItemRoot.childCount > 4) return false;
+
+		Vector3 pos = handItemRoot.transform.position + new Vector3(0, -1, 0);
+		if (handItemRoot.childCount > 0)
 		{
-			if (handItemRoot.childCount > 0)
+			Sprite handItemSprite = handItemRoot.GetComponentInChildren<SpriteRenderer>().sprite;
+			if (currentFood.GetComponent<SpriteRenderer>().sprite != handItemSprite)
 			{
-				Sprite handItemSprite = handItemRoot.GetComponentInChildren<SpriteRenderer>().sprite;
-				if (currentFood.GetComponent<SpriteRenderer>().sprite != handItemSprite)
-				{
-					// 手上餐點與選擇餐點不同
-					foreach (Transform child in handItemRoot)
-						Destroy(child.gameObject);
-				}
+				// 手上餐點與選擇餐點不同
+				foreach (Transform child in handItemRoot)
+					Destroy(child.gameObject);
 			}
-
-			if (handItemRoot.childCount > 4)
-			{
-				// 相同疊加至上限
-				//Debug.Log("hand item max limit!!!!!!!!!");
-				return false;
-			}
-
-			for (int i = 0; i < getFoodCount; i++)
-			{
-				GameObject newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
-				newItem.transform.SetParent(handItemRoot);
-				newItem.GetComponent<Collider2D>().enabled = false;
-
-				newItem.transform.SetAsFirstSibling();
-			}
-
-			if (handItemUI) handItemUI.ChangeHandItemUI();
-			return true;
+			else pos = handItemRoot.GetChild(0).transform.position;
 		}
 
-		return false;
+
+		for (int i = 0; i < getFoodCount; i++)
+		{
+			GameObject newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+			newItem.transform.SetParent(handItemRoot);
+			newItem.GetComponent<Collider2D>().enabled = false;
+
+			newItem.transform.SetAsFirstSibling();
+			newItem.transform.position = pos + new Vector3(0, 1, 0);
+		}
+
+		if (handItemUI) handItemUI.ChangeHandItemUI();
+		return true;
 	}
 
 	/// 嘗試幫附近座位上的客人確認點餐
@@ -103,6 +104,11 @@ public class PlayerInteraction : MonoBehaviour
 		return false;
 	}
 
+	private bool TryUseDessert()
+	{
+		if (!isEnableUseDessert) return false;
+		return RoundManager.Instance.foodsGroupManager.UseDessert();
+	}
 
 	// ===== 椅子觸發維護 =====
 	void OnTriggerEnter2D(Collider2D other)
@@ -116,21 +122,36 @@ public class PlayerInteraction : MonoBehaviour
 			}
 		}
 	}
-	void OnTriggerStay2D(Collider2D other)
+	void OnTriggerStay2D(Collider2D trigger)
 	{
-		if (other.CompareTag("Chair"))
+		if (trigger.CompareTag("Chair"))
 		{
-			if (!currentChairTriggers.Contains(other))
-				currentChairTriggers.Add(other);
+			if (!currentChairTriggers.Contains(trigger))
+				currentChairTriggers.Add(trigger);
 		}
 	}
-	void OnTriggerExit2D(Collider2D other)
+	void OnTriggerExit2D(Collider2D trigger)
 	{
-		if (other.CompareTag("Chair"))
+		if (trigger.CompareTag("Chair"))
 		{
-			RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, null, false);
-			if (currentChairTriggers.Contains(other))
-				currentChairTriggers.Remove(other);
+			RoundManager.Instance.chairGroupManager.EnableInteracSignal(trigger.transform, null, false);
+			if (currentChairTriggers.Contains(trigger))
+				currentChairTriggers.Remove(trigger);
+		}
+	}
+
+	private void OnCollisionStay2D(Collision2D collision)
+	{
+		if (collision.collider.CompareTag("Dessert"))
+		{
+			isEnableUseDessert = true;
+		}
+	}
+	private void OnCollisionExit2D(Collision2D collision)
+	{
+		if (collision.collider.CompareTag("Dessert"))
+		{
+			isEnableUseDessert = false;
 		}
 	}
 }

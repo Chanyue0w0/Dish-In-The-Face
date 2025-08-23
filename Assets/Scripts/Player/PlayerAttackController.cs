@@ -65,8 +65,6 @@ public class PlayerAttackController : MonoBehaviour
 
 						// 播完後再顯示 handItem
 						handItem.gameObject.SetActive(true);
-						animationManager.UpdateFromMovement(Vector2.zero);
-						playerMovement.SetEnableMoveControll(true);
 					});
 
 					break;

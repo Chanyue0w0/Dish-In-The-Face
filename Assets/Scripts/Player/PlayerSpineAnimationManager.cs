@@ -6,6 +6,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[Header("Spine")]
 	[SerializeField] private SkeletonAnimation skeletonAnim; // 角色的 SkeletonAnimation
 	[SerializeField] private int baseTrack = 0;              // 主要動作 Track（一般用 0）
+	[SerializeField] private int overlayTrack = 1; // 專門放攻擊/一次性動畫
+	private Vector2 lastMoveInput = Vector2.zero;  // 快取最後的移動輸入
+
 
 	[Header("Animation Names")]
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)]  public string IdleFront;
@@ -48,29 +51,28 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	/// <summary>由移動腳本每幀餵入目前移動向量</summary>
 	public void UpdateFromMovement(Vector2 moveInput, bool _isDashingIgnored = false, bool _isSlidingIgnored = false)
 	{
-		if (isOneShotPlaying) return;
+		lastMoveInput = moveInput;
 
-		if (!skeletonAnim || skeletonAnim.Skeleton == null) return;
+		// 如果 overlay 正在播一次性動畫，就讓底層照常更新或直接 return 都可。
+		// 建議：底層維持「當前姿勢」，所以這裡不早退，照常根據 moveInput 決定 base track 的動畫。
+		// 若你想一次性動畫時不更新底層，可以打開下面這行：
+		// if (isOneShotPlaying) return;
 
 		float sqrMag = moveInput.sqrMagnitude;
 		bool isMoving = sqrMag > idleDeadzone * idleDeadzone;
 
-
-		// ===== Slide =====
 		if (playerMovement.IsPlayerSlide())
 		{
 			SetAnimIfChanged(DashSlide, true, snap: true);
 			return;
 		}
 
-		// ===== Dash =====
 		if (playerMovement.IsPlayerDash())
 		{
 			SetAnimIfChanged(DashNormal, true, snap: true);
 			return;
 		}
 
-		// ===== Idle =====
 		if (!isMoving)
 		{
 			string idleName = (moveInput.y > 0f) ? IdleBack : IdleFront;
@@ -78,23 +80,18 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 			return;
 		}
 
-		// ===== 優先側向（只要 |x| 超過門檻就視為側向）=====
 		if (Mathf.Abs(moveInput.x) >= sideXThreshold)
 		{
 			SetAnimIfChanged(RunSide, true, snap: true);
 			return;
 		}
 
-		// ===== 非側向：只在純往後才用 back；否則用前視 run =====
-		if (moveInput.y > 0f) // 純往後
-		{
+		if (moveInput.y > 0f)
 			SetAnimIfChanged(RunBack, true, snap: true);
-		}
-		else // 往前或斜前(此時 |x| < threshold)，一律視為前視 run
-		{
+		else
 			SetAnimIfChanged(RunFront, true, snap: true);
-		}
 	}
+
 
 	/// <summary>如果動畫不同才切換；snap=true 會把 mixDuration 設為 0 直接切換</summary>
 	private void SetAnimIfChanged(string animName, bool loop, bool snap)
@@ -111,46 +108,52 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	/// <summary>
 	/// 播放一段 Spine 動畫（不循環），並監聽事件：
-	/// - "Attack_HitStart": 啟用傳入的 hitBox
-	/// - "FX_Show": 於 hitBox（若為空則角色）位置生成傳入的 vfxName，生存 2 秒
-	/// 動畫結束/被中斷時會自動關閉 hitBox、解除鎖定，並呼叫 onComplete（若提供）。
 	/// </summary>
 	public void PlayAnimationOnce(string animName, GameObject hitBox, string vfxName, System.Action onComplete = null)
 	{
 		if (!skeletonAnim || string.IsNullOrEmpty(animName)) return;
 
-		// 開播前先關閉 hitbox
 		if (hitBox) hitBox.SetActive(false);
 
-		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, false); // 不循環
+		// 在 overlay track（例如 1）播一次性動畫，不破壞 baseTrack 的移動/待機
+		var entry = skeletonAnim.AnimationState.SetAnimation(overlayTrack, animName, false);
 		if (entry == null) return;
 
-		entry.MixDuration = 0f;  // 直接切，不做漸變
+		entry.MixDuration = 0f;
 		isOneShotPlaying = true;
 
-		// 事件：命中開始 / 顯示特效
 		entry.Event += (t, e) =>
 		{
 			var evtName = e.Data.Name;
-			if (evtName == "Attack_HitStart")
+			if (evtName == "Attack_HitStart") // - "Attack_HitStart": 啟用傳入的 hitBox
 			{
 				if (hitBox) hitBox.SetActive(true);
 			}
-			else if (evtName == "FX_Show" && vfxName != "")
+			else if (evtName == "FX_Show" && !string.IsNullOrEmpty(vfxName)) // - "FX_Show": 於 hitBox（若為空則角色）位置生成傳入的 vfxName，生存 2 秒
 			{
 				var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
 				VFXPool.Instance.SpawnVFX(vfxName, pos, transform.rotation, 2f);
 			}
 		};
 
-		// 收尾：不論完成 / 中斷都保證關閉 hitbox、解鎖與回呼
 		bool closed = false;
 		System.Action close = () =>
 		{
 			if (closed) return;
 			closed = true;
-			if (hitBox) hitBox.SetActive(false);
+			if (hitBox) hitBox.SetActive(false); // 動畫結束/被中斷時會自動關閉 hitBox、解除鎖定，並呼叫 onComplete（若提供）。
+
+			// 清空 overlay track，讓底層（base track）立刻完全可見
+			skeletonAnim.AnimationState.SetEmptyAnimation(overlayTrack, 0f);
+			// 或者：skeletonAnim.AnimationState.ClearTrack(overlayTrack);
+
 			isOneShotPlaying = false;
+
+			// 這裡其實不一定要再呼叫 UpdateFromMovement，因為 base track 一直在跑
+			// 若你想根據當前輸入再刷新一次，可保留：
+			UpdateFromMovement(lastMoveInput);
+
+			playerMovement.SetEnableMoveControll(true);
 			onComplete?.Invoke();
 		};
 
