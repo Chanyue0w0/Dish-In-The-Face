@@ -26,6 +26,7 @@ public class TroubleGusetController : MonoBehaviour
 
 	[Header("----- Reference -----")]
 	[SerializeField] private SpriteRenderer guestSpriteRenderer;
+	[SerializeField] private Animator animator;
 	[SerializeField] private GameObject attackHitBox;   // 純視覺/特效
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
@@ -266,14 +267,18 @@ public class TroubleGusetController : MonoBehaviour
 
 		if (currentHp <= 0)
 		{
-			VFXPool.Instance.SpawnVFX("CoinFountain", (attackOrigin != null ? attackOrigin.position : transform.position), Quaternion.identity, 2f);
-			RoundManager.Instance.DefeatEnemySuccess();
-
-			if (poolHandler != null) poolHandler.Release();
-			else gameObject.SetActive(false);
+			Dead();
 		}
 	}
 
+	private void Dead()
+	{
+		VFXPool.Instance.SpawnVFX("CoinFountain", (attackOrigin != null ? attackOrigin.position : transform.position), Quaternion.identity, 2f);
+		RoundManager.Instance.DefeatEnemySuccess();
+
+		if (poolHandler != null) poolHandler.Release();
+		else gameObject.SetActive(false);
+	}
 
 	private IEnumerator ApplyKnockback(Vector2 direction)
 	{
@@ -282,6 +287,7 @@ public class TroubleGusetController : MonoBehaviour
 		isKnockback = true;
 		agent.isStopped = true; // 暫停 NavMeshAgent 控制
 
+		animator.SetTrigger("BeAttack"); // 撥放受擊動畫
 		float elapsed = 0f;
 		while (elapsed < knockbackDuration)
 		{
@@ -295,16 +301,16 @@ public class TroubleGusetController : MonoBehaviour
 		// 擊退結束，恢復追蹤
 		agent.isStopped = false;
 		isKnockback = false;
+		TakeDamage(1);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("AttackObject"))
 		{
-			TakeDamage(1);
 			// 擊退效果
-			//Vector2 knockDir = (transform.position - other.transform.position).normalized;
-			//StartCoroutine(ApplyKnockback(knockDir));
+			Vector2 knockDir = (transform.position - other.transform.position).normalized;
+			StartCoroutine(ApplyKnockback(knockDir));
 		}
 	}
 
