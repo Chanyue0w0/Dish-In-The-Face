@@ -305,6 +305,7 @@ public class NormalGuestController : MonoBehaviour
 	/// </summary>
 	public void EnableInteractIcon(Sprite food, bool isEnable)
 	{
+		Debug.Log("EnableInteractIcon");
 		// 若是等待玩家來點餐 rawBtn 顯示
 		if (state == GuestState.WaitingOrder)
 		{

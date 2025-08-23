@@ -83,7 +83,7 @@ public class ChairGroupManager : MonoBehaviour
 
 	public void EnableInteracSignal(Transform chair, GameObject handItem, bool onEnable)
 	{
-		if (chair == null || handItem == null | chair.childCount < 2) return;
+		if (chair == null || handItem == null || chair.childCount < 2) return;
 
 		//Transform chairItem = chair.transform.GetChild(0);
 		Sprite foodSprite = handItem.transform?.GetComponent<SpriteRenderer>()?.sprite;
