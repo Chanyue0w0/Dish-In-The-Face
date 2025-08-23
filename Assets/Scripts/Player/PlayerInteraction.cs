@@ -18,12 +18,6 @@ public class PlayerInteraction : MonoBehaviour
 
 	private List<Collider2D> currentChairTriggers = new List<Collider2D>();
 
-
-	/// 初始化綁定（可由 PlayerMovement 呼叫）
-	public void BindMovement(PlayerMovement mv) => movement = mv;
-	public void SetHandItemUI(HandItemUI ui) => handItemUI = ui;
-	public void SetHandItemRoot(Transform root) => handItemRoot = root;
-
 	/// 對外：在 InputInteract 時呼叫
 	public bool Interact()
 	{

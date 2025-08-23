@@ -38,7 +38,7 @@ public class PlayerAttackController : MonoBehaviour
 						return false;
 
 					// 攻擊成功
-					playerMovement.DestoryFirstItem(); // 使用掉第一個食物
+					if (cakeComboIndex > 0) playerMovement.DestoryFirstItem(); // 使用掉第一個食物
 					handItem.gameObject.SetActive(false);
 					playerMovement.SetEnableMoveControll(false);
 					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
@@ -54,11 +54,11 @@ public class PlayerAttackController : MonoBehaviour
 						? "DrumStick_NormalAttack_1"
 						: "DrumStick_NormalAttack_2";
 
+					//VFXPool.Instance.SpawnVFX(vfxName, attackHitBox.transform.position, Quaternion.identity, 2f);
+
 					// 撥放一次；HitBox 與 VFX 交給 Spine 事件：
-					animationManager.PlayAnimationOnce(anim, attackHitBox, "Cake", () =>
+					animationManager.PlayAnimationOnce(anim, attackHitBox, vfxName, () =>
 					{
-						// 生成 VFX
-						VFXPool.Instance.SpawnVFX(vfxName, attackHitBox.transform.position, Quaternion.identity);
 
 						// 動畫播完：切換 combo index
 						cakeComboIndex = 1 - cakeComboIndex;
