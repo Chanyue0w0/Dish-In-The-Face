@@ -27,7 +27,7 @@ public class SettingMenu : MonoBehaviour
 	[SerializeField] private Slider sfxSlider;
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 
-	[Header("Main Buttons Text (Åã¥Ü·í«e³]©w­È)")]
+	[Header("Main Buttons Text (Display current settings)")]
 	[SerializeField] private TextMeshProUGUI displayModeMainText;
 	[SerializeField] private TextMeshProUGUI resolutionMainText;
 	[SerializeField] private TextMeshProUGUI refreshRateMainText;
@@ -35,13 +35,13 @@ public class SettingMenu : MonoBehaviour
 	[SerializeField] private TextMeshProUGUI vsyncMainText;       // x / v
 	[SerializeField] private TextMeshProUGUI vibrationMainText;   // x / v
 
-	[Header("¿ï¶µ­±ªO (ÂI¥D«ö¶s«á¥´¶})")]
-	[SerializeField] private GameObject displayModePanel;   // ©ñ displayModeButtons
-	[SerializeField] private GameObject resolutionPanel;    // ©ñ resolutionButtons
-	[SerializeField] private GameObject refreshRatePanel;   // ©ñ refreshRateButtons
-	[SerializeField] private GameObject languagePanel;      // ©ñ languageButtons
+	[Header("Option Panels (Click to show detailed settings)")]
+	[SerializeField] private GameObject displayModePanel;   // Contains displayModeButtons
+	[SerializeField] private GameObject resolutionPanel;    // Contains resolutionButtons
+	[SerializeField] private GameObject refreshRatePanel;   // Contains refreshRateButtons
+	[SerializeField] private GameObject languagePanel;      // Contains languageButtons
 
-	[Header("Buttons («O¯d­ì¥»ªº¸s²Õ«ö¶s°}¦C)")]
+	[Header("Buttons (Store individual setting buttons)")]
 	[SerializeField] private Image[] displayModeButtons;
 	[SerializeField] private Image[] resolutionButtons;
 	[SerializeField] private Image[] refreshRateButtons;
@@ -52,34 +52,34 @@ public class SettingMenu : MonoBehaviour
 
 	private bool isOpened = false;
 
-	// ===== Localization §Ö¨ú¡]¥u§ä³o¨â­Ó Locale¡^=====
+	// ===== Localization configuration (cache available Locale) =====
 	private AsyncOperationHandle m_LocInitOp;
 	private Locale _localeZhTw;   // Chinese (Traditional) (zh-TW)
 	private Locale _localeEnUs;   // English (United States) (en-US)
 
 	private void Start()
 	{
-		// Root ¤À­¶­±ªO²M³æ¡]¤@¯ë / ­û¤u / «öÁä¡^
+		// Root panels management (General / Staff / Controls)
 		rootPanels.Add(normalPanel);
 		rootPanels.Add(staffPanel);
 		rootPanels.Add(keyPanel);
 
-		// ¿ï¶µ­±ªO²M³æ¡]Åã¥Ü¼Ò¦¡ / ¸ÑªR«× / §ó·s²v / »y¨¥¡^
+		// Option panels management (Display Mode / Resolution / Refresh Rate / Language)
 		optionPanels.Add(displayModePanel);
 		optionPanels.Add(resolutionPanel);
 		optionPanels.Add(refreshRatePanel);
 		optionPanels.Add(languagePanel);
 
-		// ¹w³]Åã¥Ü¤@¯ë¤À­¶
+		// Set default to first panel
 		OnClickPanel(normalPanel);
 
-		// ­µ¶qªì©l¤Æ¡]­µ¶qÅÞ¿è¤£°Ê¡^
+		// Initialize volume settings (load from saved preferences)
 		InitVolumeSetting();
 
 		settingPanel.SetActive(false);
 		isOpened = false;
 
-		// ===== Localization ªì©l¤Æ»P§Ö¨ú =====
+		// ===== Localization initialization and configuration =====
 		m_LocInitOp = LocalizationSettings.SelectedLocaleAsync;
 		if (m_LocInitOp.IsDone)
 			CacheLocales();
@@ -92,7 +92,7 @@ public class SettingMenu : MonoBehaviour
 		var locales = LocalizationSettings.AvailableLocales.Locales;
 		foreach (var loc in locales)
 		{
-			// ¥H Identifier.Code Àu¥ý¡A«O©³¤ñ¹ï LocaleName
+			// Use Identifier.Code first, fallback to LocaleName
 			if (loc.Identifier.Code == "zh-TW" || loc.LocaleName == "Chinese (Traditional) (zh-TW)")
 				_localeZhTw = loc;
 
@@ -100,7 +100,7 @@ public class SettingMenu : MonoBehaviour
 				_localeEnUs = loc;
 		}
 
-		// ¨S§ä¨ì´N´£¿ô¤@¤U¡]Á×§K±M®×¨S§â¸Ó Locale ¥[¶i¨Ó¡^
+		// Warn if not found (to avoid issues with missing Locale later)
 		if (_localeZhTw == null)
 			Debug.LogWarning("[SettingMenu] Locale zh-TW not found in Available Locales.");
 		if (_localeEnUs == null)
@@ -109,7 +109,7 @@ public class SettingMenu : MonoBehaviour
 
 	private void Update()
 	{
-		// ¨C¦¸ Setting ­±ªO³Q±Ò¥Î®É¡A¦P¨BÅã¥Ü¤å¦r»P¤Á´«ª¬ºA
+		// When Setting panel is opened, sync display text and settings
 		if (settingPanel.activeInHierarchy && !isOpened)
 		{
 			isOpened = true;
@@ -118,7 +118,7 @@ public class SettingMenu : MonoBehaviour
 		}
 	}
 
-	#region ªì©l¤Æ¡G­µ¶q¡]¤£°Ê¡^
+	#region Initialize: Volume settings (from saved preferences)
 	private void InitVolumeSetting()
 	{
 		// Master
@@ -138,31 +138,31 @@ public class SettingMenu : MonoBehaviour
 	}
 	#endregion
 
-	#region OnEnable ®É¦P¨B¥D«ö¶s¤å¦r»P¤Á´«
+	#region Sync UI text and settings from PlayerPrefs when enabled
 	private void SyncMainTextsAndTogglesFromPrefs()
 	{
-		// Åã¥Ü¼Ò¦¡
+		// Display Mode
 		string displayMode = PlayerPrefsManager.GetDisplayMode();
 		if (displayModeMainText != null) displayModeMainText.text = displayMode;
 
-		// ¸ÑªR«×
+		// Resolution
 		string resolution = PlayerPrefsManager.GetResolution();
 		if (resolutionMainText != null) resolutionMainText.text = resolution;
 
-		// §ó·s²v
+		// Refresh Rate
 		string refreshRate = PlayerPrefsManager.GetRefreshRate();
 		if (refreshRateMainText != null) refreshRateMainText.text = refreshRate;
 
-		// »y¨¥¡]Åã¥Ü¦r¦ê¡F¹ê»Ú¤Á´«¦b OnClickSelectLanguage¡^
+		// Language (display text, actual switching happens in OnClickSelectLanguage)
 		string language = PlayerPrefsManager.GetLanguage();
 		if (languageMainText != null) languageMainText.text = language;
 
-		// VSync¡]x / v¡^
+		// VSync (x / v)
 		bool vsync = PlayerPrefsManager.GetVSync();
 		if (vsyncMainText != null) vsyncMainText.text = vsync ? "v" : "x";
 		QualitySettings.vSyncCount = vsync ? 1 : 0;
 
-		// ±±¨î¾¹¾_°Ê¡]x / v¡^
+		// ï¿½ï¿½ï¿½î¾¹ï¿½_ï¿½Ê¡]x / vï¿½^
 		bool vibration = PlayerPrefsManager.GetControllerVibration();
 		if (vibrationMainText != null) vibrationMainText.text = vibration ? "v" : "x";
 		if (RumbleManager.Instance != null) RumbleManager.Instance.SetEnableRumble(vibration);
@@ -176,7 +176,7 @@ public class SettingMenu : MonoBehaviour
 	}
 	#endregion
 
-	#region ­µ¶q¡]«O«ù­ì¼Ë¡^
+	#region Volume Settings (Sliders and Buttons)
 	public void OnValueChangedMasterVolume()
 	{
 		masterVolumeText.text = ((int)(masterSlider.value * 100f)).ToString();
@@ -217,14 +217,14 @@ public class SettingMenu : MonoBehaviour
 	}
 	#endregion
 
-	#region Åã¥Ü¼Ò¦¡ / ¸ÑªR«× / §ó·s²v / »y¨¥¡G¥D«ö¶s -> ¥´¶}¿ï³æ
+	#region ï¿½ï¿½Ü¼Ò¦ï¿½ / ï¿½ÑªRï¿½ï¿½ / ï¿½ï¿½sï¿½v / ï¿½yï¿½ï¿½ï¿½Gï¿½Dï¿½ï¿½ï¿½s -> ï¿½ï¿½ï¿½}ï¿½ï¿½ï¿½
 	public void OnClickOpenOptionPanel(GameObject panel)
 	{
 		OpenOnlyThisOptionPanel(panel);
 	}
 	#endregion
 
-	#region ¿ï³æ­±ªO¤º¡G¹ê»Ú®M¥Î + §ó·s¥D«ö¶s¤å¦r + Ãö³¬¿ï³æ
+	#region ï¿½ï¿½æ­±ï¿½Oï¿½ï¿½ï¿½Gï¿½ï¿½Ú®Mï¿½ï¿½ + ï¿½ï¿½sï¿½Dï¿½ï¿½ï¿½sï¿½ï¿½r + ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	// -------- Display Mode --------
 	public void OnClickSelectDisplayMode(string mode)
 	{
@@ -262,22 +262,22 @@ public class SettingMenu : MonoBehaviour
 	{
 		PlayerPrefsManager.SetRefreshRate(rate);
 		if (refreshRateMainText != null) refreshRateMainText.text = rate;
-		// ¯u¥¿®M¥Î§ó·s²v³q±`»Ý­n·f°t¸ÑªR«×©Î¦b±Ò°Ê®É³]©w¡A³o¸Ì¶È«O¦s»PÅã¥Ü
+		// ï¿½uï¿½ï¿½ï¿½Mï¿½Î§ï¿½sï¿½vï¿½qï¿½`ï¿½Ý­nï¿½fï¿½tï¿½ÑªRï¿½×©Î¦bï¿½Ò°Ê®É³]ï¿½wï¿½Aï¿½oï¿½Ì¶È«Oï¿½sï¿½Pï¿½ï¿½ï¿½
 		refreshRatePanel.SetActive(false);
 	}
 
 	// -------- Language --------
 	/// <summary>
-	/// lang ¨Ó¦Û§Aªº UI¡A¨Ò¦p "English" / "¤¤¤å" / "en-US" / "zh-TW"
-	/// ¶È¤ä´©¨â­Ó Locale¡Gzh-TW »P en-US
+	/// lang ï¿½Ó¦Û§Aï¿½ï¿½ UIï¿½Aï¿½Ò¦p "English" / "ï¿½ï¿½ï¿½ï¿½" / "en-US" / "zh-TW"
+	/// ï¿½È¤ä´©ï¿½ï¿½ï¿½ Localeï¿½Gzh-TW ï¿½P en-US
 	/// </summary>
 	public void OnClickSelectLanguage(string lang)
 	{
-		// Åã¥Ü¬ö¿ý¡]ºû«ù§A­ì¥»ªº²ßºD¡^
+		// ï¿½ï¿½Ü¬ï¿½ï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ì¥»ï¿½ï¿½ï¿½ßºDï¿½^
 		PlayerPrefsManager.SetLanguage(lang);
 		if (languageMainText != null) languageMainText.text = lang;
 
-		// ©|¥¼ªì©l¤Æ´N¥ýµ²§ô¡]Á×§K NRE¡^
+		// ï¿½|ï¿½ï¿½ï¿½ï¿½lï¿½Æ´Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½×§K NREï¿½^
 		if (!m_LocInitOp.IsDone)
 		{
 			Debug.LogWarning("[SettingMenu] Localization not initialized yet.");
@@ -285,16 +285,16 @@ public class SettingMenu : MonoBehaviour
 			return;
 		}
 
-		// ¨M©w¥Ø¼Ð Locale
+		// ï¿½Mï¿½wï¿½Ø¼ï¿½ Locale
 		Locale target = null;
 
-		// ¤¹³\¦hºØ¿é¤J¡]¦r²´©Î¥N½X¡^
-		if (lang == "zh-TW" || lang.Contains("¤¤¤å") || lang.Contains("Chinese"))
+		// ï¿½ï¿½ï¿½\ï¿½hï¿½Ø¿ï¿½Jï¿½]ï¿½rï¿½ï¿½ï¿½Î¥Nï¿½Xï¿½^
+		if (lang == "zh-TW" || lang.Contains("ï¿½ï¿½ï¿½ï¿½") || lang.Contains("Chinese"))
 			target = _localeZhTw;
 		else if (lang == "en-US" || lang.Contains("English"))
 			target = _localeEnUs;
 
-		// §ä¤£¨ì´N¤£¤Á¡]¦ý´£¥Ü¡^
+		// ï¿½ä¤£ï¿½ï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½ï¿½ï¿½ï¿½ï¿½Ü¡^
 		if (target == null)
 		{
 			Debug.LogWarning($"[SettingMenu] Target locale not resolved for '{lang}'.");
@@ -304,12 +304,12 @@ public class SettingMenu : MonoBehaviour
 			LocalizationSettings.Instance.SetSelectedLocale(target);
 		}
 
-		// Ãö³¬­±ªO
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½O
 		if (languagePanel != null) languagePanel.SetActive(false);
 	}
 	#endregion
 
-	#region VSync / ¾_°Ê¡G³æ¤@¤Á´«¡]x <-> v¡^
+	#region VSync / ï¿½_ï¿½Ê¡Gï¿½ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½]x <-> vï¿½^
 	public void OnClickToggleVSync()
 	{
 		bool current = PlayerPrefsManager.GetVSync();
@@ -333,7 +333,7 @@ public class SettingMenu : MonoBehaviour
 	}
 	#endregion
 
-	#region ¦@¦P¡G¤À­¶/­±ªO¶}Ãö¡]µLÃC¦âÅÜ´«¡^
+	#region ï¿½@ï¿½Pï¿½Gï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½Oï¿½}ï¿½ï¿½ï¿½]ï¿½Lï¿½Cï¿½ï¿½ï¿½Ü´ï¿½ï¿½^
 	public void OnClickPanel(GameObject panel)
 	{
 		foreach (GameObject p in rootPanels)

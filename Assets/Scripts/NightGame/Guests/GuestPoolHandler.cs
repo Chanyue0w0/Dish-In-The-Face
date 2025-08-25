@@ -1,19 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// 綁在各個 Guest 上，記住它來自哪個 key 的池，並能主動回收
+/// Attached to Guest objects, holds the pool key for identification and return to pool
 /// </summary>
 public class GuestPoolHandler : MonoBehaviour
 {
-	[SerializeField] private string poolKey; // 僅用來除錯/可視，實際由 Init 設定
+	[SerializeField] private string poolKey; // Used for spawning/recycling, set by Init
 
-	/// <summary>生成後由管理者呼叫，告訴我我是從哪個池（key）來的</summary>
+	/// <summary>Called by pool manager initialization, tells us which pool we came from (key)</summary>
 	public void Init(string key)
 	{
 		poolKey = key;
 	}
 
-	/// <summary>客人離開或死亡時呼叫，將自己放回池內</summary>
+	/// <summary>Called by external systems when dying/deactivating, returns self to pool</summary>
 	public void Release()
 	{
 		if (GuestPool.Instance != null && !string.IsNullOrWhiteSpace(poolKey))

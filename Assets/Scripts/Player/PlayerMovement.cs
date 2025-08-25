@@ -17,10 +17,10 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float dashVirbation = 0.7f;
 	[SerializeField] private List<string> passThroughTags;
 
-	// === 新增：滑行中斷設定 ===
+	// === Slide Interrupt Settings ===
 	[Header("Slide Interrupt")]
-	[SerializeField] private bool canInterruptSlide = true;           // 是否可中斷滑行
-	[SerializeField, Min(0f)] private float slideInterruptDelay = 0f; // 開始滑行後多久才可中斷（秒）
+	[SerializeField] private bool canInterruptSlide = true;           // Can interrupt slide
+	[SerializeField, Min(0f)] private float slideInterruptDelay = 0f; // Delay before slide can be interrupted (seconds)
 
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
 	//private PlayerInput playerInput;
 	//private SpriteRenderer spriteRenderer;
 
-	// ======= 只改這一行：Animator 管理 → Spine 管理 =======
+	// ======= Animation Manager (Spine) =======
 	private PlayerSpineAnimationManager animationManager;
 
 	private Vector2 moveInput;
@@ -50,11 +50,11 @@ public class PlayerMovement : MonoBehaviour
 	private float dashDuration;
 	private float lastDashTime = -999f;
 
-	// 輸送帶滑行進度
+	// Slide variables
 	private float slideS;
 	private int slideDir;
-	private bool slideCancelRequested = false; // 滑行中再次按 Dash => 要離開
-	private float slideStartTime;              // ★ 新增：紀錄開始滑行的時間
+	private bool slideCancelRequested = false; // Slide interrupt requested
+	private float slideStartTime;              // Time when slide started
 
 	private void Awake()
 	{
@@ -75,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void Update()
 	{
-		// 呼叫新版 Spine 動畫
+		// Update Spine animation
 		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
@@ -117,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void Move()
 	{
-		if (isSlide) return; // 滑行由 Slide() 接管
+		if (isSlide) return; // Handled by Slide() coroutine
 		if (!isEnableMoveControll)
 		{
 			rb.velocity = Vector2.zero;
@@ -134,14 +134,14 @@ public class PlayerMovement : MonoBehaviour
 
 	void StartDash()
 	{
-		// 若正在滑行：依允許與延遲判斷是否能中斷
+		// If sliding, check if can be interrupted
 		if (isSlide)
 		{
 			if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
 			{
 				slideCancelRequested = true;
 			}
-			// 不允許或尚未到可中斷時間 → 直接忽略這次按鍵
+			// Cannot interrupt or delay not met, ignore dash
 			return;
 		}
 
@@ -160,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			moveVelocity = moveInput * dashSpeed;
 
-			// 撞到桌面 + 有輸送帶 => 轉入滑行
+			// Touching table + dashing => Enter slide
 			if (currentTableCollider != null)
 			{
 				yield return StartCoroutine(Slide());
@@ -179,25 +179,25 @@ public class PlayerMovement : MonoBehaviour
 
 	
 
-	/// 沿輸送帶滑行（手動下車需符合允許 & 延遲；不取消移動）
+	/// Table slide coroutine
 	private IEnumerator Slide()
 	{
 		isSlide = true;
 		isDashing = false;
-		slideCancelRequested = false;     // 進入滑行先清旗標
-		slideStartTime = Time.time;       // ★ 紀錄滑行開始時間
+		slideCancelRequested = false;     // Clear cancel request
+		slideStartTime = Time.time;       // Record slide start time
 		RumbleManager.Instance.StopRumble();
 
 		TableConveyorBelt belt = currentTableCollider.GetComponent<TableConveyorBelt>();
 
-		// 滑行期間避免卡邊
+		// Ignore collision during slide
 		if (belt.BoardCollider && playerCollider)
 			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, true);
 
-		// 初始起點與方向（靠近頭/尾）
+		// Initialize start point and direction
 		belt.DecideStartAndDirection(transform.position, out slideS, out slideDir);
 
-		// 吸附起點
+		// Snap to start position
 		if (belt.SnapOnStart)
 		{
 			Vector3 snap = belt.EvaluatePositionByDistance(slideS);
@@ -211,59 +211,59 @@ public class PlayerMovement : MonoBehaviour
 
 		while (!stop)
 		{
-			// ★ 手動下車：需同時符合「允許中斷」與「達到延遲」才會執行
+			// Check if can interrupt and delay has passed
 			if (slideCancelRequested)
 			{
-				slideCancelRequested = false; // consume 一次
+				slideCancelRequested = false; // consume the cancel request
 				if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
 				{
-					// 用當前 moveInput 作為方向鍵，傳入 s 與 slideDir
+					// Use current moveInput as eject direction
 					bool cancelled = belt.TryCancelSlideAndEject(rb, slideS, slideDir, moveInput);
 					if (cancelled)
 					{
-						// 已經瞬移到桌外，不要再跑滑行，直接收尾
+						// Successfully ejected, stop sliding
 						break;
 					}
-					// 未取消（方向同向）→ 繼續滑行
+					// Cannot eject (direction mismatch), continue sliding
 				}
-				// 不允許或未到時間 → 繼續滑行
+				// Cannot interrupt or delay not met, continue sliding
 			}
 
 			if (isSlideAutoPullDish) playerInteraction.TryPullDownDish();
 
-			// 推進並移動
+			// Move along path
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
 			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
 			rb.MovePosition(nextPos);
 
-			// 面向（可選）
+			// Update facing direction
 			Vector3 tan = belt.EvaluateTangentByDistance(slideS);
 			if (tan.x != 0f)
 				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 
-			// 非 loop：端點自動下車
+			// Non-loop: auto-stop at endpoints
 			if (!belt.Loop && (Mathf.Approximately(slideS, 0f) || Mathf.Approximately(slideS, belt.TotalLength)))
 				stop = true;
 
 			yield return waiter;
 		}
 
-		// 恢復碰撞
+		// Restore collision
 		if (belt.BoardCollider && playerCollider)
 			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, false);
 
 		isSlide = false;
 
-		// 收尾維持玩家當前輸入的移動
+		// Restore normal movement
 		moveVelocity = moveInput * moveSpeed;
 	}
 
-	// 持續移動一段距離
+	// Move backwards for a distance
 	private IEnumerator MoveDistanceCoroutine(float distance, float duration, Vector2 direction)
 	{
 		SetEnableMoveControll(false);
 
-		// 決定移動方向
+		// Determine move direction
 		if (direction == Vector2.zero)
 		{
 			if (transform.rotation.y >= 0) direction = new Vector2(-1, 0);
@@ -273,7 +273,7 @@ public class PlayerMovement : MonoBehaviour
 		direction = direction.normalized;
 		float elapsed = 0f;
 
-		// 鎖定初始位置，避免移動過程方向被打斷
+		// Fix initial position to prevent direction changes
 		Vector2 start = rb.position;
 		Vector2 target = start + direction * distance;
 
@@ -281,7 +281,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			if (isEnableMoveControll) break;
 
-			// 計算插值比例 (0 → 1)
+			// Calculate interpolation (0 to 1)
 			float t = elapsed / duration;
 			Vector2 nextPos = Vector2.Lerp(start, target, t);
 			rb.MovePosition(nextPos);
@@ -290,16 +290,16 @@ public class PlayerMovement : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		// 確保最後到達目標點
+		// Ensure reaches target
 		if (!isEnableMoveControll)
 			rb.MovePosition(target);
 
-		// 回復操控
+		// Restore control
 		SetEnableMoveControll(true);
 	}
 
 
-	// ===== 桌面/輸送帶接觸維護（方式 A：實體碰撞）=====
+	// ===== Table collision detection =====
 	void OnCollisionStay2D(Collision2D collision)
 	{
 		if (collision.collider.CompareTag("Table"))
@@ -315,7 +315,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	// ===== 對外 API =====
+	// ===== Public API =====
 	public void SetDashSpeed(float newSpeed) { dashSpeed = newSpeed; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
@@ -330,7 +330,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	/// 讓玩家朝當前 moveInput 的方向移動一段距離
+	/// Move backwards based on current moveInput direction
 	public void MoveDistance(float distance, float duration, Vector2 direction)
 	{
 		StartCoroutine(MoveDistanceCoroutine(distance, duration, direction));
@@ -339,7 +339,7 @@ public class PlayerMovement : MonoBehaviour
 	public float GetMoveSpeed() => moveSpeed;
 
 	public Vector2 GetMoveInput() => moveInput;
-	/// 以當前切線 y 判斷上/下（維持原有 API）
+	/// Get slide direction based on tangent y (for external API)
 	public int GetSlideDirection()
 	{
 		TableConveyorBelt belt = currentTableCollider?.GetComponent<TableConveyorBelt>();
@@ -353,7 +353,7 @@ public class PlayerMovement : MonoBehaviour
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 
-	// （可選）對外讀取目前是否可中斷
+	// Check if slide can be interrupted now
 	public bool IsSlideInterruptibleNow()
 	{
 		return isSlide && canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay;

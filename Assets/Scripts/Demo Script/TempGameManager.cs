@@ -15,7 +15,7 @@ public class TempGameManager : MonoBehaviour
 	[SerializeField] private float dishSpawnInterval = 5f;
 
 
-	// Àx¦s¥Ø«e¬¡ÅDªºÀ\ÂI¸ê°T
+	// ï¿½xï¿½sï¿½Ø«eï¿½ï¿½ï¿½Dï¿½ï¿½ï¿½\ï¿½Iï¿½ï¿½T
 	private List<DishEntry> activeDishes = new List<DishEntry>();
 
 	private void Start()
@@ -44,17 +44,17 @@ public class TempGameManager : MonoBehaviour
 			int randIndex = Random.Range(0, dishPrefabs.Count);
 			GameObject dish = Instantiate(dishPrefabs[randIndex], dishListObject.transform);
 
-			// ÀH¾÷®à¸¹ (1~6)
+			// ï¿½Hï¿½ï¿½ï¿½à¸¹ (1~6)
 			int tableNumber = Random.Range(1, 7);
 
-			// ³]©w TextMeshPro Åã¥Ü®à¸¹
+			// ï¿½]ï¿½w TextMeshPro ï¿½ï¿½Ü®à¸¹
 			TextMeshProUGUI text = dish.GetComponentInChildren<TextMeshProUGUI>();
 			if (text != null)
 			{
 				text.text = tableNumber.ToString();
 			}
 
-			// ¥[¤J active dishes list
+			// ï¿½[ï¿½J active dishes list
 			string dishName = dishPrefabs[randIndex].name;
 			activeDishes.Add(new DishEntry
 			{
@@ -65,11 +65,11 @@ public class TempGameManager : MonoBehaviour
 		}
 	}
 
-	//  ®Ú¾ÚÀ\ÂI¦WºÙ©M®à¸¹§R°£ dish¡]¦¨¥\¥u§R°£¤@­Ó¡^
+	//  ï¿½Ú¾ï¿½ï¿½\ï¿½Iï¿½Wï¿½Ù©Mï¿½à¸¹ï¿½Rï¿½ï¿½ dishï¿½]ï¿½ï¿½ï¿½\ï¿½uï¿½Rï¿½ï¿½ï¿½@ï¿½Ó¡^
 	public void FinishDish(string dishName, int tableNumber)
 	{
 
-		Debug.Log($"®à¸¹¡G{tableNumber} ¤Wµæ!!!!!");
+		Debug.Log($"Table: {tableNumber} served!!!!!");
 		for (int i = 0; i < activeDishes.Count; i++)
 		{
 			var entry = activeDishes[i];
@@ -80,15 +80,15 @@ public class TempGameManager : MonoBehaviour
 					Destroy(entry.dishObject);
 				}
 				activeDishes.RemoveAt(i);
-				Debug.Log($"§¹¦¨À\ÂI¡G{dishName}¡A®à¸¹¡G{tableNumber}");
+				Debug.Log($"Finished dish: {dishName}, Table: {tableNumber}");
 				return;
 			}
 		}
 
-		Debug.Log($"§ä¤£¨ìÀ\ÂI¡G{dishName}¡A®à¸¹¡G{tableNumber}");
+		Debug.Log($"Dish not found: {dishName}, Table: {tableNumber}");
 	}
 
-	// À\ÂI¸ê®Æµ²ºc
+	// ï¿½\ï¿½Iï¿½ï¿½Æµï¿½ï¿½c
 	private class DishEntry
 	{
 		public string dishName;

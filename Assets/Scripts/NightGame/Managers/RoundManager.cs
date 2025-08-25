@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class RoundManager : MonoBehaviour
 {
-	public static RoundManager Instance { get; private set; } // 單例
+	public static RoundManager Instance { get; private set; } // Singleton
 
 	[Header("-------- Setting ---------")]
 	[SerializeField] private float finishDishHotPoint = 0.5f;
@@ -29,14 +29,14 @@ public class RoundManager : MonoBehaviour
 
 	private void Awake()
 	{
-		// 設定單例
+		// Setup singleton
 		if (Instance != null && Instance != this)
 		{
-			Destroy(gameObject); // 如果已經有其他實例，刪掉這個
+			Destroy(gameObject); // Destroy if instance already exists
 			return;
 		}
 		Instance = this;
-		// 如果希望跨場景保留，加這行：
+		// Keep instance across scenes if needed:
 		// DontDestroyOnLoad(gameObject);
 	}
 
@@ -47,13 +47,13 @@ public class RoundManager : MonoBehaviour
 		GameContinue();
 	}
 
-	// 放下餐點成功
+	// Successfully placed dish
 	public void PullDownDishSuccess()
 	{
 		hotPointManager.AddHotPoint(finishDishHotPoint);
 	}
 
-	// 完成餐點取得金幣(顧客吃完)
+	// Dish finished and eaten by guest
 	public void FinishDishSuccess(Transform targetChair, int coinCount)
 	{
 		chairGroupManager.PullDownCoin(targetChair, coinCount);

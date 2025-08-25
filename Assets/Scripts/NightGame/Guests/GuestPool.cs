@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.Pool;
 
 /// <summary>
-/// Áä­È¦¡ªº Guest ª«¥ó¦À¡]¹³ VFXPool ¨º¼Ë¡^
-/// 1) ¦b Inspector ªº Prefabs ²M³æ¤¤³]©w key »P¹ïÀ³ªº Guest Prefab
-/// 2) ³z¹L SpawnGuest(key, pos, rot) ¨ú±oª«¥ó¡FReleaseGuest(key, obj) ¦^¦¬ª«¥ó
+/// Guest object pool (similar to VFXPool)
+/// 1) Set up key and corresponding Guest Prefab in Inspector Prefabs list
+/// 2) Get objects via SpawnGuest(key, pos, rot), return via ReleaseGuest(key, obj)
 /// </summary>
 public class GuestPool : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public class GuestPool : MonoBehaviour
 	{
 		public string key;
 
-		[Tooltip("¹ïÀ³ªº Guest Prefab¡]»Ý§t GuestPoolHandler ²Õ¥ó¡^")]
+		[Tooltip("Corresponding Guest Prefab (should contain GuestPoolHandler component)")]
 		public GameObject prefab;
 
 		[Min(0)] public int defaultCapacity = 20;
@@ -40,7 +40,7 @@ public class GuestPool : MonoBehaviour
 		}
 		Instance = this;
 
-		// «Ø¥ß¦U key ªºª«¥ó¦À
+		// Create pools for each key
 		foreach (var data in guestPrefabs)
 		{
 			if (data.prefab == null || string.IsNullOrWhiteSpace(data.key))
@@ -68,21 +68,21 @@ public class GuestPool : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¥Í¦¨«ü©w key ªº Guest¡]¦Û°Ê SetActive(true)¡^
-	/// ¥Í¦¨«á§O§Ñ¤F¹ï GuestPoolHandler.Init(key)
+	/// ï¿½Í¦ï¿½ï¿½ï¿½ï¿½w key ï¿½ï¿½ Guestï¿½]ï¿½Û°ï¿½ SetActive(true)ï¿½^
+	/// ï¿½Í¦ï¿½ï¿½ï¿½Oï¿½Ñ¤Fï¿½ï¿½ GuestPoolHandler.Init(key)
 	/// </summary>
 	public GameObject SpawnGuest(string key, Vector3 position, Quaternion rotation)
 	{
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			Debug.LogWarning("[GuestPool] SpawnGuest: key ¬OªÅªº");
+			Debug.LogWarning("[GuestPool] SpawnGuest: key ï¿½Oï¿½Åªï¿½");
 			return null;
 		}
 
 		key = key.Trim();
 		if (!pools.TryGetValue(key, out var pool))
 		{
-			Debug.LogWarning($"[GuestPool] ¥¼§ä¨ì key = {key} ªºª«¥ó¦À");
+			Debug.LogWarning($"[GuestPool] ï¿½ï¿½ï¿½ï¿½ï¿½ key = {key} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 			return null;
 		}
 
@@ -92,7 +92,7 @@ public class GuestPool : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¦^¦¬«ü©w key ªº Guest
+	/// ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½w key ï¿½ï¿½ Guest
 	/// </summary>
 	public void ReleaseGuest(string key, GameObject obj)
 	{
@@ -100,7 +100,7 @@ public class GuestPool : MonoBehaviour
 
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			Debug.LogWarning("[GuestPool] ReleaseGuest: key ¬OªÅªº¡A§ï¬°ª½±µ Destroy");
+			Debug.LogWarning("[GuestPool] ReleaseGuest: key ï¿½Oï¿½Åªï¿½ï¿½Aï¿½ï¬°ï¿½ï¿½ï¿½ï¿½ Destroy");
 			Destroy(obj);
 			return;
 		}
@@ -112,7 +112,7 @@ public class GuestPool : MonoBehaviour
 		}
 		else
 		{
-			Debug.LogWarning($"[GuestPool] ¥¼§ä¨ì key = {key} ªºª«¥ó¦À¡A§ï¬°ª½±µ Destroy");
+			Debug.LogWarning($"[GuestPool] ï¿½ï¿½ï¿½ï¿½ï¿½ key = {key} ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½ï¬°ï¿½ï¿½ï¿½ï¿½ Destroy");
 			Destroy(obj);
 		}
 	}
