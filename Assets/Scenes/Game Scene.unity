@@ -19170,7 +19170,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dessertColdownSeconds: 15
   hideBarWhenReady: 1
-  currentfoods: []
   foodPrefabs:
   - {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
   - {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
@@ -31159,8 +31158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5252283a812c19b49bccb7876c41a737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackMoveDistance: 2
-  attackMoveDuration: 0.5
+  attackMoveDistance: 5
+  attackMoveDuration: 0.05
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -31447,6 +31446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   getFoodCount: 1
+  isGetOneFood: 1
   movement: {fileID: 632101737}
   handItemUI: {fileID: 1796851951}
   handItemRoot: {fileID: 1126725960}
