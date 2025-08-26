@@ -2,59 +2,151 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 
 // ===== Localization =====
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
+[Searchable]
 public class SettingMenu : MonoBehaviour
 {
-	[Header("Panels (Root)")]
+	[Title("主要面板")]
+	[BoxGroup("面板系統")]
+	[LabelText("設定面板")]
 	[SerializeField] private GameObject settingPanel;
+	
+	[BoxGroup("面板系統/分頁面板")]
+	[LabelText("一般設定")]
 	[SerializeField] private GameObject normalPanel;
+	
+	[BoxGroup("面板系統/分頁面板")]
+	[LabelText("製作團隊")]
 	[SerializeField] private GameObject staffPanel;
+	
+	[BoxGroup("面板系統/分頁面板")]
+	[LabelText("按鍵設定")]
 	[SerializeField] private GameObject keyPanel;
 
-	[Header("-------- UI Reference --------")]
-	[Header("Volume UI")]
+	[Title("音量控制")]
+	[FoldoutGroup("音量設定", expanded: true)]
+	[HorizontalGroup("音量設定/主音量")]
+	[LabelText("滑桿")]
 	[SerializeField] private Slider masterSlider;
+	
+	[HorizontalGroup("音量設定/主音量")]
+	[LabelText("數值顯示")]
 	[SerializeField] private TextMeshProUGUI masterVolumeText;
 
+	[HorizontalGroup("音量設定/音樂")]
+	[LabelText("滑桿")]
 	[SerializeField] private Slider musicSlider;
+	
+	[HorizontalGroup("音量設定/音樂")]
+	[LabelText("數值顯示")]
 	[SerializeField] private TextMeshProUGUI musicVolumeText;
 
+	[HorizontalGroup("音量設定/音效")]
+	[LabelText("滑桿")]
 	[SerializeField] private Slider sfxSlider;
+	
+	[HorizontalGroup("音量設定/音效")]
+	[LabelText("數值顯示")]
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 
-	[Header("Main Buttons Text (Display current settings)")]
+	[Title("顯示設定")]
+	[TabGroup("設定選項", "顯示")]
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("顯示模式")]
 	[SerializeField] private TextMeshProUGUI displayModeMainText;
+	
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("解析度")]
 	[SerializeField] private TextMeshProUGUI resolutionMainText;
+	
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("更新率")]
 	[SerializeField] private TextMeshProUGUI refreshRateMainText;
+	
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("語言")]
 	[SerializeField] private TextMeshProUGUI languageMainText;
-	[SerializeField] private TextMeshProUGUI vsyncMainText;       // x / v
-	[SerializeField] private TextMeshProUGUI vibrationMainText;   // x / v
+	
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("垂直同步")]
+	[InfoBox("顯示 x 或 v")]
+	[SerializeField] private TextMeshProUGUI vsyncMainText;
+	
+	[BoxGroup("設定選項/顯示/主要文字")]
+	[LabelText("震動")]
+	[InfoBox("顯示 x 或 v")]
+	[SerializeField] private TextMeshProUGUI vibrationMainText;
+	
+	[TabGroup("設定選項", "選項面板")]
+	[BoxGroup("設定選項/選項面板/面板")]
+	[LabelText("顯示模式面板")]
+	[SerializeField] private GameObject displayModePanel;
+	
+	[BoxGroup("設定選項/選項面板/面板")]
+	[LabelText("解析度面板")]
+	[SerializeField] private GameObject resolutionPanel;
+	
+	[BoxGroup("設定選項/選項面板/面板")]
+	[LabelText("更新率面板")]
+	[SerializeField] private GameObject refreshRatePanel;
+	
+	[BoxGroup("設定選項/選項面板/面板")]
+	[LabelText("語言面板")]
+	[SerializeField] private GameObject languagePanel;
 
-	[Header("Option Panels (Click to show detailed settings)")]
-	[SerializeField] private GameObject displayModePanel;   // Contains displayModeButtons
-	[SerializeField] private GameObject resolutionPanel;    // Contains resolutionButtons
-	[SerializeField] private GameObject refreshRatePanel;   // Contains refreshRateButtons
-	[SerializeField] private GameObject languagePanel;      // Contains languageButtons
-
-	[Header("Buttons (Store individual setting buttons)")]
+	[TabGroup("設定選項", "按鈕陣列")]
+	[BoxGroup("設定選項/按鈕陣列/按鈕")]
+	[LabelText("顯示模式按鈕")]
 	[SerializeField] private Image[] displayModeButtons;
+	
+	[BoxGroup("設定選項/按鈕陣列/按鈕")]
+	[LabelText("解析度按鈕")]
 	[SerializeField] private Image[] resolutionButtons;
+	
+	[BoxGroup("設定選項/按鈕陣列/按鈕")]
+	[LabelText("更新率按鈕")]
 	[SerializeField] private Image[] refreshRateButtons;
+	
+	[BoxGroup("設定選項/按鈕陣列/按鈕")]
+	[LabelText("語言按鈕")]
 	[SerializeField] private Image[] languageButtons;
 
+	[Title("運行時資料", "僅供除錯使用")]
+	[FoldoutGroup("內部變數", expanded: false)]
+	[ShowInInspector, ReadOnly]
+	[LabelText("根面板列表")]
 	private List<GameObject> rootPanels = new List<GameObject>();
+	
+	[FoldoutGroup("內部變數")]
+	[ShowInInspector, ReadOnly]
+	[LabelText("選項面板列表")]
 	private List<GameObject> optionPanels = new List<GameObject>();
 
+	[FoldoutGroup("內部變數")]
+	[ShowInInspector, ReadOnly]
+	[LabelText("面板已開啟")]
 	private bool isOpened = false;
 
-	// ===== Localization configuration (cache available Locale) =====
+	[Title("本地化設定")]
+	[FoldoutGroup("本地化", expanded: false)]
+	[ShowInInspector, ReadOnly]
+	[LabelText("本地化初始化")]
 	private AsyncOperationHandle m_LocInitOp;
+	
+	[FoldoutGroup("本地化")]
+	[ShowInInspector, ReadOnly]
+	[LabelText("繁體中文")]
 	private Locale _localeZhTw;   // Chinese (Traditional) (zh-TW)
+	
+	[FoldoutGroup("本地化")]
+	[ShowInInspector, ReadOnly]
+	[LabelText("美式英文")]
 	private Locale _localeEnUs;   // English (United States) (en-US)
 
 	private void Start()
@@ -117,8 +209,9 @@ public class SettingMenu : MonoBehaviour
 			OnClickCloseAllOptionPanels();
 		}
 	}
-
+	
 	#region Initialize: Volume settings (from saved preferences)
+	
 	private void InitVolumeSetting()
 	{
 		// Master
