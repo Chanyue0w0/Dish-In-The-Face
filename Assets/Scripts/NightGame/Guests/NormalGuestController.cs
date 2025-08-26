@@ -107,7 +107,6 @@ public class NormalGuestController : MonoBehaviour
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 			// 找座位
-			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
 		}
 	}
 
@@ -305,23 +304,14 @@ public class NormalGuestController : MonoBehaviour
 	/// </summary>
 	public void EnableInteractIcon(Sprite food, bool isEnable)
 	{
-		Debug.Log("EnableInteractIcon");
+		rawBtnIconObj.SetActive(isEnable);
 		// 若是等待玩家來點餐 rawBtn 顯示
-		if (state == GuestState.WaitingOrder)
-		{
-			rawBtnIconObj.SetActive(isEnable);
-			return;
-		}
-
+		if (state == GuestState.WaitingOrder) return;
 		// 僅在等待餐點、且食物正確時顯示可交付提示
-		if (!isSeated || state != GuestState.WaitingDish || food != orderFoodSprite)
-		{
-			rawBtnIconObj.SetActive(false);
-		}
-		else
-		{
-			rawBtnIconObj.SetActive(isEnable);
-		}
+		if (isSeated && state == GuestState.WaitingDish && food == orderFoodSprite) return;
+		
+		
+		rawBtnIconObj.SetActive(false);
 	}
 
 	#endregion

@@ -120,11 +120,10 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		if (other.CompareTag("Chair"))
 		{
+			GameObject item = null;
 			if (handItemRoot && handItemRoot.childCount > 0)
-			{
-				GameObject item = handItemRoot.GetChild(0).gameObject;
-				RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
-			}
+				item = handItemRoot.GetChild(0).gameObject;
+			RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
 		}
 	}
 	void OnTriggerStay2D(Collider2D trigger)
