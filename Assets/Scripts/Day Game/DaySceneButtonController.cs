@@ -1,23 +1,18 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Sirenix.OdinInspector;
-using UnityEngine.SceneManagement;
-using Cysharp.Threading.Tasks;
-using PrimeTween;
 
 public class DaySceneButtonController : MonoBehaviour
 {
-	[Header("è¨­å®š")]
-	[SerializeField] private string sceneName = "GameScene"; // è¦è¼‰å…¥çš„å ´æ™¯åç¨±
-	[SerializeField] private float holdDuration = 2f;        // é•·æŒ‰å¤šå°‘ç§’æ‰æœƒè§¸ç™¼
+	[Header("³]©w")]
+	[SerializeField] private string sceneName = "GameScene"; // ­n¤Á´«ªº³õ´º
+	[SerializeField] private float holdDuration = 2f;        // ªø«ö¬í¼Æ¤~¯àÄ²µo
 
 	[Header("UI Reference")]
-	[SerializeField] private Button targetButton;            // è¦ç›£è½çš„æŒ‰éˆ•
-	[SerializeField] private Image fillImage;                // Fill Image (type è¨­ç‚º Filled)
-	[SerializeField] private LoadScenePanel loadScenePanel;  // è¼‰å…¥å ´æ™¯é¢æ¿î¾¹
+	[SerializeField] private Button targetButton;            // ­nºÊÅ¥ªº«ö¶s
+	[SerializeField] private Image fillImage;                // Fill Image (type ³]¦¨ Filled)
+	[SerializeField] private LoadScenePanel loadScenePanel;  // ¸ü¤J³õ´º±±¨î¾¹
 
 	private float holdTimer = 0f;
 	private bool isHolding = false;
@@ -27,7 +22,7 @@ public class DaySceneButtonController : MonoBehaviour
 	{
 		if (targetButton != null)
 		{
-			// è¨»å†Š UI äº‹ä»¶
+			// µù¥U UI ¨Æ¥ó
 			EventTrigger trigger = targetButton.gameObject.GetComponent<EventTrigger>();
 				trigger = targetButton.gameObject.AddComponent<EventTrigger>();
 
@@ -56,7 +51,7 @@ public class DaySceneButtonController : MonoBehaviour
 
 	private void Update()
 	{
-		// --- æª¢æŸ¥ UI æŒ‰éˆ• ---
+		// --- ÀË¬d UI ªø«ö ---
 		if (isHolding && !hasTriggered)
 		{
 			holdTimer += Time.deltaTime;
@@ -68,7 +63,7 @@ public class DaySceneButtonController : MonoBehaviour
 			}
 		}
 
-		// --- æª¢æŸ¥éµç›¤ç©ºç™½éµè¼¸å…¥ ---
+		// --- ÀË¬dÁä½LªÅ¥ÕÁäªø«ö ---
 		if (Keyboard.current != null && Keyboard.current.spaceKey.isPressed && !hasTriggered)
 		{
 			holdTimer += Time.deltaTime;
@@ -97,41 +92,14 @@ public class DaySceneButtonController : MonoBehaviour
 			fillImage.fillAmount = Mathf.Clamp01(holdTimer / holdDuration);
 	}
 
-	public float score = 0;
-
-	public AnimationCurve ScoreCurve;
-
-	public Animator playerAnimator;
-
-	[Button("æ¸¬è©¦æ›æ™¯")]
-	private async void LoadGameScene()
+	private void LoadGameScene()
 	{
-		await PrimeTween.Tween.Alpha(BlackScreen, 1.0f, 1.0f,Ease.InOutBounce).ToUniTask(PlayerLoopTiming.FixedUpdate);
-		
-		//æ’¥å€‹è²éŸ³
-		await UniTask.Delay(TimeSpan.FromSeconds(5));
-		
-		playerAnimator.Play("ç²å‹å‹•ç•«",0);
-
-		await UniTask.WaitUntil(() => playerAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1);
-
-		await PrimeTween.Tween.Custom(0.0f, 5500.0f, 5, SetScore,ScoreCurve);
-		
-		
-		Debug.Log("å ´æ™¯è¼‰å…¥å®Œæˆ");
+		hasTriggered = true;
+		Debug.Log($"Loading scene: {sceneName}");
+		loadScenePanel.LoadingSceneAsync(sceneName);
 	}
 
-	private void SetScore(float newScore)
-	{
-		score = newScore;
-	}
-	
-	[Header("è¼‰å…¥ç•«é¢")]
-	public Image BlackScreen;
-	[SerializeField] private Image loadingBar; // é€²åº¦æ¢ (è¨­ç‚º Filled é¡å‹)
-	[SerializeField] private GameObject loadingIcon; // Loading åœ–ç¤ºæˆ–å‹•ç•«
-
-	// --- Helper: å»ºç«‹ EventTrigger äº‹ä»¶ ---
+	// --- Helper: «Ø¥ß EventTrigger ¨Æ¥ó ---
 	private void AddEventTrigger(EventTrigger trigger, EventTriggerType eventType, System.Action<BaseEventData> action)
 	{
 		EventTrigger.Entry entry = new EventTrigger.Entry { eventID = eventType };

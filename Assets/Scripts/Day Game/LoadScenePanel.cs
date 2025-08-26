@@ -3,24 +3,24 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-using Sirenix.OdinInspector;
+
 public class LoadScenePanel : MonoBehaviour
 {
 	[Header("UI Reference")]
-	[SerializeField] private GameObject loadingPanel;  // Loading é¢æ¿
-	[SerializeField] private Image fillImage;          // é€²åº¦æ¢ (Image type è¨­ç‚º Filled)
-	[SerializeField] private TextMeshProUGUI progressText;        // ç™¾åˆ†æ¯”æ–‡å­—ï¼ˆå¯é¸ï¼‰
+	[SerializeField] private GameObject loadingPanel;  // Loading ­±ªO
+	[SerializeField] private Image fillImage;          // ¶i«×±ø (Image type ³]¦¨ Filled)
+	[SerializeField] private TextMeshProUGUI progressText;        // ¦Ê¤À¤ñ¤å¦r¡]¥i¿ï¡^
 
 	private void Awake()
 	{
-		loadingPanel.SetActive(false); // éŠæˆ²ä¸€é–‹å§‹éš±è—
+		loadingPanel.SetActive(false); // ¹CÀ¸¤@¶}©lÃö³¬
 		fillImage.fillAmount = 0f;
 	}
 
 	/// <summary>
-	/// å‘¼å«æ­¤å‡½å¼ä»¥é¡¯ç¤º loading panel ä¸¦é–‹å§‹è¼‰å…¥
+	/// ©I¥s¦¹¥\¯à ¡÷ Åã¥Ü loading panel ¨Ã¶}©l¸ü¤J
 	/// </summary>
-	/// <param name="sceneName">è¦è¼‰å…¥çš„å ´æ™¯åç¨±</param>
+	/// <param name="sceneName">­n¤Á´«ªº³õ´º¦WºÙ</param>
 	public void LoadingSceneAsync(string sceneName)
 	{
 		if (loadingPanel != null)
@@ -30,29 +30,29 @@ public class LoadScenePanel : MonoBehaviour
 	}
 
 	/// <summary>
-	/// éåŒæ­¥è¼‰å…¥å ´æ™¯ä¸¦æ›´æ–°é€²åº¦æ¢
+	/// «D¦P¨B¸ü¤J³õ´º¨Ã§ó·s¶i«×±ø
 	/// </summary>
 	private IEnumerator LoadSceneAsync(string sceneName)
 	{
 		AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-		operation.allowSceneActivation = false; // ä¸è¦è‡ªå‹•åˆ‡æ›ï¼Œç­‰æˆ‘å€‘æ§åˆ¶
+		operation.allowSceneActivation = false; // ¤£­n¦Û°Ê¤Á´«¡Aµ¥§Ú­Ì±±¨î
 
 		while (!operation.isDone)
 		{
-			// Unity çš„ progress æœ€å¤§æ˜¯ 0.9ï¼Œå‰©ä¸‹ 0.1 æ˜¯æº–å‚™éšæ®µ
+			// Unity ªº progress ³Ì¤j¨ì 0.9¡A³Ñ¤U 0.1 ¬O¿E¬¡³õ´º
 			float progress = Mathf.Clamp01(operation.progress / 0.9f);
 
-			// æ›´æ–°é€²åº¦æ¢
+			// §ó·s¶i«×±ø
 			if (fillImage != null)
 				fillImage.fillAmount = progress;
 
 			if (progressText != null)
 				progressText.text = Mathf.RoundToInt(progress * 100f) + "%";
 
-			// ç•¶é€²åº¦åˆ° 90%ï¼ˆprogress == 1fï¼‰
+			// ·í¶i«×¨ì 90%¡]progress == 1f¡^
 			if (progress >= 1f)
 			{
-				// ç­‰å¾… 0.5 ç§’ï¼Œè®“ç©å®¶çœ‹é€²åº¦æ»¿äº†
+				// µ¥­Ó 0.5 ¬í¡Aµ¹ª±®a¬İ¶i«×º¡®æ
 				yield return new WaitForSeconds(0.5f);
 				operation.allowSceneActivation = true;
 			}
