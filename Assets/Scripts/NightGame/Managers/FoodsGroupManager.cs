@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
@@ -11,7 +12,8 @@ public class FoodsGroupManager : MonoBehaviour
 	[SerializeField] private bool hideBarWhenReady = true;               // 冷卻完成自動隱藏
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private GameObject[] foodsArray;
+	[SerializeField] private GameObject[] foodPrefabs;
+	[SerializeField] private Transform[] foodsSpawnPositions;
 	[SerializeField] private Transform dessertBarFill;
 	//[SerializeField] private Transform dishLoadingBar;
 	[SerializeField] private Animator dessertAnimator;
@@ -21,17 +23,19 @@ public class FoodsGroupManager : MonoBehaviour
 	[SerializeField] private Collider2D playerCollider; // 玩家自己的碰撞器
 	[SerializeField] private LayerMask foodLayerMask;   // 食物的 Layer
 
+	private List<GameObject> currentfoods = new List<GameObject>();
 	private Transform currentFoodTarget = null;
-	private int[] foodsCount;
+	//private int[] foodsCount;
 	private bool isPlayerInsideTrigger = false;
 
 	private float dessertCdRemain = 0f;  // 剩餘冷卻時間
 	private bool IsDessertOnCd => dessertCdRemain > 0f;
+
 	void Start()
 	{
-		foodsCount = new int[foodsArray.Length];
-		for (int i = 0; i < foodsCount.Length; i++)
-			foodsCount[i] = 10;
+		//foodsCount = new int[currentfoods.Count];
+		//for (int i = 0; i < foodsCount.Length; i++)
+		//	foodsCount[i] = 10;
 
 		if (yellowFrame != null)
 			yellowFrame.SetActive(false);
@@ -44,7 +48,111 @@ public class FoodsGroupManager : MonoBehaviour
 	void Update()
 	{
 		UpdateDesertColdDown();
+		UpdateSelectFood();
+		UpdateFoodOnTable();
+	}
 
+	private void UpdateFoodOnTable()
+	{
+		// 防呆
+		List<NormalGuestController> guestList = RoundManager.Instance.chairGroupManager.GetGuestsOrderList();
+		if (guestList == null || guestList.Count == 0)
+		{
+			// 沒客人時清空所有生產點
+			for (int i = 0; i < foodsSpawnPositions.Length; i++)
+				ClearChildren(foodsSpawnPositions[i]);
+			return;
+		}
+
+		int len = Mathf.Min(guestList.Count, foodsSpawnPositions.Length);
+
+		// 1) 依序處理前 len 位客人
+		for (int i = 0; i < len; i++)
+		{
+			Transform spawn = foodsSpawnPositions[i];
+			NormalGuestController guest = guestList[i];
+
+			if (spawn == null || guest == null)
+			{
+				if (spawn != null) ClearChildren(spawn);
+				continue;
+			}
+
+			// 只有在 WaitingDish 階段才會有實際點的餐點圖；非等餐狀態則清空
+			Sprite needed = guest.GetOrderFood(); // WaitingDish 顯示的那張餐點圖
+			if (needed == null)
+			{
+				ClearChildren(spawn);
+				continue;
+			}
+
+			// 已經擺了正確餐點就略過
+			Transform child = (spawn.childCount > 0) ? spawn.GetChild(0) : null;
+			if (child != null)
+			{
+				var sr = child.GetComponent<SpriteRenderer>();
+				if (sr != null && sr.sprite == needed)
+					continue; // 正確，什麼都不做
+
+				// 放錯餐 → 先清掉
+				Object.Destroy(child.gameObject);
+			}
+
+			// 依 Sprite 尋找對應 Prefab
+			GameObject prefab = FindPrefabBySprite(needed);
+			if (prefab != null)
+			{
+				GameObject go = Instantiate(prefab, spawn);
+				go.transform.localPosition = Vector3.zero; // 對齊座標
+				currentfoods.Add(go);
+			}
+			else
+			{
+				// 沒找到對應 prefab，保險起見清空該點位
+				ClearChildren(spawn);
+#if UNITY_EDITOR
+				Debug.LogWarning($"[FoodsGroupManager] 找不到對應 Sprite 的餐點 Prefab：{needed.name}");
+#endif
+			}
+		}
+
+		// 2) 多餘的生產點清空
+		for (int i = len; i < foodsSpawnPositions.Length; i++)
+		{
+			ClearChildren(foodsSpawnPositions[i]);
+		}
+	}
+
+	/// <summary>
+	/// 依餐點圖找對應的 prefab（以 prefab 上的 SpriteRenderer.sprite 比對）
+	/// </summary>
+	private GameObject FindPrefabBySprite(Sprite sprite)
+	{
+		if (sprite == null || foodPrefabs == null) return null;
+
+		for (int i = 0; i < foodPrefabs.Length; i++)
+		{
+			var pf = foodPrefabs[i];
+			if (pf == null) continue;
+
+			var sr = pf.GetComponent<SpriteRenderer>();
+			if (sr != null && sr.sprite == sprite)
+				return pf;
+		}
+		return null;
+	}
+
+	/// <summary>刪掉節點底下所有子物件（清桌）</summary>
+	private void ClearChildren(Transform parent)
+	{
+		if (parent == null) return;
+		for (int i = parent.childCount - 1; i >= 0; i--)
+			Object.Destroy(parent.GetChild(i).gameObject);
+	}
+
+
+	private void UpdateSelectFood()
+	{
 		if (!isPlayerInsideTrigger)
 		{
 			if (yellowFrame.activeSelf)
@@ -73,7 +181,6 @@ public class FoodsGroupManager : MonoBehaviour
 				yellowFrame.SetActive(false);
 		}
 	}
-
 	private void UpdateDesertColdDown()
 	{
 		// --- 更新甜點冷卻條 ---
@@ -114,7 +221,7 @@ public class FoodsGroupManager : MonoBehaviour
 	// --- 玩家碰撞檢查 ---
 	private Transform GetTouchedFoodByPlayer()
 	{
-		foreach (GameObject food in foodsArray)
+		foreach (GameObject food in currentfoods)
 		{
 			if (food == null) continue;
 
@@ -161,11 +268,11 @@ public class FoodsGroupManager : MonoBehaviour
 	// --- 隨機點餐（取得 Sprite）---
 	public Sprite OrderFoodRandomly()
 	{
-		if (foodsArray == null || foodsArray.Length == 0)
+		if (foodPrefabs == null || foodPrefabs.Length == 0)
 			return null;
 
-		int randomIndex = Random.Range(0, foodsArray.Length);
-		GameObject selectedFood = foodsArray[randomIndex];
+		int randomIndex = Random.Range(0, foodPrefabs.Length);
+		GameObject selectedFood = foodPrefabs[randomIndex];
 
 		SpriteRenderer foodSR = selectedFood.GetComponent<SpriteRenderer>();
 		return foodSR != null ? foodSR.sprite : null;

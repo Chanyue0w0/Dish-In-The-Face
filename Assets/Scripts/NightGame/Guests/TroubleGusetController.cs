@@ -12,14 +12,14 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f;
 
 	[Header("----- Attack Setting -----")]
-	[SerializeField] private float attackCooldown = 2f; // Attack cooldown (seconds)
-	[SerializeField] private float chargeTime = 1f;     // Charge time (seconds)
-	[SerializeField] private LayerMask playerLayer;     // Player layer
-	[SerializeField] private Transform attackOrigin;    // AttackRangeBox will be automatically assigned
+	[SerializeField] private float attackCooldown = 2f; // 攻擊冷卻(秒)
+	[SerializeField] private float chargeTime = 1f;     // 蓄力時間(秒)
+	[SerializeField] private LayerMask playerLayer;     // 玩家圖層
+	[SerializeField] private Transform attackOrigin;    // 由 attackRangeBox 自動帶入
 
 	[Header("----- Knockback Setting -----")]
-	[SerializeField] private float knockbackForce = 5f;     // Knockback force
-	[SerializeField] private float knockbackDuration = 0.2f; // Knockback duration
+	[SerializeField] private float knockbackForce = 5f;     // 擊退力度
+	[SerializeField] private float knockbackDuration = 0.2f; // 擊退持續時間
 
 	[Header("-------- Appearance --------")]
 	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
@@ -27,10 +27,10 @@ public class TroubleGusetController : MonoBehaviour
 	[Header("----- Reference -----")]
 	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 	[SerializeField] private Animator animator;
-	[SerializeField] private GameObject attackHitBox;   // Attack collision/effects
+	[SerializeField] private GameObject attackHitBox;   // 純視覺/特效
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
-	[SerializeField] private GameObject attackRangeBox; // Detection range based on this object's size
+	[SerializeField] private GameObject attackRangeBox; // ← 用它的大小當攻擊範圍
 	[SerializeField] private GameObject hpBar;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject dieVFX;
@@ -41,9 +41,9 @@ public class TroubleGusetController : MonoBehaviour
 	private bool isCharging;
 	private float chargeStartTime;
 
-	private bool isKnockback = false;
+	//private bool isKnockback = false;
 
-	// Object pool handler
+	// 物件池處理器
 	private GuestPoolHandler poolHandler;
 
 	private void Awake()
@@ -55,9 +55,9 @@ public class TroubleGusetController : MonoBehaviour
 
 		poolHandler = GetComponent<GuestPoolHandler>();
 
-		// Default attack origin = Attack detection object's Transform
+		// 預設攻擊中心 = 攻擊範圍物件的 Transform
 		if (attackOrigin == null && attackRangeBox != null)
-			attackOrigin = attackRangeBox.transform; // Use attackRangeBox as reference:contentReference[oaicite:2]{index=2}
+			attackOrigin = attackRangeBox.transform; // 以 attackRangeBox 為中心:contentReference[oaicite:2]{index=2}
 	}
 
 	private void Start()
@@ -66,7 +66,7 @@ public class TroubleGusetController : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SetSprite(); // Initialize appearance:contentReference[oaicite:3]{index=3}
+		SetSprite(); // 初始外觀或沿用外觀:contentReference[oaicite:3]{index=3}
 
 		if (RoundManager.Instance) player = RoundManager.Instance.Player;
 
@@ -84,7 +84,7 @@ public class TroubleGusetController : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		// Cancel any pending Invoke calls to avoid EndAttack() being called after recycling
+		// 取消尚未執行的 Invoke，避免回收後仍呼叫 EndAttack()
 		CancelInvoke(nameof(EndAttack));
 		isCharging = false;
 	}
@@ -93,13 +93,13 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (player == null) return;
 
-		// Face movement direction:contentReference[oaicite:4]{index=4}
+		// 翻轉面向（依速度）:contentReference[oaicite:4]{index=4}
 		if (agent.velocity.x < -0.01f)
 			transform.rotation = Quaternion.Euler(0, 0, 0);
 		else if (agent.velocity.x > 0.01f)
 			transform.rotation = Quaternion.Euler(0, 180, 0);
 
-		// Charging: attack if player is still in range
+		// 蓄力中：原地等待直到出手
 		if (isCharging)
 		{
 			if (Time.time - chargeStartTime >= chargeTime)
@@ -114,11 +114,11 @@ public class TroubleGusetController : MonoBehaviour
 			}
 		}
 
-		// Chase player
+		// 追擊玩家
 		agent.isStopped = false;
 		agent.SetDestination(player.position);
 
-		// Start charging when player in range and cooldown finished
+		// 進入攻擊範圍且冷卻結束 → 開始蓄力
 		if (Time.time - lastAttackTime >= attackCooldown && IsPlayerInRange())
 		{
 			StartCharge();
@@ -126,41 +126,41 @@ public class TroubleGusetController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Get attack range from attackRangeBox, returns attackRange based on attached object.
-	/// Reference: Use CircleCollider2D.radius (scaled) or SpriteRenderer.bounds.extents as attackRange
+	/// 從 attackRangeBox 推得攻擊半徑；若失敗則退回 attackRange。
+	/// 優先順序：CircleCollider2D.radius(含縮放) → SpriteRenderer.bounds.extents → attackRange
 	/// </summary>
 	private float GetAttackRadius()
 	{
-		// Attack detection object appearance determination
+		// 有攻擊範圍物件才有判定
 		if (attackRangeBox != null)
 		{
 			var t = attackRangeBox.transform;
 
-			// 1) CircleCollider2D (circular detection)
+			// 1) CircleCollider2D（最穩）
 			var circle = attackRangeBox.GetComponent<CircleCollider2D>();
 			if (circle != null)
 			{
-				// Get max scale ratio (avoid mismatch with circular detection for non-uniform scaling)
+				// 半徑需乘上最大軸向縮放（避免非等比縮放導致半徑失真）
 				float scale = Mathf.Max(Mathf.Abs(t.lossyScale.x), Mathf.Abs(t.lossyScale.y));
 				return circle.radius * scale;
 			}
 
-			// 2) SpriteRenderer (use bounds as circle)
+			// 2) SpriteRenderer（用 bounds 推半徑）
 			var sr = attackRangeBox.GetComponent<SpriteRenderer>();
 			if (sr != null && sr.sprite != null)
 			{
-				// Average x/y extents as circle radius
+				// 取 x/y 的 extents 平均作為近似半徑
 				var ext = sr.bounds.extents;
 				return (ext.x + ext.y) * 0.5f;
 			}
 		}
 
-		// 3) Default: empirical setting
+		// 3) 後備：用設定值
 		return 2f;
 	}
 
 	/// <summary>
-	/// Use attackRangeBox position and size (circular detection) to check if player is in attack range.
+	/// 以 attackRangeBox 的中心與大小（或後備半徑）檢測玩家是否在攻擊範圍。
 	/// </summary>
 	private bool IsPlayerInRange()
 	{
@@ -187,13 +187,13 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		agent.isStopped = true;
 
-		// Attack collision/effects
+		// 視覺/音效
 		if (attackHitBox != null) attackHitBox.SetActive(true);
 		var fxPos = (attackOrigin != null ? attackOrigin.position : transform.position);
 		VFXPool.Instance.SpawnVFX("Attack", fxPos, Quaternion.identity, 1f);
 		AudioManager.Instance.PlayOneShot(FMODEvents.Instance.enemyAttack, transform.position);
 
-		// Detection and attack (same circle)
+		// 命中檢測（同一個圓）
 		float radius = GetAttackRadius();
 		if (attackOrigin == null) attackOrigin = transform;
 
@@ -205,17 +205,17 @@ public class TroubleGusetController : MonoBehaviour
 				playerStatus.TakeDamage(atk);
 		}
 
-		// Can delay 0.2 seconds before disabling attack, protected by CancelInvoke in OnDisable()
+		// 這裡可能之後 0.2 秒內物件被回收 → 由 OnDisable() 的 CancelInvoke 保護
 		Invoke(nameof(EndAttack), 0.2f);
 	}
 
 	private void EndAttack()
 	{
-		// Check if object has been recycled/destroyed: preliminary check
+		// 物件可能已被回收/停用：先做安全檢查
 		if (this == null || !gameObject.activeInHierarchy) return;
 		if (agent == null || !agent.isActiveAndEnabled) return;
 
-		// If not on NavMesh, try to return to NavMesh; if fails, can't find nearby area
+		// 若不在 NavMesh，嘗試就近放回 NavMesh；失敗就別恢復移動
 		if (!agent.isOnNavMesh && !TryEnsureOnNavMesh(2f))
 			return;
 
@@ -225,7 +225,7 @@ public class TroubleGusetController : MonoBehaviour
 		agent.isStopped = false;
 	}
 
-	/// <summary>Try to move Agent back to nearest NavMesh position.</summary>
+	/// <summary>嘗試把 Agent 放回最近的 NavMesh 位置。</summary>
 	private bool TryEnsureOnNavMesh(float searchRadius = 2f)
 	{
 		if (agent == null || !agent.isActiveAndEnabled) return false;
@@ -284,23 +284,23 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (agent == null) yield break;
 
-		isKnockback = true;
-		agent.isStopped = true; // Stop NavMeshAgent movement
+		//isKnockback = true;
+		agent.isStopped = true; // 暫停 NavMeshAgent 控制
 
-		animator.SetTrigger("BeAttack"); // Play hit animation
+		animator.SetTrigger("BeAttack"); // 撥放受擊動畫
 		float elapsed = 0f;
 		while (elapsed < knockbackDuration)
 		{
-			// Move physics body
+			// 直接位移
 			transform.position += (Vector3)(direction * knockbackForce * Time.deltaTime);
 
 			elapsed += Time.deltaTime;
 			yield return null;
 		}
 
-		// Knockback finished, resume chasing
+		// 擊退結束，恢復追蹤
 		agent.isStopped = false;
-		isKnockback = false;
+		//isKnockback = false;
 		TakeDamage(1);
 	}
 
@@ -308,7 +308,7 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (other.CompareTag("AttackObject"))
 		{
-			// Knockback direction
+			// 擊退效果
 			Vector2 knockDir = (transform.position - other.transform.position).normalized;
 			StartCoroutine(ApplyKnockback(knockDir));
 		}

@@ -11,23 +11,23 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f;
 
 	[Header("-------- Patience / Timing --------")]
-	[Tooltip("Phase 1: Time to think about order (seconds)")]
+	[Tooltip("¨BÆJ1¡G«ä¦ÒÂIÀ\®É¶¡¡]¬í¡^")]
 	[SerializeField] private float thinkOrderTime = 10f;
 
-	[Tooltip("Phase 2: Max patience waiting for player to take order (seconds)")]
+	[Tooltip("¨BÆJ2¡Gµ¥«Ýª±®a¨ÓÂIÀ\ªº­@¤ß®É¶¡¡]¬í¡^")]
 	[SerializeField] private float maxOrderPatience = 20f;
 
-	[Tooltip("Phase 3: Max patience waiting for dish (seconds)")]
+	[Tooltip("¨BÆJ3¡Gµ¥«ÝÀ\ÂIªº©T©w­@¤ß¡]¬í¡^")]
 	[SerializeField] private float maxDishPatience = 25f;
 
 	[Header("-------- Flow Setting --------")]
-	[SerializeField] private float stateTransitionDelay = 0.3f; // State transition delay (seconds)
+	[SerializeField] private float stateTransitionDelay = 0.3f; // ª¬ºA¤Á´«©µ¿ð¡]¬í¡^
 
 	[Header("-------- Eat / Reorder --------")]
-	[Tooltip("Time to eat (seconds)")]
+	[Tooltip("¦Y¶º®É¶¡¡]¬í¡^")]
 	[SerializeField] private float eatTime = 10f;
 
-	[Tooltip("Probability of reordering after eating (0-1)")]
+	[Tooltip("¦Y§¹«á¡A¦A¦¸ÂIÀ\ªº¾÷²v¡]0~1¡^")]
 	[SerializeField, Range(0f, 1f)] private float reorderProbability = 0.3f;
 
 	[Header("-------- Stuck Retry Setting --------")]
@@ -56,9 +56,9 @@ public class NormalGuestController : MonoBehaviour
 	private enum GuestState
 	{
 		WalkingToChair,
-		Thinking,      // ï¿½Bï¿½J1ï¿½Gï¿½ï¿½ï¿½ï¿½Iï¿½\
-		WaitingOrder,  // ï¿½Bï¿½J2ï¿½Gï¿½ï¿½ï¿½Ýªï¿½ï¿½aï¿½ï¿½ï¿½Iï¿½\ï¿½]ï¿½ï¿½ï¿½Uï¿½ï¿½ï¿½Ê½Tï¿½{ï¿½^
-		WaitingDish,   // ï¿½Bï¿½J3ï¿½Gï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½Iï¿½]ï¿½Tï¿½wï¿½@ï¿½ß¡^
+		Thinking,      // ¨BÆJ1¡G«ä¦ÒÂIÀ\
+		WaitingOrder,  // ¨BÆJ2¡Gµ¥«Ýª±®a¨ÓÂIÀ\¡]«ö¤U¤¬°Ê½T»{¡^
+		WaitingDish,   // ¨BÆJ3¡Gµ¥«ÝÀ\ÂI¡]©T©w­@¤ß¡^
 		Eating,
 		Leaving
 	}
@@ -67,7 +67,7 @@ public class NormalGuestController : MonoBehaviour
 
 	private Transform targetChair;
 
-	// ï¿½ï¿½ï¿½Nï¿½ï¿½ timer ï¿½ï¿½ï¿½Tï¿½Ó³Ñ¾lï¿½É¶ï¿½ï¿½Ü¼ï¿½
+	// ¨ú¥NÂÂ timer ªº¤T­Ó³Ñ¾l®É¶¡ÅÜ¼Æ
 	private float thinkTimeLeft = 0f;
 	private float orderPatienceLeft = 0f;
 	private float dishPatienceLeft = 0f;
@@ -82,7 +82,7 @@ public class NormalGuestController : MonoBehaviour
 	private Vector3 lastPosition;
 	private float stuckTimer;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½
+	// ª«¥ó¦À
 	private GuestPoolHandler poolHandler;
 
 	#endregion
@@ -101,33 +101,32 @@ public class NormalGuestController : MonoBehaviour
 
 	private void Start()
 	{
-		// ï¿½_ï¿½Iï¿½Pï¿½Xï¿½f
+		// °_ÂI»P¥X¤f
 		if (RoundManager.Instance)
 		{
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
-			// ï¿½ï¿½yï¿½ï¿½
-			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
+			// §ä®y¦ì
 		}
 	}
 
 	private void OnEnable()
 	{
-		// ï¿½Hï¿½ï¿½ï¿½~ï¿½[
+		// ÀH¾÷¥~Æ[
 		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
 		{
 			int idx = Random.Range(0, guestAppearanceList.Count);
 			guestSpriteRenderer.sprite = guestAppearanceList[idx];
 		}
 
-		// ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½A
+		// ­«¸mª¬ºA
 		isSeated = false;
 		isLeaving = false;
 		isRetrying = false;
 		stuckTimer = 0f;
 		state = GuestState.WalkingToChair;
 
-		// ï¿½ï¿½ï¿½mï¿½Uï¿½Ñ¾lï¿½É¶ï¿½
+		// ­«¸m¦U³Ñ¾l®É¶¡
 		thinkTimeLeft = 0f;
 		orderPatienceLeft = 0f;
 		dishPatienceLeft = 0f;
@@ -139,13 +138,13 @@ public class NormalGuestController : MonoBehaviour
 		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 		foodSpriteRenderer.sprite = null;
 
-		// ï¿½_ï¿½Iï¿½Pï¿½Xï¿½f
+		// °_ÂI»P¥X¤f
 		if (RoundManager.Instance)
 		{
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
-			// ï¿½ï¿½yï¿½ï¿½
-			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
+			// §ä®y¦ì
+			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
 		}
 
 		if (targetChair != null)
@@ -158,7 +157,7 @@ public class NormalGuestController : MonoBehaviour
 
 	private void Update()
 	{
-		// ï¿½È¤lï¿½Qï¿½mï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½}
+		// ´È¤l³Q·m¨«´NÂ÷¶}
 		if (!isSeated && targetChair != null && targetChair.childCount > 1)
 		{
 			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
@@ -166,13 +165,13 @@ public class NormalGuestController : MonoBehaviour
 			Leave();
 		}
 
-		// ï¿½ï¿½Fï¿½yï¿½ï¿½
+		// ©è¹F®y¦ì
 		if (state == GuestState.WalkingToChair && targetChair != null && !agent.pathPending && agent.remainingDistance <= 0.05f)
 		{
 			ArriveAtChair();
 		}
 
-		// ï¿½ï¿½ï¿½Aï¿½Xï¿½Êªï¿½ï¿½pï¿½É»P UI
+		// ª¬ºAÅX°Êªº­p®É»P UI
 		TickStateTimers();
 
 		CheckStuckAndRetry();
@@ -189,7 +188,7 @@ public class NormalGuestController : MonoBehaviour
 		isSeated = true;
 		transform.SetParent(targetChair);
 
-		// ï¿½iï¿½Jï¿½uï¿½ï¿½ï¿½ï¿½Iï¿½\ï¿½v
+		// ¶i¤J¡u«ä¦ÒÂIÀ\¡v
 		EnterThinking();
 	}
 
@@ -199,9 +198,9 @@ public class NormalGuestController : MonoBehaviour
 
 		chatBoxIconObj.SetActive(false);
 		patienceBar.SetActive(false);
-		foodSpriteRenderer.sprite = null; // ï¿½ï¿½Ò®É¤ï¿½ï¿½ï¿½Ü­ï¿½ï¿½ï¿½
+		foodSpriteRenderer.sprite = null; // «ä¦Ò®É¤£Åã¥Ü­¹ª«
 
-		// ï¿½ï¿½Ò§ï¿½ï¿½uï¿½Mï¿½wï¿½vï¿½\ï¿½Iï¿½Aï¿½ï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ý¨ï¿½Fï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ó¤ï¿½ï¿½Ê¤~ï¿½ï¿½Ü­qï¿½ï¿½Ï¥ï¿½
+		// «ä¦Ò§¹¡u¨M©w¡vÀ\ÂI¡A¦ý©|¥¼Åýª±®a¬Ý¨ì¡Fµ¥ª±®a¨Ó¤¬°Ê¤~Åã¥Ü­q³æ¹Ï¥Ü
 		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
 		thinkTimeLeft = thinkOrderTime;
 
@@ -212,12 +211,12 @@ public class NormalGuestController : MonoBehaviour
 	{
 		state = GuestState.WaitingOrder;
 
-		// ï¿½ï¿½Üªï¿½ï¿½aï¿½iï¿½ï¿½ï¿½Ê¤ï¿½ï¿½ï¿½ï¿½Ü¡]ï¿½Ò¦p X/Raw ï¿½ï¿½ï¿½ï¿½^
+		// Åã¥Üª±®a¥i¤¬°Ê¤§´£¥Ü¡]¨Ò¦p X/Raw «öÁä¡^
 		rawBtnIconObj.SetActive(false);
 		chatBoxIconObj.SetActive(true);
-		questionIconObj.SetActive(true);// ï¿½Ý¸ï¿½ï¿½iï¿½ï¿½ï¿½Ê¡]ï¿½Tï¿½{ï¿½Iï¿½ï¿½^
+		questionIconObj.SetActive(true);// °Ý¸¹¥i¤¬°Ê¡]½T»{ÂI³æ¡^
 
-		// ï¿½Î¬Û¦Pï¿½@ï¿½ß­ï¿½ UI
+		// ¥Î¬Û¦P­@¤ß­È UI
 		patienceBar.SetActive(true);
 		orderPatienceLeft = maxOrderPatience;
 		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
@@ -228,13 +227,14 @@ public class NormalGuestController : MonoBehaviour
 		state = GuestState.WaitingDish;
 
 		rawBtnIconObj.SetActive(false);
-		chatBoxIconObj.SetActive(true);    // ï¿½ï¿½ï¿½ï¿½\ï¿½Iï¿½Tï¿½ï¿½ï¿½ï¿½
+		chatBoxIconObj.SetActive(true);    // Åã¥ÜÀ\ÂI°T®§®Ø
 		questionIconObj.SetActive(false);
 
-		// ï¿½bï¿½ï¿½Ü®Ø¤Wï¿½iï¿½ï¿½ï¿½\ï¿½Iï¿½ï¿½
+		// ¦b¹ï¸Ü®Ø¤W®i¥ÜÀ\ÂI¹Ï
 		foodSpriteRenderer.sprite = orderFoodSprite;
+		RoundManager.Instance.chairGroupManager.AddOrderGuest(this);
 
-		// ï¿½Tï¿½wï¿½@ï¿½ß®É¶ï¿½
+		// ©T©w­@¤ß®É¶¡
 		patienceBar.SetActive(true);
 		dishPatienceLeft = maxDishPatience;
 		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
@@ -247,7 +247,7 @@ public class NormalGuestController : MonoBehaviour
 		chatBoxIconObj.SetActive(false);
 		patienceBar.SetActive(false);
 
-		// ï¿½ï¿½ RoundManager ï¿½Ò°Ê¨ï¿½{ï¿½Aï¿½×§K Inactive ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		// ¥Ñ RoundManager ±Ò°Ê¨óµ{¡AÁ×§K Inactive ª«¥ó³ø¿ù
 		RoundManager.Instance.StartCoroutine(EatAndThenDecide());
 	}
 
@@ -255,13 +255,13 @@ public class NormalGuestController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(eatTime);
 
-		// ï¿½ï¿½ï¿½bï¿½]ï¿½@ï¿½ï¿½ï¿½\ï¿½Iï¿½^
+		// µ²±b¡]¤@¦¸À\ÂI¡^
 		RoundManager.Instance.FinishDishSuccess(targetChair, 10);
 
-		// ï¿½Oï¿½_ï¿½Aï¿½Iï¿½@ï¿½ï¿½ï¿½H
+		// ¬O§_¦AÂI¤@¦¸¡H
 		if (Random.value < reorderProbability)
 		{
-			// ï¿½^ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ýªï¿½ï¿½aï¿½Iï¿½\ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½I
+			// ¦^¨ì«ä¦Ò ¡÷ µ¥«Ýª±®aÂIÀ\ ¡÷ µ¥«ÝÀ\ÂI
 			EnterThinking();
 		}
 		else
@@ -275,10 +275,10 @@ public class NormalGuestController : MonoBehaviour
 	#region Public Interactions
 
 	/// <summary>
-	/// ï¿½Ñªï¿½ï¿½aï¿½Iï¿½sï¿½Gï¿½Tï¿½{ï¿½È¤Hï¿½ï¿½ï¿½qï¿½ï¿½C
-	/// ï¿½È¦b WaitingOrder ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½Ä¡Cï¿½ï¿½ï¿½\ï¿½|ï¿½ï¿½ï¿½ï¿½ WaitingDish ï¿½Ã¶}ï¿½lï¿½Tï¿½wï¿½@ï¿½ß­Ë¼Æ¡C
+	/// ¨Ñª±®a©I¥s¡G½T»{«È¤Hªº­q³æ¡C
+	/// ¶È¦b WaitingOrder ª¬ºA¦³®Ä¡C¦¨¥\·|¤Á¦Ü WaitingDish ¨Ã¶}©l©T©w­@¤ß­Ë¼Æ¡C
 	/// </summary>
-	/// <returns>ï¿½Oï¿½_ï¿½Tï¿½{ï¿½ï¿½ï¿½\</returns>
+	/// <returns>¬O§_½T»{¦¨¥\</returns>
 	public bool ConfirmOrderByPlayer()
 	{
 		if (!isSeated || state != GuestState.WaitingOrder)
@@ -289,39 +289,31 @@ public class NormalGuestController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ï¿½ï¿½ï¿½aï¿½eï¿½\ï¿½Cï¿½È¦b WaitingDish ï¿½ï¿½ï¿½Aï¿½Bï¿½\ï¿½Iï¿½ï¿½ï¿½Tï¿½É¦ï¿½ï¿½ß¡Aï¿½Ã¶iï¿½J Eatingï¿½C
+	/// ª±®a°eÀ\¡C¶È¦b WaitingDish ª¬ºA¥BÀ\ÂI¥¿½T®É¦¨¥ß¡A¨Ã¶i¤J Eating¡C
 	/// </summary>
 	public bool IsReceiveFood(Sprite foods)
 	{
 		if (!isSeated || state != GuestState.WaitingDish || foods != orderFoodSprite)
 			return false;
 
+		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
 		EnterEating();
 		return true;
 	}
 
 	/// <summary>
-	/// WaitingOrderï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¡Cï¿½b WaitingDish ï¿½ï¿½ï¿½qï¿½Aï¿½Yï¿½ï¿½ï¿½aï¿½ï¿½Wï¿½Oï¿½ï¿½ï¿½Tï¿½\ï¿½Iï¿½~ï¿½ï¿½Ü¤ï¿½ï¿½Ê´ï¿½ï¿½Ü¡C
+	/// WaitingOrderª½±µÅã¥Ü¡C¦b WaitingDish ¶¥¬q¡A­Yª±®a¤â¤W¬O¥¿½TÀ\ÂI¤~Åã¥Ü¤¬°Ê´£¥Ü¡C
 	/// </summary>
 	public void EnableInteractIcon(Sprite food, bool isEnable)
 	{
-		Debug.Log("EnableInteractIcon");
-		// ï¿½Yï¿½Oï¿½ï¿½ï¿½Ýªï¿½ï¿½aï¿½ï¿½ï¿½Iï¿½\ rawBtn ï¿½ï¿½ï¿½
-		if (state == GuestState.WaitingOrder)
-		{
-			rawBtnIconObj.SetActive(isEnable);
-			return;
-		}
-
-		// ï¿½È¦bï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½Iï¿½Bï¿½Bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Tï¿½ï¿½ï¿½ï¿½Ü¥iï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½
-		if (!isSeated || state != GuestState.WaitingDish || food != orderFoodSprite)
-		{
-			rawBtnIconObj.SetActive(false);
-		}
-		else
-		{
-			rawBtnIconObj.SetActive(isEnable);
-		}
+		rawBtnIconObj.SetActive(isEnable);
+		// ­Y¬Oµ¥«Ýª±®a¨ÓÂIÀ\ rawBtn Åã¥Ü
+		if (state == GuestState.WaitingOrder) return;
+		// ¶È¦bµ¥«ÝÀ\ÂI¡B¥B­¹ª«¥¿½T®ÉÅã¥Ü¥i¥æ¥I´£¥Ü
+		if (isSeated && state == GuestState.WaitingDish && food == orderFoodSprite) return;
+		
+		
+		rawBtnIconObj.SetActive(false);
 	}
 
 	#endregion
@@ -336,7 +328,7 @@ public class NormalGuestController : MonoBehaviour
 				thinkTimeLeft -= Time.deltaTime;
 				if (thinkTimeLeft <= 0f)
 				{
-					// ï¿½ï¿½Ò§ï¿½ï¿½ï¿½ï¿½Aï¿½iï¿½Jï¿½uï¿½ï¿½ï¿½Ýªï¿½ï¿½aï¿½ï¿½ï¿½Iï¿½\ï¿½v
+					// «ä¦Ò§¹¦¨¡A¶i¤J¡uµ¥«Ýª±®a¨ÓÂIÀ\¡v
 					EnterWaitingOrder();
 				}
 				break;
@@ -413,7 +405,7 @@ public class NormalGuestController : MonoBehaviour
 			yield return null;
 		}
 
-		// ï¿½^ï¿½ï¿½ï¿½ìª«ï¿½ï¿½ï¿½
+		// ¦^¦¬¨ìª«¥ó¦À
 		if (poolHandler != null) poolHandler.Release();
 		else gameObject.SetActive(false);
 	}
@@ -469,26 +461,27 @@ public class NormalGuestController : MonoBehaviour
 
 	private void BecomeTroubleGuest()
 	{
-		// ï¿½ï¿½ï¿½Bï¿½zï¿½yï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Pï¿½à­±ï¿½Mï¿½zï¿½]ï¿½pï¿½Gï¿½ï¿½ï¿½É¦bï¿½yï¿½ï¿½Wï¿½^
+		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
+		// ¥ý³B²z®y¦ìÄÀ©ñ»P®à­±²M²z¡]¦pªG¦¹®É¦b®y¦ì¤W¡^
 		if (targetChair != null)
 		{
-			// ï¿½ï¿½ï¿½ï¿½ï¿½È¤lï¿½ï¿½ï¿½lï¿½ï¿½ï¿½Yï¿½Aï¿½×§K TroubleGuest ï¿½~ï¿½Ó¨ï¿½
+			// ²æÂ÷´È¤l¤÷¤lÃö«Y¡AÁ×§K TroubleGuest Ä~©Ó¨ì
 			transform.SetParent(RoundManager.Instance.guestGroupManager.transform);
 
-			// ï¿½ï¿½ï¿½ï¿½È¤lï¿½Pï¿½Mï¿½ï¿½
+			// ÄÀ©ñ´È¤l»P²M®à
 			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
 			RoundManager.Instance.chairGroupManager.ClearChairItem(targetChair);
 			targetChair = null;
 		}
 
-		// ï¿½Oï¿½Uï¿½{ï¿½bï¿½ï¿½mï¿½Pï¿½~ï¿½[
+		// °O¤U²{¦b¦ì¸m»P¥~Æ[
 		Vector3 pos = transform.position;
 		Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
 
-		// ï¿½s GuestGroupManager ï¿½Í¦ï¿½ TroubleGuestï¿½Aï¿½uï¿½ï¿½ï¿½y
+		// ¥s GuestGroupManager ¥Í¦¨ TroubleGuest¡Aªu¥ÎÁy
 		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, face);
 
-		// ï¿½^ï¿½ï¿½ï¿½Û¤v
+		// ¦^¦¬¦Û¤v
 		if (poolHandler != null) poolHandler.Release();
 		else Destroy(gameObject);
 	}
@@ -504,6 +497,10 @@ public class NormalGuestController : MonoBehaviour
 		dishPatienceLeft = maxDishPatience;
 	}
 
+	public Sprite GetOrderFood()
+	{
+		return foodSpriteRenderer.sprite;
+	}
 	#endregion
 
 }
