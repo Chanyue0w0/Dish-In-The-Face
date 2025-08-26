@@ -19174,7 +19174,7 @@ MonoBehaviour:
   foodPrefabs:
   - {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
   - {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
-  foodsSpawnPosition:
+  foodsSpawnPositions:
   - {fileID: 350722913}
   - {fileID: 934708409}
   - {fileID: 1865163220}

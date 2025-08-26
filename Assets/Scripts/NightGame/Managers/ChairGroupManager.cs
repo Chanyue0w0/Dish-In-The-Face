@@ -76,7 +76,6 @@ public class ChairGroupManager : MonoBehaviour
 		Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
 
 		// 紀錄訂單客人與佔用標記
-		guestsOrderList.Add(normalGuest);
 		occupiedChairs.Add(selectedChair);
 		return selectedChair;
 	}
@@ -221,6 +220,37 @@ public class ChairGroupManager : MonoBehaviour
 		return guestsOrderList;
 	}
 
+	/// <summary>
+	/// 加入指定客人到 guestsOrderList ；若不存在則輸出警告。
+	/// </summary>
+	public void AddOrderGuest(NormalGuestController normalGuest)
+	{
+		if (normalGuest == null) return;
+
+		if (guestsOrderList.Contains(normalGuest))
+		{
+			//Debug.Log($"已存在 {normalGuest.name} 在 guestsOrderList");
+			return;
+		}
+		guestsOrderList.Add(normalGuest);
+	}
+
+	/// <summary>
+	/// 從 guestsOrderList 移除指定客人；若不存在則輸出警告。
+	/// </summary>
+	public void RemovOrderGuest(NormalGuestController normalGuest)
+	{
+		if (normalGuest == null) return;
+
+		if (guestsOrderList.Contains(normalGuest))
+		{
+			guestsOrderList.Remove(normalGuest);
+			//Debug.Log($"已移除客人 {normalGuest.name} 從 guestsOrderList");
+			return;
+		}
+
+		//Debug.Log($"要移除的客人 {normalGuest?.name} 不在 guestsOrderList 裡");
+	}
 	#endregion
 
 
@@ -235,23 +265,6 @@ public class ChairGroupManager : MonoBehaviour
 			Vector3.Distance(a.position, guestEnterPoistion.position)
 				.CompareTo(Vector3.Distance(b.position, guestEnterPoistion.position))
 		);
-	}
-
-	/// <summary>
-	/// 從 guestsOrderList 移除指定客人；若不存在則輸出警告。
-	/// </summary>
-	private void RemovOrderGuest(NormalGuestController normalGuest)
-	{
-		if (normalGuest == null) return;
-
-		if (guestsOrderList.Contains(normalGuest))
-		{
-			guestsOrderList.Remove(normalGuest);
-			Debug.Log($"已移除客人 {normalGuest.name} 從 guestsOrderList");
-			return;
-		}
-
-		Debug.LogWarning($"要移除的客人 {normalGuest?.name} 不在 guestsOrderList 裡");
 	}
 
 	#endregion

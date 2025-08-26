@@ -138,6 +138,7 @@ namespace {NamespaceName}
 {{
 	public enum {finalEnumName}
 	{{
+		None,
 {string.Join("\n", foodNames.Select(n => $"\t\t{n},"))}
 	}}
 }}";

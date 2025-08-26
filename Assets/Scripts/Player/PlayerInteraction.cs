@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +11,8 @@ public class PlayerInteraction : MonoBehaviour
 
 	[Header("-------- Setting ---------")]
 	[SerializeField] private int getFoodCount = 1;
+	[SerializeField] private bool isGetOneFood = true;
+
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] private PlayerMovement movement; // 由 Movement 綁定或 Inspector 指定
@@ -70,7 +73,9 @@ public class PlayerInteraction : MonoBehaviour
 
 		for (int i = 0; i < getFoodCount; i++)
 		{
-			GameObject newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+			GameObject newItem;
+			if (isGetOneFood) newItem = currentFood;
+			else newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
 			newItem.transform.SetParent(handItemRoot);
 			newItem.GetComponent<Collider2D>().enabled = false;
 

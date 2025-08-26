@@ -232,6 +232,7 @@ public class NormalGuestController : MonoBehaviour
 
 		// 在對話框上展示餐點圖
 		foodSpriteRenderer.sprite = orderFoodSprite;
+		RoundManager.Instance.chairGroupManager.AddOrderGuest(this);
 
 		// 固定耐心時間
 		patienceBar.SetActive(true);
@@ -295,6 +296,7 @@ public class NormalGuestController : MonoBehaviour
 		if (!isSeated || state != GuestState.WaitingDish || foods != orderFoodSprite)
 			return false;
 
+		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
 		EnterEating();
 		return true;
 	}
@@ -459,6 +461,7 @@ public class NormalGuestController : MonoBehaviour
 
 	private void BecomeTroubleGuest()
 	{
+		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
 		// 先處理座位釋放與桌面清理（如果此時在座位上）
 		if (targetChair != null)
 		{
