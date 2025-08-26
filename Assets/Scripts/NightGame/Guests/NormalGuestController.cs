@@ -144,7 +144,7 @@ public class NormalGuestController : MonoBehaviour
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 			// §ä®y¦ì
-			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair();
+			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
 		}
 
 		if (targetChair != null)
@@ -494,6 +494,10 @@ public class NormalGuestController : MonoBehaviour
 		dishPatienceLeft = maxDishPatience;
 	}
 
+	public Sprite GetOrderFood()
+	{
+		return foodSpriteRenderer.sprite;
+	}
 	#endregion
 
 }

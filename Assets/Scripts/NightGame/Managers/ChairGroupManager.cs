@@ -3,119 +3,148 @@ using UnityEngine;
 
 public class ChairGroupManager : MonoBehaviour
 {
+	#region Inspector
+
 	[Header("Chair List")]
-	[SerializeField] private List<Transform> chairList; // 所有椅子位置
-	[SerializeField] private Transform guestEnterPoistion;
+	[SerializeField] private List<Transform> chairList;            // 所有椅子位置（會在 Awake 以 Tag=Chair 重新蒐集並排序）
+	[SerializeField] private Transform guestEnterPoistion;         // 依距離此點排序（保持命名以免序列化破壞）
 
 	[Header("Reference")]
-	[SerializeField] private GameObject coinPrefab;
-	private HashSet<Transform> occupiedChairs;// 正在被使用的椅子集合
+	[SerializeField] private GameObject coinPrefab;                // 桌上金幣 Prefab
+
+	#endregion
+
+
+	#region Runtime State / Collections
+
+	private HashSet<Transform> occupiedChairs;                     // 正在被使用的椅子集合
+	private List<NormalGuestController> guestsOrderList = new List<NormalGuestController>(); // 已下單（或等待上餐）的客人清單
+
+	#endregion
+
+
+	#region Unity Events
 
 	private void Awake()
 	{
 		chairList.Clear();
 		occupiedChairs = new HashSet<Transform>();
+
+		// 以 Tag 取得所有椅子
 		GameObject[] allChairs = GameObject.FindGameObjectsWithTag("Chair");
 		foreach (GameObject chairObj in allChairs)
 		{
 			chairList.Add(chairObj.transform);
 		}
-		SortChairList(); // 椅子以靠近重生點分類
-	}
 
+		// 依靠近重生點排序
+		SortChairList();
+	}
 
 	private void Start()
 	{
+		// 清空所有椅子桌面物件
 		foreach (Transform obj in chairList)
 		{
 			ClearChairItem(obj);
 		}
 	}
 
-	/// 隨機尋找一個空的椅子並標記為已佔用(隨機)。找不到則回傳 null。
-	public Transform FindEmptyChair()
-	{
-		// 建立一個清單來存放所有尚未被佔用的椅子
-		List<Transform> availableChairs = new List<Transform>();
+	#endregion
 
+
+	#region Public API - 查找 / 釋放椅子
+
+	/// <summary>
+	/// 隨機尋找一個空的椅子並標記為已佔用（找不到則回傳 null）。
+	/// 會同時把該客人加入 guestsOrderList。
+	/// </summary>
+	public Transform FindEmptyChair(NormalGuestController normalGuest)
+	{
+		// 蒐集未佔用椅子
+		List<Transform> availableChairs = new List<Transform>();
 		foreach (Transform chair in chairList)
 		{
 			if (!occupiedChairs.Contains(chair))
 				availableChairs.Add(chair);
 		}
 
-		// 若沒有空椅子，回傳 null
 		if (availableChairs.Count == 0)
 			return null;
 
-		// 隨機選取其中一張椅子
+		// 隨機挑選
 		Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
 
-		// 標記為已佔用
+		// 紀錄訂單客人與佔用標記
+		guestsOrderList.Add(normalGuest);
 		occupiedChairs.Add(selectedChair);
 		return selectedChair;
 	}
 
-	/// 依序尋找一個空的椅子並標記為已佔用(照順序)。找不到則回傳 null。
-	//public Transform FindEmptyChair()
-	//{
-	//	foreach (Transform chair in chairList)
-	//	{
-	//		if (!occupiedChairs.Contains(chair))
-	//		{
-	//			occupiedChairs.Add(chair);
-	//			return chair;
-	//		}
-	//	}
-
-	//	// 若沒有空椅子，回傳 null
-	//	return null;
-	//}
-
-	/// 當客人離席時釋放椅子。
+	/// <summary>
+	/// 客人離席時釋放椅子佔用。
+	/// </summary>
 	public void ReleaseChair(Transform targetChair)
 	{
+		if (targetChair == null) return;
 		if (occupiedChairs.Contains(targetChair))
 		{
 			occupiedChairs.Remove(targetChair);
 		}
 	}
 
+	/// <summary>
+	/// 詢問椅子是否已被佔用。
+	/// </summary>
+	public bool IsChairccupied(Transform chair)
+	{
+		return chair != null && occupiedChairs.Contains(chair);
+	}
+
+	#endregion
+
+
+	#region Public API - 上餐 / 互動顯示 / 金幣
+
+	/// <summary>
+	/// 啟用/關閉椅位上的互動提示圖示（把玩家手上物品的 Sprite 傳給客人顯示）。
+	/// </summary>
 	public void EnableInteracSignal(Transform chair, GameObject handItem, bool onEnable)
 	{
 		if (chair == null || chair.childCount < 2) return;
 
-		//Transform chairItem = chair.transform.GetChild(0);
 		Sprite foodSprite = handItem?.transform?.GetComponent<SpriteRenderer>()?.sprite;
 		NormalGuestController npc = chair.GetChild(1).GetComponent<NormalGuestController>();
-
 		npc?.EnableInteractIcon(foodSprite, onEnable);
 	}
 
+	/// <summary>
+	/// 嘗試將玩家手上餐點放到椅位桌面上；若客人確認收到正確餐點則回報成功，並觸發熱度等流程。
+	/// </summary>
 	public bool PullDownChairItem(Transform chair, GameObject handItem)
 	{
-		Transform chairItem = chair.transform.GetChild(0); 
-		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>().sprite;
-
+		if (chair == null || handItem == null) return false;
 		if (chair.childCount < 2) return false;
-		NormalGuestController npc = chair.GetComponentInChildren<NormalGuestController>();
 
-		// 回報已上餐
+		Transform chairItem = chair.transform.GetChild(0);
+		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>()?.sprite;
+
+		NormalGuestController npc = chair.GetComponentInChildren<NormalGuestController>();
+		if (npc == null || foodSprite == null) return false;
+
+		// 回報已上餐（判斷是否是該客人要的食物）
 		if (npc.IsReceiveFood(foodSprite))
 		{
 			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pullDownDish, transform.position);
 
-			// 放置餐點
-			handItem.transform.SetParent(chairItem.transform); // 餐點從玩家手上放到桌子上
+			// 放置餐點到桌面（把玩家手上的物件移到桌上）
+			handItem.transform.SetParent(chairItem.transform);
 			handItem.transform.localPosition = Vector3.zero;
 
-			//// 生成 handItem 的複製品（Instantiate 一份新物件）
-			//GameObject newItem = Instantiate(handItem); // 複製餐點放到桌子上，玩家手上餐點不變
-			//newItem.transform.localScale = handItem.transform.lossyScale;
-			//newItem.transform.SetParent(chairItem.transform);
-			//newItem.transform.localPosition = Vector3.zero;
+			// 從訂單客人清單移除
+			RemovOrderGuest(npc);
 
-			// 上餐成功增加熱度
+			// 上餐成功：增加熱度等
 			RoundManager.Instance.PullDownDishSuccess();
 			return true;
 		}
@@ -123,72 +152,107 @@ public class ChairGroupManager : MonoBehaviour
 		return false;
 	}
 
+	/// <summary>
+	/// 幫客人確認點單（僅 WaitingOrder 狀態會成功）。
+	/// </summary>
 	public bool ConfirmOrderChair(Transform chair)
 	{
 		if (chair == null) return false;
 
-		// 在椅子子層級找客人（包含停用物件之外的 active & enabled）
 		NormalGuestController guest = chair.GetComponentInChildren<NormalGuestController>();
 		if (guest == null || !guest.isActiveAndEnabled) return false;
 
-		// 嘗試幫客人確認點單（只有 WaitingOrder 狀態會成功）
-		if (guest.ConfirmOrderByPlayer())
-		{
-			// 可選：一點回饋
-			return true;
-		}
-
-		return false;
+		return guest.ConfirmOrderByPlayer();
 	}
 
+	/// <summary>
+	/// 在椅位桌面放置金幣物件（並設定金幣數量）。
+	/// </summary>
 	public void PullDownCoin(Transform chair, int coinCount)
 	{
-		if (chair == null) return;
+		if (chair == null || coinPrefab == null) return;
+
 		Transform chairItem = chair.transform.GetChild(0);
 
 		GameObject coinObj = Instantiate(coinPrefab);
-		coinObj.GetComponent<CoinOnTable>().SetCoinCount(coinCount); // 設定金幣數量為 10
+		coinObj.GetComponent<CoinOnTable>()?.SetCoinCount(coinCount);
 		coinObj.transform.localScale = coinPrefab.transform.lossyScale;
 		coinObj.transform.SetParent(chairItem.transform);
 		coinObj.transform.localPosition = Vector3.zero;
 	}
 
+	/// <summary>
+	/// 清空椅位桌面上的第一個子物件（若有）。
+	/// </summary>
 	public void ClearChairItem(Transform chair)
 	{
 		if (chair == null) return;
 
 		Transform parentItem = chair.transform.GetChild(0);
-
-		// 刪除第一個子物件（如果有）
 		if (parentItem.childCount > 0)
 		{
 			Destroy(parentItem.GetChild(0).gameObject);
 		}
 	}
 
-	public bool IsChairccupied(Transform chair)
-	{
-		return occupiedChairs.Contains(chair);
-	}
-
-	private void SortChairList()
-	{
-		// 按照距離 spawnPoistion 的遠近排序（由近到遠）
-		chairList.Sort((a, b) =>
-			Vector3.Distance(a.position, guestEnterPoistion.position)
-			.CompareTo(Vector3.Distance(b.position, guestEnterPoistion.position))
-		);
-	}
+	#endregion
 
 
+	#region Public API - 客人耐心 / 訂單清單
+
+	/// <summary>
+	/// 讓所有椅位上坐著的客人重設耐心值。
+	/// </summary>
 	public void ResetAllSetGuestsPatience()
 	{
-		foreach (Transform chair in chairList) //得到所有子物件
+		foreach (Transform chair in chairList)
 		{
 			NormalGuestController guestController = chair.GetComponentInChildren<NormalGuestController>();
 			if (guestController == null) continue;
-
 			guestController.ResetPatience();
 		}
 	}
+
+	/// <summary>
+	/// 取得目前 guestsOrderList（已下單或等待上餐的客人）。
+	/// </summary>
+	public List<NormalGuestController> GetGuestsOrderList()
+	{
+		return guestsOrderList;
+	}
+
+	#endregion
+
+
+	#region Private Helpers
+
+	/// <summary>
+	/// 依椅子到 guestEnterPoistion 的距離由近到遠排序。
+	/// </summary>
+	private void SortChairList()
+	{
+		chairList.Sort((a, b) =>
+			Vector3.Distance(a.position, guestEnterPoistion.position)
+				.CompareTo(Vector3.Distance(b.position, guestEnterPoistion.position))
+		);
+	}
+
+	/// <summary>
+	/// 從 guestsOrderList 移除指定客人；若不存在則輸出警告。
+	/// </summary>
+	private void RemovOrderGuest(NormalGuestController normalGuest)
+	{
+		if (normalGuest == null) return;
+
+		if (guestsOrderList.Contains(normalGuest))
+		{
+			guestsOrderList.Remove(normalGuest);
+			Debug.Log($"已移除客人 {normalGuest.name} 從 guestsOrderList");
+			return;
+		}
+
+		Debug.LogWarning($"要移除的客人 {normalGuest?.name} 不在 guestsOrderList 裡");
+	}
+
+	#endregion
 }

@@ -41,7 +41,7 @@ public class TroubleGusetController : MonoBehaviour
 	private bool isCharging;
 	private float chargeStartTime;
 
-	private bool isKnockback = false;
+	//private bool isKnockback = false;
 
 	// 物件池處理器
 	private GuestPoolHandler poolHandler;
@@ -284,7 +284,7 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (agent == null) yield break;
 
-		isKnockback = true;
+		//isKnockback = true;
 		agent.isStopped = true; // 暫停 NavMeshAgent 控制
 
 		animator.SetTrigger("BeAttack"); // 撥放受擊動畫
@@ -300,7 +300,7 @@ public class TroubleGusetController : MonoBehaviour
 
 		// 擊退結束，恢復追蹤
 		agent.isStopped = false;
-		isKnockback = false;
+		//isKnockback = false;
 		TakeDamage(1);
 	}
 

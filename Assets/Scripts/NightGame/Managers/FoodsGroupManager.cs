@@ -11,7 +11,9 @@ public class FoodsGroupManager : MonoBehaviour
 	[SerializeField] private bool hideBarWhenReady = true;               // 冷卻完成自動隱藏
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private GameObject[] foodsArray;
+	[SerializeField] private GameObject[] currentfoods;
+	[SerializeField] private GameObject[] foodPrefabs;
+	[SerializeField] private Transform[] foodsSpawnPosition;
 	[SerializeField] private Transform dessertBarFill;
 	//[SerializeField] private Transform dishLoadingBar;
 	[SerializeField] private Animator dessertAnimator;
@@ -29,7 +31,7 @@ public class FoodsGroupManager : MonoBehaviour
 	private bool IsDessertOnCd => dessertCdRemain > 0f;
 	void Start()
 	{
-		foodsCount = new int[foodsArray.Length];
+		foodsCount = new int[currentfoods.Length];
 		for (int i = 0; i < foodsCount.Length; i++)
 			foodsCount[i] = 10;
 
@@ -114,7 +116,7 @@ public class FoodsGroupManager : MonoBehaviour
 	// --- 玩家碰撞檢查 ---
 	private Transform GetTouchedFoodByPlayer()
 	{
-		foreach (GameObject food in foodsArray)
+		foreach (GameObject food in currentfoods)
 		{
 			if (food == null) continue;
 
@@ -161,11 +163,11 @@ public class FoodsGroupManager : MonoBehaviour
 	// --- 隨機點餐（取得 Sprite）---
 	public Sprite OrderFoodRandomly()
 	{
-		if (foodsArray == null || foodsArray.Length == 0)
+		if (foodPrefabs == null || foodPrefabs.Length == 0)
 			return null;
 
-		int randomIndex = Random.Range(0, foodsArray.Length);
-		GameObject selectedFood = foodsArray[randomIndex];
+		int randomIndex = Random.Range(0, foodPrefabs.Length);
+		GameObject selectedFood = foodPrefabs[randomIndex];
 
 		SpriteRenderer foodSR = selectedFood.GetComponent<SpriteRenderer>();
 		return foodSR != null ? foodSR.sprite : null;
