@@ -49,6 +49,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchWeapon",
+                    "type": "Button",
+                    "id": "a2195ea2-97f8-48de-bb87-be8230c59f8c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UseItem",
+                    "type": "Button",
+                    "id": "f9ab42bd-c242-409e-b5c0-49dac5451632",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -236,6 +254,61 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2162b8f7-10be-4deb-8628-c7204a103728",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard Mouse",
+                    "action": "SwitchWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "010c4ad5-ed8f-488e-baa4-a9d4f7f4daf3",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SwitchWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b1330df0-07e4-48b3-8a92-644b1525f044",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SwitchWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1fc5f647-a80e-4d15-95db-47ac02ed24de",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "897810fa-341d-4cf0-b4eb-87be3ca86087",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard Mouse",
+                    "action": "UseItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

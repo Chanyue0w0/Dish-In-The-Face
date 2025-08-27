@@ -4,90 +4,95 @@ using System.Collections.Generic;
 
 public class VFXPool : MonoBehaviour
 {
-	[Header("VFX Parent Group")]
-	[SerializeField] private Transform vfxGroupParent;
+    [Header("VFX Parent Group")]
+    [SerializeField] private Transform vfxGroupParent;
 
-	public static VFXPool Instance { get; private set; }
+    public static VFXPool Instance { get; private set; }
 
-	[System.Serializable]
-	public class VFXPrefabData
-	{
-		public string key; // ¥Î¨ÓÃÑ§Oªº¦WºÙ¡A¨Ò¦p "Cake", "Beer", "Attack", "Hurt"
-		public GameObject prefab;
-		public int defaultCapacity = 10;
-		public int maxSize = 50;
-	}
+    [System.Serializable]
+    public class VFXPrefabData
+    {
+        public string key;                 // ç”¨æ–¼è¾¨è­˜çš„éµï¼Œä¾‹å¦‚ "Cake", "Beer", "Attack", "Hurt"
+        public GameObject prefab;          // è©²æ•ˆæœçš„é ç½®ç‰©
+        public int defaultCapacity = 10;   // ç‰©ä»¶æ± é è¨­å®¹é‡
+        public int maxSize = 50;           // ç‰©ä»¶æ± æœ€å¤§å®¹é‡
+    }
 
-	[Header("VFX Prefabs")]
-	[SerializeField] private List<VFXPrefabData> vfxPrefabs;
+    [Header("VFX Prefabs")]
+    [SerializeField] private List<VFXPrefabData> vfxPrefabs;
 
-	private Dictionary<string, ObjectPool<GameObject>> pools = new Dictionary<string, ObjectPool<GameObject>>();
+    private Dictionary<string, ObjectPool<GameObject>> pools =
+        new Dictionary<string, ObjectPool<GameObject>>();
 
-	private void Awake()
-	{
-		if (Instance != null && Instance != this)
-		{
-			Destroy(gameObject);
-			return;
-		}
-		Instance = this;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
 
-		// «Ø¥ß©Ò¦³ VFX ªºª«¥ó¦À
-		foreach (var data in vfxPrefabs)
-		{
-			if (data.prefab == null || string.IsNullOrEmpty(data.key))
-				continue;
+        // å»ºç«‹æ‰€æœ‰ VFX çš„ç‰©ä»¶æ± 
+        foreach (var data in vfxPrefabs)
+        {
+            if (data.prefab == null || string.IsNullOrEmpty(data.key))
+                continue;
 
-			var pool = new ObjectPool<GameObject>(
-				createFunc: () =>
-				{
-					var obj = Instantiate(data.prefab, vfxGroupParent);
-					obj.SetActive(false);
-					return obj;
-				},
-				actionOnGet: obj => obj.SetActive(true),
-				actionOnRelease: obj => obj.SetActive(false),
-				actionOnDestroy: obj => Destroy(obj),
-				collectionCheck: false,
-				defaultCapacity: data.defaultCapacity,
-				maxSize: data.maxSize
-			);
+            var pool = new ObjectPool<GameObject>(
+                createFunc: () =>
+                {
+                    var obj = Instantiate(data.prefab, vfxGroupParent);
+                    obj.SetActive(false);
+                    return obj;
+                },
+                actionOnGet: obj => obj.SetActive(true),
+                actionOnRelease: obj => obj.SetActive(false),
+                actionOnDestroy: obj => Destroy(obj),
+                collectionCheck: false,
+                defaultCapacity: data.defaultCapacity,
+                maxSize: data.maxSize
+            );
 
-			pools[data.key] = pool;
-		}
-	}
+            pools[data.key] = pool;
+        }
+    }
 
-	/// ¨ú±o VFX¡]·|¦Û°Ê±Ò¥Î¡^
-	public GameObject SpawnVFX(string key, Vector3 position, Quaternion rotation, float autoReleaseTime = -1f)
-	{
-		if (!pools.ContainsKey(key))
-		{
-			Debug.LogWarning($"VFXPool: ¥¼§ä¨ì Key '{key}' ªºª«¥ó¦À");
-			return null;
-		}
+    /// <summary>
+    /// å–å¾— VFXï¼ˆå¯é¸æ“‡è‡ªå‹•é‡‹æ”¾ï¼‰
+    /// </summary>
+    public GameObject SpawnVFX(string key, Vector3 position, Quaternion rotation, float autoReleaseTime = -1f)
+    {
+        if (!pools.ContainsKey(key))
+        {
+            Debug.LogWarning($"VFXPool: æ‰¾ä¸åˆ° Key '{key}' å°æ‡‰çš„ç‰©ä»¶æ± ã€‚");
+            return null;
+        }
 
-		var obj = pools[key].Get();
-		obj.transform.position = position;
-		obj.transform.rotation = rotation;
+        var obj = pools[key].Get();
+        obj.transform.position = position;
+        obj.transform.rotation = rotation;
 
-		if (autoReleaseTime > 0)
-			StartCoroutine(AutoReleaseCoroutine(key, obj, autoReleaseTime));
+        if (autoReleaseTime > 0)
+            StartCoroutine(AutoReleaseCoroutine(key, obj, autoReleaseTime));
 
-		return obj;
-	}
+        return obj;
+    }
 
-	/// ¤â°Ê¦^¦¬ VFX
-	public void ReleaseVFX(string key, GameObject obj)
-	{
-		if (pools.ContainsKey(key))
-			pools[key].Release(obj);
-		else
-			Destroy(obj);
-	}
+    /// <summary>
+    /// æ­¸é‚„ VFX
+    /// </summary>
+    public void ReleaseVFX(string key, GameObject obj)
+    {
+        if (pools.ContainsKey(key))
+            pools[key].Release(obj);
+        else
+            Destroy(obj);
+    }
 
-	private System.Collections.IEnumerator AutoReleaseCoroutine(string key, GameObject obj, float delay)
-	{
-		yield return new WaitForSeconds(delay);
-		ReleaseVFX(key, obj);
-	}
+    private System.Collections.IEnumerator AutoReleaseCoroutine(string key, GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ReleaseVFX(key, obj);
+    }
 }

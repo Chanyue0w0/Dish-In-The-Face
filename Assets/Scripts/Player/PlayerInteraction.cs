@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 /// <summary>
@@ -21,11 +20,12 @@ public class PlayerInteraction : MonoBehaviour
 
 	private List<Collider2D> currentChairTriggers;
 
-	private bool isEnableUseDessert = false;
+	private bool isEnableUseDessert ;
 
 
 	private void Start()
 	{
+		isEnableUseDessert = true;
 		currentChairTriggers = new List<Collider2D>();
 	}
 	/// External: Called on InputInteract
@@ -71,11 +71,9 @@ public class PlayerInteraction : MonoBehaviour
 		}
 
 
-		for (int i = 0; i < getFoodCount; i++)
+		for (var i = 0; i < getFoodCount; i++)
 		{
-			GameObject newItem;
-			if (isGetOneFood) newItem = currentFood;
-			else newItem = Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+			GameObject newItem = isGetOneFood ? currentFood : Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
 			newItem.transform.SetParent(handItemRoot);
 			newItem.GetComponent<Collider2D>().enabled = false;
 
@@ -99,7 +97,7 @@ public class PlayerInteraction : MonoBehaviour
 		return false;
 	}
 
-	/// Place first hand item on a nearby chair
+	/// Place first item on a nearby chair
 	public bool TryPullDownDish()
 	{
 		//Debug.Log("TryPullDownDish");

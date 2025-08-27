@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3816128235453972487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 196697749618269049}
+  - component: {fileID: 4509032348578635882}
+  m_Layer: 0
+  m_Name: VFX Group
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &196697749618269049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816128235453972487}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4509032348578635882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3816128235453972487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8f18434a0a13c54fa92f8e3796ad5af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vfxGroupParent: {fileID: 196697749618269049}
+  vfxPrefabs:
+  - key: Hurt
+    prefab: {fileID: 1734798603044744806, guid: 5529b62ea6c622e45bd67dc98f9fb860, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: Cake
+    prefab: {fileID: 351022916506592422, guid: ec4a11eff311a00478211208a5ed3f37, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: Beer
+    prefab: {fileID: 4818930366549204378, guid: a0a7a86f411893f4eb7dd8ae5ef9d357, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: Attack
+    prefab: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: CoinFountain
+    prefab: {fileID: 8557251050425574339, guid: 4250da03c657d6e41b09d0a009710b22, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: DrumStick_NormalAttack_1
+    prefab: {fileID: 3820275065737676581, guid: 354b1d19c2805f248aba9c64d11e3ca6, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: DrumStick_NormalAttack_2
+    prefab: {fileID: 9028555385303058240, guid: a30ecfb390f33e3409b1a6b1ef5b6d36, type: 3}
+    defaultCapacity: 10
+    maxSize: 100
+  - key: BasicAttack
+    prefab: {fileID: 351022916506592422, guid: ec4a11eff311a00478211208a5ed3f37, type: 3}
+    defaultCapacity: 10
+    maxSize: 50

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 
@@ -14,9 +12,8 @@ public class FMODEvents : MonoBehaviour
 
 	[field: Header("----------- SFX -----------")]
 	[field: Header("--- Player SFX ---")]
-	[field: Header("Player")]
 	[field: SerializeField] public EventReference playerFootsteps { get; private set; }
-
+	[field: SerializeField] public EventReference playerEatFood { get; private set; }
 	[field: Header("Attack")]
 	[field: SerializeField] public EventReference pieAttack { get; private set; }
 

@@ -1,0 +1,150 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &432819876101118662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 161683199852546848}
+  - component: {fileID: 8515675048809582399}
+  m_Layer: 0
+  m_Name: FMOD Events
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &161683199852546848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432819876101118662}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 297810748039428220}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8515675048809582399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432819876101118662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b486b4f0bb331cd4b9302d218c8f63b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <music>k__BackingField:
+    Guid:
+      Data1: 212054522
+      Data2: 1297443171
+      Data3: 1915766191
+      Data4: -336209620
+    Path: event:/Music/night-fever
+  <playerFootsteps>k__BackingField:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  <playerEatFood>k__BackingField:
+    Guid:
+      Data1: 924851443
+      Data2: 1086965823
+      Data3: -1962435409
+      Data4: 388434542
+    Path: event:/SFX/EatSound
+  <pieAttack>k__BackingField:
+    Guid:
+      Data1: -1783262030
+      Data2: 1327447223
+      Data3: 2029305011
+      Data4: -1759183884
+    Path: event:/SFX/heavy_punch1
+  <pullDownDish>k__BackingField:
+    Guid:
+      Data1: 1119538432
+      Data2: 1217309717
+      Data3: 757727900
+      Data4: -1536107229
+    Path: event:/SFX/putting_a_water_glass2
+  <coinCollected>k__BackingField:
+    Guid:
+      Data1: 2125533040
+      Data2: 1239755137
+      Data3: -1134258545
+      Data4: -330635120
+    Path: event:/SFX/select07
+  <beerAttack>k__BackingField:
+    Guid:
+      Data1: 683172208
+      Data2: 1299848469
+      Data3: 94505883
+      Data4: 809087735
+    Path: event:/SFX/water-splash-199583
+  <enemyAttack>k__BackingField:
+    Guid:
+      Data1: 1641033783
+      Data2: 1225441542
+      Data3: 192947610
+      Data4: 472483547
+    Path: event:/SFX/swing1
+--- !u!1 &4829860337057067353
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 297810748039428220}
+  - component: {fileID: 6643122805061565464}
+  m_Layer: 0
+  m_Name: Audio Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &297810748039428220
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4829860337057067353}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 161683199852546848}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6643122805061565464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4829860337057067353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c1fbf9acf352d84490a5e4e05c7a9a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  masterVolume: 1
+  musicVolume: 1
+  SFXVolume: 1

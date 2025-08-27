@@ -43,11 +43,19 @@ MonoBehaviour:
     - FMODUnityResonance
     - KinoBloom.Runtime
     - NavMeshPlus
+    - PrimeTween.Debug
+    - PrimeTween.Demo
+    - PrimeTween.Runtime
     - Sirenix.OdinInspector.Modules.Unity.Addressables
     - Sirenix.OdinInspector.Modules.UnityLocalization
     - spine-csharp
     - spine-unity
     - spine-unity-examples
+    - UniTask
+    - UniTask.Addressables
+    - UniTask.DOTween
+    - UniTask.Linq
+    - UniTask.TextMeshPro
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1

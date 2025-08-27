@@ -71,6 +71,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""a2195ea2-97f8-48de-bb87-be8230c59f8c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""f9ab42bd-c242-409e-b5c0-49dac5451632"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -260,6 +278,61 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""ESC"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2162b8f7-10be-4deb-8628-c7204a103728"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard Mouse"",
+                    ""action"": ""SwitchWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""010c4ad5-ed8f-488e-baa4-a9d4f7f4daf3"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SwitchWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b1330df0-07e4-48b3-8a92-644b1525f044"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SwitchWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fc5f647-a80e-4d15-95db-47ac02ed24de"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UseItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""897810fa-341d-4cf0-b4eb-87be3ca86087"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard Mouse"",
+                    ""action"": ""UseItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -301,6 +374,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_Fire1 = m_Player.FindAction("Fire1", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_ESC = m_Player.FindAction("ESC", throwIfNotFound: true);
+        m_Player_SwitchWeapon = m_Player.FindAction("SwitchWeapon", throwIfNotFound: true);
+        m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -367,6 +442,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire1;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_ESC;
+    private readonly InputAction m_Player_SwitchWeapon;
+    private readonly InputAction m_Player_UseItem;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -376,6 +453,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @Fire1 => m_Wrapper.m_Player_Fire1;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @ESC => m_Wrapper.m_Player_ESC;
+        public InputAction @SwitchWeapon => m_Wrapper.m_Player_SwitchWeapon;
+        public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -400,6 +479,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ESC.started += instance.OnESC;
             @ESC.performed += instance.OnESC;
             @ESC.canceled += instance.OnESC;
+            @SwitchWeapon.started += instance.OnSwitchWeapon;
+            @SwitchWeapon.performed += instance.OnSwitchWeapon;
+            @SwitchWeapon.canceled += instance.OnSwitchWeapon;
+            @UseItem.started += instance.OnUseItem;
+            @UseItem.performed += instance.OnUseItem;
+            @UseItem.canceled += instance.OnUseItem;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -419,6 +504,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @ESC.started -= instance.OnESC;
             @ESC.performed -= instance.OnESC;
             @ESC.canceled -= instance.OnESC;
+            @SwitchWeapon.started -= instance.OnSwitchWeapon;
+            @SwitchWeapon.performed -= instance.OnSwitchWeapon;
+            @SwitchWeapon.canceled -= instance.OnSwitchWeapon;
+            @UseItem.started -= instance.OnUseItem;
+            @UseItem.performed -= instance.OnUseItem;
+            @UseItem.canceled -= instance.OnUseItem;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -461,5 +552,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnFire1(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnESC(InputAction.CallbackContext context);
+        void OnSwitchWeapon(InputAction.CallbackContext context);
+        void OnUseItem(InputAction.CallbackContext context);
     }
 }

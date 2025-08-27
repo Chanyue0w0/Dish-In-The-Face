@@ -7,6 +7,8 @@ public class HandItemUI : MonoBehaviour
     [SerializeField] private Transform playerHandItem;
     [SerializeField] private Image dishImage;
     [SerializeField] private TextMeshProUGUI dishCountText;
+	[SerializeField] private PlayerAttackController attackController;
+
 
 	public void Start()
 	{
@@ -32,4 +34,14 @@ public class HandItemUI : MonoBehaviour
         dishImage.gameObject.SetActive(true);
         dishImage.sprite = sprite;
     }
+
+	public void SwichWeaponFinish()
+	{
+		attackController.SetIsSwichWeaponFinish(true);
+	}
+
+	public void StartSwitchWeapon()
+	{
+		attackController.SetIsSwichWeaponFinish(false);
+	}
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static PlayerAttackController;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -103,6 +104,16 @@ public class PlayerMovement : MonoBehaviour
 		if (context.performed) playerInteraction.Interact();
 	}
 
+	public void InputUseItem(InputAction.CallbackContext context)
+	{
+		if (context.performed) UseItem();
+	}
+
+	public void InputSwitchWeapon(InputAction.CallbackContext context)
+	{
+		if (context.performed) SwitchWeapon();
+	}
+
 	// ===== Actions =====
 	void HandleMovementInput(float moveX, float moveY)
 	{
@@ -132,9 +143,28 @@ public class PlayerMovement : MonoBehaviour
 		attackController.IsAttackSuccess();
 	}
 
+	void SwitchWeapon()
+	{
+		AttackMode mode = attackController.GetAttackMode();
+		if (mode == AttackMode.Basic)
+			attackController.SetAttackModeUI(AttackMode.Food);
+		else if (mode == AttackMode.Food)
+			attackController.SetAttackModeUI(AttackMode.Basic);
+		else attackController.SetAttackModeUI(AttackMode.Basic);
+	}
+
+	void UseItem()
+	{
+		if (attackController.GetAttackMode() == AttackMode.Food)
+		{
+			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
+			DestoryFirstItem();
+		}
+
+	}
 	void StartDash()
 	{
-		// If sliding, check if can be interrupted
+		// If sliding, check if you can be interrupted
 		if (isSlide)
 		{
 			if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
@@ -211,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
 
 		while (!stop)
 		{
-			// Check if can interrupt and delay has passed
+			// Check if you can interrupt and delay has passed
 			if (slideCancelRequested)
 			{
 				slideCancelRequested = false; // consume the cancel request
@@ -266,8 +296,7 @@ public class PlayerMovement : MonoBehaviour
 		// Determine move direction
 		if (direction == Vector2.zero)
 		{
-			if (transform.rotation.y >= 0) direction = new Vector2(-1, 0);
-			else direction = new Vector2(1, 0);
+			direction = transform.rotation.y >= 0 ? new Vector2(-1, 0) : new Vector2(1, 0);
 		}
 
 		direction = direction.normalized;

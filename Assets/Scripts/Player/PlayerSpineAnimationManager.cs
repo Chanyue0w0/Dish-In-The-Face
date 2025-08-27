@@ -8,27 +8,27 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[SerializeField] private int baseTrack = 0;              // Main animation Track (usually 0)
 
 	[Header("Animation Names")]
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string IdleFront;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string IdleBack;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string RunFront;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string RunBack;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string RunSide;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string DashNormal;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string DashSlide;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string DrumStick1;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string DrumStick2;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runFront;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runBack;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runSide;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string drumStick1;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string drumStick2;
 
 	[Header("Movement Judge")]
 	[SerializeField] private float idleDeadzone = 0.05f;   // Idle threshold (vector magnitude)
 	[SerializeField] private float sideXThreshold = 0.05f; // X threshold for horizontal input detection
 														   // Placed inside PlayerSpineAnimationManager class
-	private bool isOneShotPlaying = false;
+	private bool isOneShotAnimationPlaying;
 
 	[Header("Reference")]
 	[SerializeField] private PlayerMovement playerMovement;
 
-	private string currentAnimName = null;
-	private float initialScaleX = 1f;
+	private string currentAnimName;
+	// private float initialScaleX = 1f;
 
 	private void Reset()
 	{
@@ -37,8 +37,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	private void Awake()
 	{
-		if (skeletonAnim && skeletonAnim.Skeleton != null)
-			initialScaleX = skeletonAnim.Skeleton.ScaleX;
+		isOneShotAnimationPlaying = false;
+		// if (skeletonAnim && skeletonAnim.Skeleton != null)
+		// 	initialScaleX = skeletonAnim.Skeleton.ScaleX;
 
 		// Cancel all cross-animation blending (avoid transitions)
 		if (skeletonAnim && skeletonAnim.AnimationState != null && skeletonAnim.AnimationState.Data != null)
@@ -46,9 +47,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	}
 
 	/// <summary>Called by movement script every frame with current movement vector</summary>
-	public void UpdateFromMovement(Vector2 moveInput, bool _isDashingIgnored = false, bool _isSlidingIgnored = false)
+	public void UpdateFromMovement(Vector2 moveInput, bool isDashingIgnored = false, bool isSlidingIgnored = false)
 	{
-		if (isOneShotPlaying) return;
+		if (isOneShotAnimationPlaying) return;
 
 		if (!skeletonAnim || skeletonAnim.Skeleton == null) return;
 
@@ -59,21 +60,21 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// ===== Slide =====
 		if (playerMovement.IsPlayerSlide())
 		{
-			SetAnimIfChanged(DashSlide, true, snap: true);
+			SetAnimIfChanged(dashSlide, true, snap: true);
 			return;
 		}
 
 		// ===== Dash =====
 		if (playerMovement.IsPlayerDash())
 		{
-			SetAnimIfChanged(DashNormal, true, snap: true);
+			SetAnimIfChanged(dashNormal, true, snap: true);
 			return;
 		}
 
 		// ===== Idle =====
 		if (!isMoving)
 		{
-			string idleName = (moveInput.y > 0f) ? IdleBack : IdleFront;
+			string idleName = (moveInput.y > 0f) ? idleBack : idleFront;
 			SetAnimIfChanged(idleName, true, snap: true);
 			return;
 		}
@@ -81,18 +82,18 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// ===== Prioritize side movement (if |x| exceeds threshold) =====
 		if (Mathf.Abs(moveInput.x) >= sideXThreshold)
 		{
-			SetAnimIfChanged(RunSide, true, snap: true);
+			SetAnimIfChanged(runSide, true, snap: true);
 			return;
 		}
 
 		// ===== Non-side: only use back for pure backward; otherwise use front run =====
 		if (moveInput.y > 0f) // Pure backward
 		{
-			SetAnimIfChanged(RunBack, true, snap: true);
+			SetAnimIfChanged(runBack, true, snap: true);
 		}
 		else // Forward or diagonal forward (|x| < threshold), treat as front run
 		{
-			SetAnimIfChanged(RunFront, true, snap: true);
+			SetAnimIfChanged(runFront, true, snap: true);
 		}
 	}
 
@@ -126,10 +127,10 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		if (entry == null) return;
 
 		entry.MixDuration = 0f;  // Direct switch, no transition
-		isOneShotPlaying = true;
+		isOneShotAnimationPlaying = true;
 
 		// Events: hit start / show effects
-		entry.Event += (t, e) =>
+		entry.Event += (_, e) =>
 		{
 			var evtName = e.Data.Name;
 			if (evtName == "Attack_HitStart")
@@ -150,7 +151,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 			if (closed) return;
 			closed = true;
 			if (hitBox) hitBox.SetActive(false);
-			isOneShotPlaying = false;
+			isOneShotAnimationPlaying = false;
 			onComplete?.Invoke();
 		};
 
@@ -159,9 +160,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		entry.Interrupt += _ => close();
 	}
 
-	/// <summary>Flip horizontally based on x sign: x>0 faces right, x<0 faces left.</summary>
-	private void SetFlipByX(float x)
-	{
+	// /// <summary>Flip horizontally based on x sign: x>0 faces right, x<0 faces left.</summary>
+	// private void SetFlipByX(float x)
+	// {
 		//if (x > 0f)
 		//	skeletonAnim.Skeleton.ScaleX = -Mathf.Abs(initialScaleX);  // Right
 		//else if (x < 0f)
@@ -171,11 +172,11 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		//// Immediately force refresh skeleton (version compatibility)
 		//skeletonAnim.Update(0f);
 		//skeletonAnim.LateUpdate();
-	}
+	// }
 
 	/// <summary>For front/back animations: reset X flip to initial.</summary>
-	private void ResetFlipX()
-	{
+	// private void ResetFlipX()
+	// {
 		//if (!Mathf.Approximately(skeletonAnim.Skeleton.ScaleX, initialScaleX))
 		//{
 		//	skeletonAnim.Skeleton.ScaleX = initialScaleX;
@@ -183,8 +184,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		//	skeletonAnim.Update(0f);
 		//	skeletonAnim.LateUpdate();
 		//}
-	}
+	// }
 
 
-	public bool IsBusy() => isOneShotPlaying;
+	public bool IsBusy() => isOneShotAnimationPlaying;
 }
