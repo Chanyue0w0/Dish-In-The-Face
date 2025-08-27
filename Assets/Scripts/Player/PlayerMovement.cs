@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private PlayerAttackController attackController;
+	[SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private HandItemUI handItemUI;
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow;
@@ -43,7 +44,6 @@ public class PlayerMovement : MonoBehaviour
 	//private SpriteRenderer spriteRenderer;
 
 	// ======= Animation Manager (Spine) =======
-	private PlayerSpineAnimationManager animationManager;
 
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
@@ -64,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
 		playerCollider = GetComponent<Collider2D>();
 		//playerInput = GetComponent<PlayerInput>();
 		playerInteraction = GetComponent<PlayerInteraction>();
-		animationManager = GetComponent<PlayerSpineAnimationManager>();
 	}
 	void Start()
 	{

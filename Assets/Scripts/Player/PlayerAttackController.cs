@@ -63,7 +63,7 @@ public class PlayerAttackController : MonoBehaviour
 		AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 		// 0.5 ���۰�����
 		Tween.Delay(0.5f, () => basicAttackHitBox.SetActive(false));
-
+		
 		return true;
 	}
 

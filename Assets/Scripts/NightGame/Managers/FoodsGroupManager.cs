@@ -1,167 +1,268 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
 {
-	//[Header("-------- Setting ---------")]
-	//[SerializeField] private float spawnInerval = 10f;
-	//[SerializeField] private int spawnFoodsCount = 10;
+	#region ===== Inspector 設定 =====
+
+	[Header("-------- Food Setting ---------")]
+	[SerializeField] private float foodSpawnInerval = 3f;
 
 	[Header("-------- Dessert Cooldown ---------")]
-	[SerializeField, Min(0f)] private float dessertColdownSeconds = 5f; // �N�o����
-	[SerializeField] private bool hideBarWhenReady = true;               // �N�o�����۰�����
+	[SerializeField, Min(0f)] private float dessertColdownSeconds = 5f;
+	[SerializeField] private bool hideBarWhenReady = true;
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodPrefabs;
 	[SerializeField] private Transform[] foodsSpawnPositions;
+	[SerializeField] private SpriteRenderer foodSprite;
+	[SerializeField] private GameObject foodMakingBarFill;
 	[SerializeField] private Transform dessertBarFill;
-	//[SerializeField] private Transform dishLoadingBar;
 	[SerializeField] private Animator dessertAnimator;
 
 	[Header("-------- Highlight ---------")]
 	[SerializeField] private GameObject yellowFrame;
-	[SerializeField] private Collider2D playerCollider; // ���a�ۤv���I����
-	[SerializeField] private LayerMask foodLayerMask;   // ������ Layer
+	[SerializeField] private Collider2D playerCollider;
+	[SerializeField] private LayerMask foodLayerMask;
 
-	private List<GameObject> currentfoods = new List<GameObject>();
+	#endregion
+
+	#region ===== 欄位與狀態 =====
+
+	private List<GameObject> currentfoods;
 	private Transform currentFoodTarget = null;
-	//private int[] foodsCount;
 	private bool isPlayerInsideTrigger = false;
 
-	private float dessertCdRemain = 0f;  // �Ѿl�N�o�ɶ�
+	private float dessertCdRemain = 0f;
 	private bool IsDessertOnCd => dessertCdRemain > 0f;
 
-	void Start()
+	private Coroutine makeRoutine = null;
+	private Sprite makingTargetSprite = null;
+
+	#endregion
+
+	#region ===== Unity 生命周期 =====
+
+	private void Start()
 	{
-		//foodsCount = new int[currentfoods.Count];
-		//for (int i = 0; i < foodsCount.Length; i++)
-		//	foodsCount[i] = 10;
+		currentfoods = new List<GameObject>();
 
 		if (yellowFrame != null)
 			yellowFrame.SetActive(false);
 
-		// ��l��Ū�����A
-		if (dessertBarFill != null) dessertBarFill.gameObject.SetActive(false);
-		if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ��l 0�]���b�N�o�^
+		if (dessertBarFill != null)
+		{
+			dessertBarFill.gameObject.SetActive(false);
+			dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
+		}
+
+		SetupFoodMakingBar(false, 0f);
+
+		if (foodSprite != null)
+			foodSprite.sprite = null;
 	}
 
-	void Update()
+	private void Update()
 	{
 		UpdateDesertColdDown();
 		UpdateSelectFood();
 		UpdateFoodOnTable();
 	}
 
+	#endregion
+
+	#region ===== 製作流程 =====
+
+	private IEnumerator MakeFoodRoutine()
+	{
+		if (foodSprite != null)
+			foodSprite.sprite = makingTargetSprite;
+
+		SetupFoodMakingBar(true, 0f);
+
+		float t = 0f;
+		float duration = Mathf.Max(0f, foodSpawnInerval);
+
+		while (t < duration)
+		{
+			t += Time.deltaTime;
+			float p = Mathf.Clamp01(t / duration);
+			SetFoodMakingBarProgress(p);
+			yield return null;
+		}
+
+		if (foodSprite != null)
+			foodSprite.sprite = null;
+
+		SetupFoodMakingBar(false, 0f);
+		makeRoutine = null;
+		makingTargetSprite = null;
+	}
+
+	private void SetupFoodMakingBar(bool show, float progress)
+	{
+		if (foodMakingBarFill == null) return;
+		foodMakingBarFill.SetActive(show);
+		foodMakingBarFill.transform.localScale = new Vector3(Mathf.Clamp01(progress), 1f, 1f);
+	}
+
+	private void SetFoodMakingBarProgress(float progress)
+	{
+		if (foodMakingBarFill == null) return;
+		foodMakingBarFill.transform.localScale = new Vector3(Mathf.Clamp01(progress), 1f, 1f);
+	}
+
+	private bool IsMaking() => makeRoutine != null;
+
+	#endregion
+
+	#region ===== 點心技能 =====
+
+	private void UpdateDesertColdDown()
+	{
+		if (!IsDessertOnCd) return;
+
+		dessertCdRemain = Mathf.Max(0f, dessertCdRemain - Time.deltaTime);
+		float p = (dessertColdownSeconds <= 0f) ? 0f : (dessertCdRemain / dessertColdownSeconds);
+
+		if (dessertBarFill != null)
+			dessertBarFill.localScale = new Vector3(Mathf.Clamp01(p), 1f, 1f);
+
+		if (!IsDessertOnCd)
+		{
+			if (dessertBarFill != null)
+				dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
+			if (dessertBarFill != null && hideBarWhenReady)
+				dessertBarFill.gameObject.SetActive(false);
+		}
+	}
+
+	private void StartDessertColdown()
+	{
+		if (dessertColdownSeconds <= 0f)
+		{
+			dessertCdRemain = 0f;
+			if (dessertBarFill != null)
+				dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
+			if (dessertBarFill != null && hideBarWhenReady)
+				dessertBarFill.gameObject.SetActive(false);
+			return;
+		}
+
+		dessertCdRemain = dessertColdownSeconds;
+
+		if (dessertBarFill != null)
+		{
+			dessertBarFill.gameObject.SetActive(true);
+			dessertBarFill.localScale = new Vector3(1f, 1f, 1f);
+		}
+	}
+
+	public bool UseDessert()
+	{
+		if (IsDessertOnCd) return false;
+
+		if (dessertAnimator != null)
+			dessertAnimator.Play("DessertEffect", -1, 0f);
+
+		RoundManager.Instance.chairGroupManager.ResetAllSetGuestsPatience();
+		StartDessertColdown();
+		return true;
+	}
+
+	#endregion
+
+	#region ===== 食物擺盤邏輯 =====
+
 	private void UpdateFoodOnTable()
 	{
-		// ���b
 		List<NormalGuestController> guestList = RoundManager.Instance.chairGroupManager.GetGuestsOrderList();
 		if (guestList == null || guestList.Count == 0)
 		{
-			// �S�ȤH�ɲM�ũҦ��Ͳ��I
-			for (int i = 0; i < foodsSpawnPositions.Length; i++)
-				ClearChildren(foodsSpawnPositions[i]);
+			foreach (var pos in foodsSpawnPositions)
+				ClearChildren(pos);
 			return;
 		}
 
 		int len = Mathf.Min(guestList.Count, foodsSpawnPositions.Length);
-
-		// 1) �̧ǳB�z�e len ��ȤH
 		for (int i = 0; i < len; i++)
 		{
 			Transform spawn = foodsSpawnPositions[i];
 			NormalGuestController guest = guestList[i];
-
-			if (spawn == null || guest == null)
+			if (!spawn || !guest)
 			{
-				if (spawn != null) ClearChildren(spawn);
+				if (spawn) ClearChildren(spawn);
 				continue;
 			}
 
-			// �u���b WaitingDish ���q�~�|������I���\�I�ϡF�D���\���A�h�M��
-			Sprite needed = guest.GetOrderFood(); // WaitingDish ��ܪ����i�\�I��
-			if (needed == null)
+			Sprite needed = guest.GetOrderFood();
+			if (!needed)
 			{
 				ClearChildren(spawn);
 				continue;
 			}
 
-			// �w�g�\�F���T�\�I�N���L
 			Transform child = (spawn.childCount > 0) ? spawn.GetChild(0) : null;
-			if (child != null)
+			if (child)
 			{
 				var sr = child.GetComponent<SpriteRenderer>();
-				if (sr != null && sr.sprite == needed)
-					continue; // ���T�A���򳣤���
-
-				// ����\ �� ���M��
+				if (sr && sr.sprite == needed) continue;
 				Object.Destroy(child.gameObject);
 			}
 
-			// �� Sprite �M����� Prefab
 			GameObject prefab = FindPrefabBySprite(needed);
-			if (prefab != null)
+			if (prefab)
 			{
 				GameObject go = Instantiate(prefab, spawn);
-				go.transform.localPosition = Vector3.zero; // ����y��
+				go.transform.localPosition = Vector3.zero;
 				currentfoods.Add(go);
 			}
 			else
 			{
-				// �S������ prefab�A�O�I�_���M�Ÿ��I��
-				ClearChildren(spawn);
 #if UNITY_EDITOR
-				Debug.LogWarning($"[FoodsGroupManager] 找不到帶有 Sprite 的餐點 Prefab：{needed.name}");
+				Debug.LogWarning($"[FoodsGroupManager] 找不到對應的餐點 Prefab：{needed.name}");
 #endif
+				ClearChildren(spawn);
 			}
 		}
 
-		// 2) �h�l���Ͳ��I�M��
 		for (int i = len; i < foodsSpawnPositions.Length; i++)
-		{
 			ClearChildren(foodsSpawnPositions[i]);
-		}
 	}
 
-	/// <summary>
-	/// ���\�I�ϧ������ prefab�]�H prefab �W�� SpriteRenderer.sprite ���^
-	/// </summary>
 	private GameObject FindPrefabBySprite(Sprite sprite)
 	{
-		if (sprite == null || foodPrefabs == null) return null;
-
-		for (int i = 0; i < foodPrefabs.Length; i++)
+		if (sprite == null) return null;
+		foreach (var pf in foodPrefabs)
 		{
-			var pf = foodPrefabs[i];
-			if (pf == null) continue;
-
+			if (!pf) continue;
 			var sr = pf.GetComponent<SpriteRenderer>();
-			if (sr != null && sr.sprite == sprite)
-				return pf;
+			if (sr && sr.sprite == sprite) return pf;
 		}
 		return null;
 	}
 
-	/// <summary>�R���`�I���U�Ҧ��l����]�M��^</summary>
 	private void ClearChildren(Transform parent)
 	{
-		if (parent == null) return;
+		if (!parent) return;
 		for (int i = parent.childCount - 1; i >= 0; i--)
-			Object.Destroy(parent.GetChild(i).gameObject);
+			Destroy(parent.GetChild(i).gameObject);
 	}
 
+	#endregion
+
+	#region ===== 食物選取指示 =====
 
 	private void UpdateSelectFood()
 	{
 		if (!isPlayerInsideTrigger)
 		{
-			if (yellowFrame.activeSelf)
-				yellowFrame.SetActive(false);
+			if (yellowFrame.activeSelf) yellowFrame.SetActive(false);
 			currentFoodTarget = null;
 			return;
 		}
 
-		// �ƹ��u��
 		Transform mouseTarget = GetHoveredFoodByMouse();
 		if (mouseTarget != null)
 		{
@@ -169,83 +270,40 @@ public class FoodsGroupManager : MonoBehaviour
 			return;
 		}
 
-		// ���a�I�������n
 		Transform touchedTarget = GetTouchedFoodByPlayer();
 		if (touchedTarget != null)
-		{
 			UpdateYellowFrame(touchedTarget);
-		}
-		else
-		{
-			if (yellowFrame.activeSelf)
-				yellowFrame.SetActive(false);
-		}
-	}
-	private void UpdateDesertColdDown()
-	{
-		// --- ��s���I�N�o�� ---
-		if (IsDessertOnCd)
-		{
-			dessertCdRemain = Mathf.Max(0f, dessertCdRemain - Time.deltaTime);
-
-			// �i�� = �Ѿl�ɶ� / �`�N�o �� �q 1 ����� 0
-			float p = (dessertColdownSeconds <= 0f) ? 0f : (dessertCdRemain / dessertColdownSeconds);
-			if (dessertBarFill != null)
-				dessertBarFill.localScale = new Vector3(Mathf.Clamp01(p), 1f, 1f);
-
-			// �N�o���� �� ���é���ܪű�
-			if (!IsDessertOnCd)
-			{
-				if (dessertBarFill != null)
-					dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // �ܦ���
-				if (dessertBarFill != null && hideBarWhenReady)
-					dessertBarFill.gameObject.SetActive(false);
-			}
-		}
+		else if (yellowFrame.activeSelf)
+			yellowFrame.SetActive(false);
 	}
 
-	// --- �ƹ� hover �ˬd ---
 	private Transform GetHoveredFoodByMouse()
 	{
 		Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-		// �u�j�M���w Layer�]�q�`�O Food�^
 		Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos, foodLayerMask);
-		if (hit != null)
-		{
-			return hit.transform;
-		}
-		return null;
+		return hit ? hit.transform : null;
 	}
 
-	// --- ���a�I���ˬd ---
 	private Transform GetTouchedFoodByPlayer()
 	{
-		foreach (GameObject food in currentfoods)
+		foreach (var food in currentfoods)
 		{
-			if (food == null) continue;
-
-			Collider2D foodCollider = food.GetComponent<Collider2D>();
-			if (foodCollider != null && foodCollider.isTrigger && foodCollider.IsTouching(playerCollider))
-			{
+			if (!food) continue;
+			var col = food.GetComponent<Collider2D>();
+			if (col != null && col.isTrigger && col.IsTouching(playerCollider))
 				return food.transform;
-			}
 		}
 		return null;
 	}
 
-	// --- ���ʶ��� ---
 	private void UpdateYellowFrame(Transform target)
 	{
 		currentFoodTarget = target;
-
 		if (!yellowFrame.activeSelf)
 			yellowFrame.SetActive(true);
-
 		yellowFrame.transform.position = currentFoodTarget.position;
 	}
 
-	// --- Trigger �ˬd�i�X ---
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other == playerCollider)
@@ -265,59 +323,33 @@ public class FoodsGroupManager : MonoBehaviour
 		}
 	}
 
-	// --- �H���I�\�]���o Sprite�^---
+	#endregion
+
+	#region ===== 外部取得與流程觸發 =====
+
+	/// <summary>隨機抽餐點並開始製作</summary>
 	public Sprite OrderFoodRandomly()
 	{
-		if (foodPrefabs == null || foodPrefabs.Length == 0)
-			return null;
+		if (foodPrefabs == null || foodPrefabs.Length == 0) return null;
 
 		int randomIndex = Random.Range(0, foodPrefabs.Length);
-		GameObject selectedFood = foodPrefabs[randomIndex];
+		GameObject selected = foodPrefabs[randomIndex];
+		Sprite sprite = selected.GetComponent<SpriteRenderer>()?.sprite;
 
-		SpriteRenderer foodSR = selectedFood.GetComponent<SpriteRenderer>();
-		return foodSR != null ? foodSR.sprite : null;
-	}
-
-	/// �^�ǥثe�Q yellowFrame ��w������ GameObject�A�p�G�S���h�^�� null
-	public GameObject GetCurrentDishObject()
-	{
-		return currentFoodTarget != null ? currentFoodTarget.gameObject : null;
-	}
-
-	// �ϥεo�I��
-	// �ϥεo�I�ߡ]�a�N�o��Ū���^
-	public bool UseDessert()
-	{
-		// �N�o���N��Ĳ�o
-		if (IsDessertOnCd) return false;
-
-		// ����ʵe�]�q�Y�^
-		if (dessertAnimator != null)
-			dessertAnimator.Play("DessertEffect", -1, 0f);
-
-		RoundManager.Instance.chairGroupManager.ResetAllSetGuestsPatience();
-
-		// �}�l�N�o
-		StartDessertColdown();
-		return true;
-	}
-
-	private void StartDessertColdown()
-	{
-		if (dessertColdownSeconds <= 0f)
+		if (sprite != null && !IsMaking())
 		{
-			dessertCdRemain = 0f;
-			if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // �@�}�l�N�O��
-			if (dessertBarFill != null && hideBarWhenReady)
-				dessertBarFill.gameObject.SetActive(false);
-			return;
+			makingTargetSprite = sprite;
+			makeRoutine = StartCoroutine(MakeFoodRoutine());
 		}
 
-		dessertCdRemain = dessertColdownSeconds;
-
-		// ���Ū���ñq���}�l
-		if (dessertBarFill != null) dessertBarFill.gameObject.SetActive(true);
-		if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(1f, 1f, 1f);
+		return sprite;
 	}
 
+	/// <summary>目前選中的餐點 GameObject（可用於互動）</summary>
+	public GameObject GetCurrentDishObject()
+	{
+		return currentFoodTarget ? currentFoodTarget.gameObject : null;
+	}
+
+	#endregion
 }
