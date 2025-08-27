@@ -31158,8 +31158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5252283a812c19b49bccb7876c41a737, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackMoveDistance: 2
-  attackMoveDuration: 0.5
+  attackMoveDistance: 5
+  attackMoveDuration: 0.05
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0

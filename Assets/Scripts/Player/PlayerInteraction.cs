@@ -3,8 +3,8 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 /// <summary>
-/// 專責處理玩家的互動行為：撿餐、幫客人點餐、放餐
-/// 由 PlayerMovement 在 InputInteract 時呼叫 Interact()
+/// Handles player interactions: picking up food, serving guests, placing dishes
+/// Called by PlayerMovement when InputInteract is triggered
 /// </summary>
 public class PlayerInteraction : MonoBehaviour
 {
@@ -15,9 +15,9 @@ public class PlayerInteraction : MonoBehaviour
 
 
 	[Header("-------- Reference ---------")]
-	[SerializeField] private PlayerMovement movement; // 由 Movement 綁定或 Inspector 指定
-	[SerializeField] private HandItemUI handItemUI;   // 更新手上物品UI
-	[SerializeField] private Transform handItemRoot; // 放玩家手上物件的父物件
+	[SerializeField] private PlayerMovement movement; // Reference to Movement component
+	[SerializeField] private HandItemUI handItemUI;   // Updates hand item UI
+	[SerializeField] private Transform handItemRoot; // Parent for held items
 
 	private List<Collider2D> currentChairTriggers;
 
@@ -28,25 +28,25 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		currentChairTriggers = new List<Collider2D>();
 	}
-	/// 對外：在 InputInteract 時呼叫
+	/// External: Called on InputInteract
 	public bool Interact()
 	{
 		//Debug.Log("Interact");
-		// 先撿餐，成功即結束
+		// Try to pick up food first
 		if (TryGetFood()) return true;
 
 		if (TryUseDessert()) return true;
 
-		// 幫附近客人確認點餐，成功即結束
+		// Try to confirm orders for nearby guests
 		if (TryConfirmOrderForNearbyGuests()) return true;
 
-		// 嘗試放餐，成功即結束
+		// Try to place dish on table
 		if (TryPullDownDish()) return true;
 
 		return false;
 	}
 
-	/// 嘗試從目前可撿取的來源拿餐到手上
+	/// Try to pick up food from current serving area
 	private bool TryGetFood()
 	{
 		if (handItemUI) handItemUI.ChangeHandItemUI();
@@ -54,7 +54,7 @@ public class PlayerInteraction : MonoBehaviour
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
 		if (currentFood == null) return false;
 
-		// 相同疊加至上限
+		// Max 4 items on hand
 		if (handItemRoot.childCount > 4) return false;
 
 		Vector3 pos = handItemRoot.transform.position + new Vector3(0, -1, 0);
@@ -63,7 +63,7 @@ public class PlayerInteraction : MonoBehaviour
 			Sprite handItemSprite = handItemRoot.GetComponentInChildren<SpriteRenderer>().sprite;
 			if (currentFood.GetComponent<SpriteRenderer>().sprite != handItemSprite)
 			{
-				// 手上餐點與選擇餐點不同
+				// Hand item differs from new food type
 				foreach (Transform child in handItemRoot)
 					Destroy(child.gameObject);
 			}
@@ -87,11 +87,11 @@ public class PlayerInteraction : MonoBehaviour
 		return true;
 	}
 
-	/// 嘗試幫附近座位上的客人確認點餐
+	/// Confirm orders for nearby guests
 	private bool TryConfirmOrderForNearbyGuests()
 	{
 		//Debug.Log("TryConfirmOrderForNearbyGuests");
-		// 從目前偵測到的椅子 trigger 找客人（NormalGuestController 是坐下後被設為椅子子物件）
+		// Check current chair triggers for guests
 		foreach (var chair in currentChairTriggers)
 			if (RoundManager.Instance.chairGroupManager.ConfirmOrderChair(chair.transform))
 				return true;
@@ -99,7 +99,7 @@ public class PlayerInteraction : MonoBehaviour
 		return false;
 	}
 
-	/// 嘗試把手上第一個物品放到附近任一張椅子
+	/// Place first hand item on a nearby chair
 	public bool TryPullDownDish()
 	{
 		//Debug.Log("TryPullDownDish");
@@ -120,7 +120,7 @@ public class PlayerInteraction : MonoBehaviour
 		return RoundManager.Instance.foodsGroupManager.UseDessert();
 	}
 
-	// ===== 椅子觸發維護 =====
+	// ===== Chair trigger handling =====
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("Chair"))

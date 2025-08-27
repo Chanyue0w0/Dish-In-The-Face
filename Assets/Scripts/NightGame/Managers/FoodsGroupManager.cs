@@ -8,8 +8,8 @@ public class FoodsGroupManager : MonoBehaviour
 	//[SerializeField] private int spawnFoodsCount = 10;
 
 	[Header("-------- Dessert Cooldown ---------")]
-	[SerializeField, Min(0f)] private float dessertColdownSeconds = 5f; // §N«o¬í¼Æ
-	[SerializeField] private bool hideBarWhenReady = true;               // §N«o§¹¦¨¦Û°ÊÁôÂÃ
+	[SerializeField, Min(0f)] private float dessertColdownSeconds = 5f; // ï¿½Nï¿½oï¿½ï¿½ï¿½ï¿½
+	[SerializeField] private bool hideBarWhenReady = true;               // ï¿½Nï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Û°ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodPrefabs;
@@ -20,15 +20,15 @@ public class FoodsGroupManager : MonoBehaviour
 
 	[Header("-------- Highlight ---------")]
 	[SerializeField] private GameObject yellowFrame;
-	[SerializeField] private Collider2D playerCollider; // ª±®a¦Û¤vªº¸I¼²¾¹
-	[SerializeField] private LayerMask foodLayerMask;   // ­¹ª«ªº Layer
+	[SerializeField] private Collider2D playerCollider; // ï¿½ï¿½ï¿½aï¿½Û¤vï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½
+	[SerializeField] private LayerMask foodLayerMask;   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Layer
 
 	private List<GameObject> currentfoods = new List<GameObject>();
 	private Transform currentFoodTarget = null;
 	//private int[] foodsCount;
 	private bool isPlayerInsideTrigger = false;
 
-	private float dessertCdRemain = 0f;  // ³Ñ¾l§N«o®É¶¡
+	private float dessertCdRemain = 0f;  // ï¿½Ñ¾lï¿½Nï¿½oï¿½É¶ï¿½
 	private bool IsDessertOnCd => dessertCdRemain > 0f;
 
 	void Start()
@@ -40,9 +40,9 @@ public class FoodsGroupManager : MonoBehaviour
 		if (yellowFrame != null)
 			yellowFrame.SetActive(false);
 
-		// ªì©l¤ÆÅª±øª¬ºA
+		// ï¿½ï¿½lï¿½ï¿½Åªï¿½ï¿½ï¿½ï¿½ï¿½A
 		if (dessertBarFill != null) dessertBarFill.gameObject.SetActive(false);
-		if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ªì©l 0¡]¥¼¦b§N«o¡^
+		if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ï¿½ï¿½l 0ï¿½]ï¿½ï¿½ï¿½bï¿½Nï¿½oï¿½^
 	}
 
 	void Update()
@@ -54,11 +54,11 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void UpdateFoodOnTable()
 	{
-		// ¨¾§b
+		// ï¿½ï¿½ï¿½b
 		List<NormalGuestController> guestList = RoundManager.Instance.chairGroupManager.GetGuestsOrderList();
 		if (guestList == null || guestList.Count == 0)
 		{
-			// ¨S«È¤H®É²MªÅ©Ò¦³¥Í²£ÂI
+			// ï¿½Sï¿½È¤Hï¿½É²Mï¿½Å©Ò¦ï¿½ï¿½Í²ï¿½ï¿½I
 			for (int i = 0; i < foodsSpawnPositions.Length; i++)
 				ClearChildren(foodsSpawnPositions[i]);
 			return;
@@ -66,7 +66,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 		int len = Mathf.Min(guestList.Count, foodsSpawnPositions.Length);
 
-		// 1) ¨Ì§Ç³B²z«e len ¦ì«È¤H
+		// 1) ï¿½Ì§Ç³Bï¿½zï¿½e len ï¿½ï¿½È¤H
 		for (int i = 0; i < len; i++)
 		{
 			Transform spawn = foodsSpawnPositions[i];
@@ -78,45 +78,45 @@ public class FoodsGroupManager : MonoBehaviour
 				continue;
 			}
 
-			// ¥u¦³¦b WaitingDish ¶¥¬q¤~·|¦³¹ê»ÚÂIªºÀ\ÂI¹Ï¡F«Dµ¥À\ª¬ºA«h²MªÅ
-			Sprite needed = guest.GetOrderFood(); // WaitingDish Åã¥Üªº¨º±iÀ\ÂI¹Ï
+			// ï¿½uï¿½ï¿½ï¿½b WaitingDish ï¿½ï¿½ï¿½qï¿½~ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½\ï¿½Iï¿½Ï¡Fï¿½Dï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½Aï¿½hï¿½Mï¿½ï¿½
+			Sprite needed = guest.GetOrderFood(); // WaitingDish ï¿½ï¿½Üªï¿½ï¿½ï¿½ï¿½iï¿½\ï¿½Iï¿½ï¿½
 			if (needed == null)
 			{
 				ClearChildren(spawn);
 				continue;
 			}
 
-			// ¤w¸gÂ\¤F¥¿½TÀ\ÂI´N²¤¹L
+			// ï¿½wï¿½gï¿½\ï¿½Fï¿½ï¿½ï¿½Tï¿½\ï¿½Iï¿½Nï¿½ï¿½ï¿½L
 			Transform child = (spawn.childCount > 0) ? spawn.GetChild(0) : null;
 			if (child != null)
 			{
 				var sr = child.GetComponent<SpriteRenderer>();
 				if (sr != null && sr.sprite == needed)
-					continue; // ¥¿½T¡A¤°»ò³£¤£°µ
+					continue; // ï¿½ï¿½ï¿½Tï¿½Aï¿½ï¿½ï¿½ò³£¤ï¿½ï¿½ï¿½
 
-				// ©ñ¿ùÀ\ ¡÷ ¥ı²M±¼
+				// ï¿½ï¿½ï¿½ï¿½\ ï¿½ï¿½ ï¿½ï¿½ï¿½Mï¿½ï¿½
 				Object.Destroy(child.gameObject);
 			}
 
-			// ¨Ì Sprite ´M§ä¹ïÀ³ Prefab
+			// ï¿½ï¿½ Sprite ï¿½Mï¿½ï¿½ï¿½ï¿½ï¿½ Prefab
 			GameObject prefab = FindPrefabBySprite(needed);
 			if (prefab != null)
 			{
 				GameObject go = Instantiate(prefab, spawn);
-				go.transform.localPosition = Vector3.zero; // ¹ï»ô®y¼Ğ
+				go.transform.localPosition = Vector3.zero; // ï¿½ï¿½ï¿½ï¿½yï¿½ï¿½
 				currentfoods.Add(go);
 			}
 			else
 			{
-				// ¨S§ä¨ì¹ïÀ³ prefab¡A«OÀI°_¨£²MªÅ¸ÓÂI¦ì
+				// ï¿½Sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ prefabï¿½Aï¿½Oï¿½Iï¿½_ï¿½ï¿½ï¿½Mï¿½Å¸ï¿½ï¿½Iï¿½ï¿½
 				ClearChildren(spawn);
 #if UNITY_EDITOR
-				Debug.LogWarning($"[FoodsGroupManager] §ä¤£¨ì¹ïÀ³ Sprite ªºÀ\ÂI Prefab¡G{needed.name}");
+				Debug.LogWarning($"[FoodsGroupManager] æ‰¾ä¸åˆ°å¸¶æœ‰ Sprite çš„é¤é» Prefabï¼š{needed.name}");
 #endif
 			}
 		}
 
-		// 2) ¦h¾lªº¥Í²£ÂI²MªÅ
+		// 2) ï¿½hï¿½lï¿½ï¿½ï¿½Í²ï¿½ï¿½Iï¿½Mï¿½ï¿½
 		for (int i = len; i < foodsSpawnPositions.Length; i++)
 		{
 			ClearChildren(foodsSpawnPositions[i]);
@@ -124,7 +124,7 @@ public class FoodsGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¨ÌÀ\ÂI¹Ï§ä¹ïÀ³ªº prefab¡]¥H prefab ¤Wªº SpriteRenderer.sprite ¤ñ¹ï¡^
+	/// ï¿½ï¿½ï¿½\ï¿½Iï¿½Ï§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ prefabï¿½]ï¿½H prefab ï¿½Wï¿½ï¿½ SpriteRenderer.sprite ï¿½ï¿½ï¿½^
 	/// </summary>
 	private GameObject FindPrefabBySprite(Sprite sprite)
 	{
@@ -142,7 +142,7 @@ public class FoodsGroupManager : MonoBehaviour
 		return null;
 	}
 
-	/// <summary>§R±¼¸`ÂI©³¤U©Ò¦³¤lª«¥ó¡]²M®à¡^</summary>
+	/// <summary>ï¿½Rï¿½ï¿½ï¿½`ï¿½Iï¿½ï¿½ï¿½Uï¿½Ò¦ï¿½ï¿½lï¿½ï¿½ï¿½ï¿½]ï¿½Mï¿½ï¿½^</summary>
 	private void ClearChildren(Transform parent)
 	{
 		if (parent == null) return;
@@ -161,7 +161,7 @@ public class FoodsGroupManager : MonoBehaviour
 			return;
 		}
 
-		// ·Æ¹«Àu¥ı
+		// ï¿½Æ¹ï¿½ï¿½uï¿½ï¿½
 		Transform mouseTarget = GetHoveredFoodByMouse();
 		if (mouseTarget != null)
 		{
@@ -169,7 +169,7 @@ public class FoodsGroupManager : MonoBehaviour
 			return;
 		}
 
-		// ª±®a¸I¼²¬°¦¸­n
+		// ï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½n
 		Transform touchedTarget = GetTouchedFoodByPlayer();
 		if (touchedTarget != null)
 		{
@@ -183,33 +183,33 @@ public class FoodsGroupManager : MonoBehaviour
 	}
 	private void UpdateDesertColdDown()
 	{
-		// --- §ó·s²¢ÂI§N«o±ø ---
+		// --- ï¿½ï¿½sï¿½ï¿½ï¿½Iï¿½Nï¿½oï¿½ï¿½ ---
 		if (IsDessertOnCd)
 		{
 			dessertCdRemain = Mathf.Max(0f, dessertCdRemain - Time.deltaTime);
 
-			// ¶i«× = ³Ñ¾l®É¶¡ / Á`§N«o ¡÷ ±q 1 º¥´î¨ì 0
+			// ï¿½iï¿½ï¿½ = ï¿½Ñ¾lï¿½É¶ï¿½ / ï¿½`ï¿½Nï¿½o ï¿½ï¿½ ï¿½q 1 ï¿½ï¿½ï¿½ï¿½ï¿½ 0
 			float p = (dessertColdownSeconds <= 0f) ? 0f : (dessertCdRemain / dessertColdownSeconds);
 			if (dessertBarFill != null)
 				dessertBarFill.localScale = new Vector3(Mathf.Clamp01(p), 1f, 1f);
 
-			// §N«oµ²§ô ¡÷ ÁôÂÃ©ÎÅã¥ÜªÅ±ø
+			// ï¿½Nï¿½oï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ã©ï¿½ï¿½ï¿½ÜªÅ±ï¿½
 			if (!IsDessertOnCd)
 			{
 				if (dessertBarFill != null)
-					dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ÅÜ¦¨ªÅ
+					dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ï¿½Ü¦ï¿½ï¿½ï¿½
 				if (dessertBarFill != null && hideBarWhenReady)
 					dessertBarFill.gameObject.SetActive(false);
 			}
 		}
 	}
 
-	// --- ·Æ¹« hover ÀË¬d ---
+	// --- ï¿½Æ¹ï¿½ hover ï¿½Ë¬d ---
 	private Transform GetHoveredFoodByMouse()
 	{
 		Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		// ¥u·j´M«ü©w Layer¡]³q±`¬O Food¡^
+		// ï¿½uï¿½jï¿½Mï¿½ï¿½ï¿½w Layerï¿½]ï¿½qï¿½`ï¿½O Foodï¿½^
 		Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos, foodLayerMask);
 		if (hit != null)
 		{
@@ -218,7 +218,7 @@ public class FoodsGroupManager : MonoBehaviour
 		return null;
 	}
 
-	// --- ª±®a¸I¼²ÀË¬d ---
+	// --- ï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½ï¿½Ë¬d ---
 	private Transform GetTouchedFoodByPlayer()
 	{
 		foreach (GameObject food in currentfoods)
@@ -234,7 +234,7 @@ public class FoodsGroupManager : MonoBehaviour
 		return null;
 	}
 
-	// --- ²¾°Ê¶À®Ø ---
+	// --- ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½ï¿½ ---
 	private void UpdateYellowFrame(Transform target)
 	{
 		currentFoodTarget = target;
@@ -245,7 +245,7 @@ public class FoodsGroupManager : MonoBehaviour
 		yellowFrame.transform.position = currentFoodTarget.position;
 	}
 
-	// --- Trigger ÀË¬d¶i¥X ---
+	// --- Trigger ï¿½Ë¬dï¿½iï¿½X ---
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other == playerCollider)
@@ -265,7 +265,7 @@ public class FoodsGroupManager : MonoBehaviour
 		}
 	}
 
-	// --- ÀH¾÷ÂIÀ\¡]¨ú±o Sprite¡^---
+	// --- ï¿½Hï¿½ï¿½ï¿½Iï¿½\ï¿½]ï¿½ï¿½ï¿½o Spriteï¿½^---
 	public Sprite OrderFoodRandomly()
 	{
 		if (foodPrefabs == null || foodPrefabs.Length == 0)
@@ -278,26 +278,26 @@ public class FoodsGroupManager : MonoBehaviour
 		return foodSR != null ? foodSR.sprite : null;
 	}
 
-	/// ¦^¶Ç¥Ø«e³Q yellowFrame Âê©wªº­¹ª« GameObject¡A¦pªG¨S¦³«h¦^¶Ç null
+	/// ï¿½^ï¿½Ç¥Ø«eï¿½Q yellowFrame ï¿½ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ GameObjectï¿½Aï¿½pï¿½Gï¿½Sï¿½ï¿½ï¿½hï¿½^ï¿½ï¿½ null
 	public GameObject GetCurrentDishObject()
 	{
 		return currentFoodTarget != null ? currentFoodTarget.gameObject : null;
 	}
 
-	// ¨Ï¥ÎµoÂI¤ß
-	// ¨Ï¥ÎµoÂI¤ß¡]±a§N«o¡®Åª±ø¡^
+	// ï¿½Ï¥Îµoï¿½Iï¿½ï¿½
+	// ï¿½Ï¥Îµoï¿½Iï¿½ß¡]ï¿½aï¿½Nï¿½oï¿½ï¿½Åªï¿½ï¿½ï¿½^
 	public bool UseDessert()
 	{
-		// §N«o¤¤´N¤£Ä²µo
+		// ï¿½Nï¿½oï¿½ï¿½ï¿½Nï¿½ï¿½Ä²ï¿½o
 		if (IsDessertOnCd) return false;
 
-		// ¼½©ñ°Êµe¡]±qÀY¡^
+		// ï¿½ï¿½ï¿½ï¿½Êµeï¿½]ï¿½qï¿½Yï¿½^
 		if (dessertAnimator != null)
 			dessertAnimator.Play("DessertEffect", -1, 0f);
 
 		RoundManager.Instance.chairGroupManager.ResetAllSetGuestsPatience();
 
-		// ¶}©l§N«o
+		// ï¿½}ï¿½lï¿½Nï¿½o
 		StartDessertColdown();
 		return true;
 	}
@@ -307,7 +307,7 @@ public class FoodsGroupManager : MonoBehaviour
 		if (dessertColdownSeconds <= 0f)
 		{
 			dessertCdRemain = 0f;
-			if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ¤@¶}©l´N¬OªÅ
+			if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(0f, 1f, 1f); // ï¿½@ï¿½}ï¿½lï¿½Nï¿½Oï¿½ï¿½
 			if (dessertBarFill != null && hideBarWhenReady)
 				dessertBarFill.gameObject.SetActive(false);
 			return;
@@ -315,7 +315,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 		dessertCdRemain = dessertColdownSeconds;
 
-		// Åã¥ÜÅª±ø¨Ã±qº¡¶}©l
+		// ï¿½ï¿½ï¿½Åªï¿½ï¿½ï¿½Ã±qï¿½ï¿½ï¿½}ï¿½l
 		if (dessertBarFill != null) dessertBarFill.gameObject.SetActive(true);
 		if (dessertBarFill != null) dessertBarFill.localScale = new Vector3(1f, 1f, 1f);
 	}

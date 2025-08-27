@@ -59,7 +59,7 @@ public class GuestGroupManager : MonoBehaviour
 	{
 		if (GuestPool.Instance == null)
 		{
-			Debug.LogError("[GuestGroupManager] GuestPool.Instance 為空，請先放置並設定 GuestPool！");
+			Debug.LogError("[GuestGroupManager] GuestPool.Instance is null, please set up GuestPool!");
 			return;
 		}
 
@@ -92,28 +92,28 @@ public class GuestGroupManager : MonoBehaviour
 		var go = GuestPool.Instance.SpawnGuest(key, pos, Quaternion.identity);
 		if (go == null) return;
 
-		// 綁定回收資訊
+		// Initialize return to pool info
 		var handler = go.GetComponent<GuestPoolHandler>();
 		if (handler != null) handler.Init(key);
 
-		// 這裡如需初始化 controller 狀態、進場導航等，也可在此設定
+		// Additional controller setup can be done here if needed
 	}
 
 	private Vector3 GetSpawnPosition()
 	{
 		if (doorPosition != null) return doorPosition.position;
-		Debug.LogWarning("[GuestGroupManager] doorPosition 未指定，使用 (0,0,0)");
+		Debug.LogWarning("[GuestGroupManager] doorPosition not set, using (0,0,0)");
 		return Vector3.zero;
 	}
 
 	/// <summary>
-	/// 在指定位置生成 TroubleGuest（可選擇複製外觀 sprite）
+	/// Spawn TroubleGuest at specified position (can copy sprite for duplication)
 	/// </summary>
 	public GameObject SpawnTroubleGuestAt(Vector3 pos, Sprite copySprite = null)
 	{
 		if (GuestPool.Instance == null)
 		{
-			Debug.LogError("[GuestGroupManager] GuestPool.Instance 為空，無法生成 TroubleGuest");
+			Debug.LogError("[GuestGroupManager] GuestPool.Instance is null, cannot spawn TroubleGuest");
 			return null;
 		}
 
@@ -123,7 +123,7 @@ public class GuestGroupManager : MonoBehaviour
 		var handler = guest.GetComponent<GuestPoolHandler>();
 		if (handler != null) handler.Init(troubleGuestKey);
 
-		// 若你的 TroubleGusetController 有 SetSprite(Sprite) 的公開方法，可在這裡做外觀複製
+		// If TroubleGusetController has SetSprite(Sprite) method, can add sprite copying here
 		var ctrl = guest.GetComponent<TroubleGusetController>();
 		if (ctrl != null && copySprite != null)
 		{
@@ -134,11 +134,11 @@ public class GuestGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 範例：重置場上所有 NormalGuest 的耐心
+	/// Debug: Reset patience of all NormalGuest on the map
 	/// </summary>
 	public void ResetAllGuestsPatience()
 	{
-		foreach (Transform child in transform) // 視你的層級結構而定（如果 Guest 都放在 GuestPool 的 parent 下，可改掃 GuestPool 的 parent）
+		foreach (Transform child in transform) // Iterate through children (if Guest is under GuestPool's parent, can iterate through GuestPool's parent)
 		{
 			var controller = child.GetComponent<NormalGuestController>();
 			if (controller == null) continue;

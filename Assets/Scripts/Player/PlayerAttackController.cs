@@ -5,7 +5,7 @@ public class PlayerAttackController : MonoBehaviour
 	[Header("--------- Setting -----------")]
 	[SerializeField] private float attackMoveDistance = 5f;
 	[SerializeField] private float attackMoveDuration = 0.5f;
-	[SerializeField] private LayerMask enemyLayer; // 指定敵人 Layer，防止誤判
+	[SerializeField] private LayerMask enemyLayer; // Enemy layer for detection
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItem;
 	[SerializeField] private GameObject attackHitBox;
@@ -14,7 +14,7 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private PlayerSpineAnimationManager animationManager;
 
-	private int cakeComboIndex = 0; // 0: 播 DrumStick1, 1: 播 DrumStick2
+	private int cakeComboIndex = 0; // 0: use DrumStick1, 1: use DrumStick2
 	
 	//private bool isAttacked = false;
 	private void Start()
@@ -37,33 +37,33 @@ public class PlayerAttackController : MonoBehaviour
 					if (animationManager.IsBusy())
 						return false;
 
-					// 攻擊成功
-					if (cakeComboIndex > 0) playerMovement.DestoryFirstItem(); // 使用掉第一個食物
+					// Perform attack
+					if (cakeComboIndex > 0) playerMovement.DestoryFirstItem(); // Destroy first item if combo index > 0
 					handItem.gameObject.SetActive(false);
 					playerMovement.SetEnableMoveControll(false);
 					AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 					playerMovement.MoveDistance(attackMoveDistance, attackMoveDuration, playerMovement.GetMoveInput());
 
-					// 交替播放 DrumStick1 / DrumStick2
+					// Alternate between DrumStick1 / DrumStick2
 					string anim = (cakeComboIndex % 2 == 0)
 						? animationManager.DrumStick1
 						: animationManager.DrumStick2;
 
-					// 對應特效名稱
+					// VFX effect name
 					string vfxName = (cakeComboIndex % 2 == 0)
 						? "DrumStick_NormalAttack_1"
 						: "DrumStick_NormalAttack_2";
 
 					//VFXPool.Instance.SpawnVFX(vfxName, attackHitBox.transform.position, Quaternion.identity, 2f);
 
-					// 撥放一次；HitBox 與 VFX 交給 Spine 事件：
+					// Handle HitBox and VFX through Spine events:
 					animationManager.PlayAnimationOnce(anim, attackHitBox, vfxName, () =>
 					{
 
-						// 動畫播完：切換 combo index
+						// After animation: toggle combo index
 						cakeComboIndex = 1 - cakeComboIndex;
 
-						// 播完後再顯示 handItem
+						// Re-enable handItem
 						handItem.gameObject.SetActive(true);
 					});
 

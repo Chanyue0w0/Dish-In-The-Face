@@ -51,15 +51,15 @@ public class SceneComponentValueEditor : EditorWindow
 
 	void OnGUI()
 	{
-		EditorGUILayout.LabelField("³õ´ºª«¥óÄæ¦ìÁ`Äı¤u¨ã", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("å ´æ™¯çµ„ä»¶å€¼è¿½è¹¤å·¥å…·", EditorStyles.boldLabel);
 		EditorGUILayout.Space();
 
-		ShowUnsupportedFieldTypes = GUILayout.Toggle(ShowUnsupportedFieldTypes, "Åã¥Ü¤£¤ä´©Ãş«¬Äæ¦ì");
-		ShowPrivateFieldsWithoutSerializeField = GUILayout.Toggle(ShowPrivateFieldsWithoutSerializeField, "Åã¥Ü¨S¦³ [SerializeField] ªº private Äæ¦ì");
+		ShowUnsupportedFieldTypes = GUILayout.Toggle(ShowUnsupportedFieldTypes, "é¡¯ç¤ºä¸æ”¯æ´çš„é¡å‹");
+		ShowPrivateFieldsWithoutSerializeField = GUILayout.Toggle(ShowPrivateFieldsWithoutSerializeField, "é¡¯ç¤ºæ²’æœ‰ [SerializeField] çš„ private æ¬„ä½");
 
 		EditorGUILayout.Space();
 
-		if (GUILayout.Button("¥[¤J¿ï¨úª«¥óªº©Ò¦³¤¸¥ó"))
+		if (GUILayout.Button("åŠ å…¥é¸æ“‡ç‰©ä»¶çš„æ‰€æœ‰çµ„ä»¶"))
 		{
 			GameObject selected = Selection.activeGameObject;
 			if (selected != null)
@@ -68,7 +68,7 @@ public class SceneComponentValueEditor : EditorWindow
 			}
 		}
 
-		if (GUILayout.Button("¿ï¾Ü­n¥[¤Jªº¤¸¥ó"))
+		if (GUILayout.Button("é¸æ“‡è¦åŠ å…¥çš„çµ„ä»¶"))
 		{
 			GameObject selected = Selection.activeGameObject;
 			if (selected != null)
@@ -77,7 +77,7 @@ public class SceneComponentValueEditor : EditorWindow
 			}
 		}
 
-		if (GUILayout.Button("­«·s¸ü¤J¥Ø«e³õ´º¤wÀx¦s¸ê®Æ"))
+		if (GUILayout.Button("é‡æ–°è¼‰å…¥ç•¶å‰å ´æ™¯å·²å„²å­˜æ¸…å–®"))
 		{
 			LoadTrackedObjectsFromJson();
 		}
@@ -94,7 +94,7 @@ public class SceneComponentValueEditor : EditorWindow
 
 			EditorGUILayout.BeginHorizontal();
 			ObjectFoldouts.TryGetValue(go, out bool goOpen);
-			goOpen = EditorGUILayout.Foldout(goOpen, $"ª«¥ó¡G{go.name}", true);
+			goOpen = EditorGUILayout.Foldout(goOpen, $"ç‰©ä»¶ï¼š{go.name}", true);
 			ObjectFoldouts[go] = goOpen;
 
 			if (GUILayout.Button("X", GUILayout.Width(20)))
@@ -125,7 +125,7 @@ public class SceneComponentValueEditor : EditorWindow
 					bool skipComponent = false;
 
 					string label = comp.GetType().Name;
-					compOpen = EditorGUILayout.Foldout(compOpen, $"Component¡G{label}", true);
+					compOpen = EditorGUILayout.Foldout(compOpen, $"çµ„ä»¶ï¼š{label}", true);
 					ComponentFoldouts[comp] = compOpen;
 
 					if (GUILayout.Button("X", GUILayout.Width(20)))
@@ -152,14 +152,14 @@ public class SceneComponentValueEditor : EditorWindow
 		EditorGUILayout.EndScrollView();
 
 		EditorGUILayout.BeginHorizontal();
-		if (GUILayout.Button("²MªÅ°lÂÜ²M³æ"))
+		if (GUILayout.Button("æ¸…ç©ºè¿½è¹¤æ¸…å–®"))
 		{
 			TrackedObjects.Clear();
 			ObjectFoldouts.Clear();
 			ComponentFoldouts.Clear();
 			ObjectTrackedComponents.Clear();
 		}
-		if (GUILayout.Button("Àx¦s¥Ø«e²M³æ"))
+		if (GUILayout.Button("å„²å­˜ç•¶å‰æ¸…å–®"))
 		{
 			SaveTrackedObjectsToJson();
 		}
@@ -266,7 +266,7 @@ public class SceneComponentValueEditor : EditorWindow
 			}
 			catch (Exception e)
 			{
-				EditorGUILayout.LabelField(field.Name, $"¿ù»~¡G{e.Message}");
+				EditorGUILayout.LabelField(field.Name, $"éŒ¯èª¤ï¼š{e.Message}");
 			}
 		}
 	}
@@ -292,13 +292,13 @@ public class SceneComponentValueEditor : EditorWindow
 			else
 			{
 				if (ShowUnsupportedFieldTypes)
-					EditorGUILayout.LabelField(label, $"¤£¤ä´©ªºÃş«¬¡G{type.Name}");
+					EditorGUILayout.LabelField(label, $"ä¸æ”¯æ´çš„é¡å‹ï¼š{type.Name}");
 				return null;
 			}
 		}
 		catch
 		{
-			EditorGUILayout.LabelField(label, "¿ù»~¡GµLªkÅã¥Ü");
+			EditorGUILayout.LabelField(label, "éŒ¯èª¤ï¼šç„¡æ³•è®€å–");
 			return null;
 		}
 	}
