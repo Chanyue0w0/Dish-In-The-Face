@@ -59,7 +59,7 @@ public class VFXPool : MonoBehaviour
     }
 
     /// <summary>
-    /// 取得 VFX（可選擇自動釋放）
+    /// 取得 VFX（可選擇自動釋放）autoReleaseTime = -1 不限時間
     /// </summary>
     public GameObject SpawnVFX(string key, Vector3 position, Quaternion rotation, float autoReleaseTime = -1f)
     {

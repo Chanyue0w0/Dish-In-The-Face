@@ -12,14 +12,14 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f;
 
 	[Header("----- Attack Setting -----")]
-	[SerializeField] private float attackCooldown = 2f; // §ğÀ»§N«o(¬í)
-	[SerializeField] private float chargeTime = 1f;     // »W¤O®É¶¡(¬í)
-	[SerializeField] private LayerMask playerLayer;     // ª±®a¹Ï¼h
-	[SerializeField] private Transform attackOrigin;    // ¥Ñ attackRangeBox ¦Û°Ê±a¤J
+	[SerializeField] private float attackCooldown = 2f; // å†·å»(ç§’)
+	[SerializeField] private float chargeTime = 1f;     // è“„åŠ›æ™‚é–“(ç§’)
+	[SerializeField] private LayerMask playerLayer;     // ç©å®¶åœ–å±¤
+	[SerializeField] private Transform attackOrigin;    // ä¾› attackRangeBox åƒè€ƒçš„åŸé»
 
 	[Header("----- Knockback Setting -----")]
-	[SerializeField] private float knockbackForce = 5f;     // À»°h¤O«×
-	[SerializeField] private float knockbackDuration = 0.2f; // À»°h«ùÄò®É¶¡
+	[SerializeField] private float knockbackForce = 5f;
+	[SerializeField] private float knockbackDuration = 0.2f;
 
 	[Header("-------- Appearance --------")]
 	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
@@ -27,14 +27,23 @@ public class TroubleGusetController : MonoBehaviour
 	[Header("----- Reference -----")]
 	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 	[SerializeField] private Animator animator;
-	[SerializeField] private GameObject attackHitBox;   // ¯ÂµøÄ±/¯S®Ä
+	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private NavMeshAgent agent;
 	[SerializeField] private SpriteRenderer spriteRenderer;
-	[SerializeField] private GameObject attackRangeBox; // ¡ö ¥Î¥¦ªº¤j¤p·í§ğÀ»½d³ò
+	[SerializeField] private GameObject attackRangeBox;
 	[SerializeField] private GameObject hpBar;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject dieVFX;
 	[SerializeField] private GameObject attackVFX;
+	[SerializeField] private BeGrabByPlayer beGrabByPlayer;
+	
+	// === æ–°å¢ï¼šæšˆçœ©ç³»çµ± ===
+	[Header("----- Stun (æšˆçœ©) -----")]
+	[SerializeField] private int maxStun = 10;             // æšˆçœ©æœ€å¤§å€¼ï¼ˆå¯èª¿ï¼‰
+	[SerializeField] private GameObject stunBar;           // æšˆçœ©æ¢ï¼ˆè¢«æ”»æ“Šæ™‚é¡¯ç¤ºï¼‰
+	[SerializeField] private Transform stunBarFill;        // æšˆçœ©æ¢å¡«æ»¿ï¼ˆç¸®æ”¾ X 0â†’1ï¼‰
+	private int currentStun = 0;                           // å¾ 0 é–‹å§‹
+	private bool isStunned = false;                        // æ˜¯å¦å·²æšˆçœ©ï¼ˆåœæ­¢ç§»å‹•æ§åˆ¶ï¼‰
 
 	private Transform player;
 	private float lastAttackTime;
@@ -42,8 +51,6 @@ public class TroubleGusetController : MonoBehaviour
 	private float chargeStartTime;
 
 	//private bool isKnockback = false;
-
-	// ª«¥ó¦À³B²z¾¹
 	private GuestPoolHandler poolHandler;
 
 	private void Awake()
@@ -55,23 +62,29 @@ public class TroubleGusetController : MonoBehaviour
 
 		poolHandler = GetComponent<GuestPoolHandler>();
 
-		// ¹w³]§ğÀ»¤¤¤ß = §ğÀ»½d³òª«¥óªº Transform
 		if (attackOrigin == null && attackRangeBox != null)
-			attackOrigin = attackRangeBox.transform; // ¥H attackRangeBox ¬°¤¤¤ß:contentReference[oaicite:2]{index=2}
+			attackOrigin = attackRangeBox.transform;
 	}
 
 	private void Start()
 	{
 		if (RoundManager.Instance) player = RoundManager.Instance.Player;
 	}
+
 	private void OnEnable()
 	{
-		SetSprite(); // ªì©l¥~Æ[©Îªu¥Î¥~Æ[:contentReference[oaicite:3]{index=3}
+		SetSprite();
 
 		if (RoundManager.Instance) player = RoundManager.Instance.Player;
 
 		maxHp = Random.Range(1, 4);
 		currentHp = maxHp;
+
+		// é‡ç½®æšˆçœ©
+		currentStun = 0;
+		isStunned = false;
+		stunBar.SetActive(false);
+		UpdateStunBarFill();
 
 		if (hpBar != null) hpBar.SetActive(false);
 		if (attackHitBox != null) attackHitBox.SetActive(false);
@@ -82,9 +95,9 @@ public class TroubleGusetController : MonoBehaviour
 
 		TryEnsureOnNavMesh(2f);
 	}
+
 	private void OnDisable()
 	{
-		// ¨ú®ø©|¥¼°õ¦æªº Invoke¡AÁ×§K¦^¦¬«á¤´©I¥s EndAttack()
 		CancelInvoke(nameof(EndAttack));
 		isCharging = false;
 	}
@@ -93,13 +106,25 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (player == null) return;
 
-		// Â½Âà­±¦V¡]¨Ì³t«×¡^:contentReference[oaicite:4]{index=4}
+		// å¦‚æœå·²æšˆçœ©ï¼Œå®Œå…¨åœæ­¢ç§»å‹•æ§åˆ¶
+		if (isStunned)
+		{
+			agent.isStopped = true;
+			beGrabByPlayer.SetIsCanBeGrabByPlayer(true);
+			return;
+		}
+		else
+		{
+			beGrabByPlayer.SetIsCanBeGrabByPlayer(false);
+		}
+
+		// è§’è‰²å·¦å³ç¿»é¢
 		if (agent.velocity.x < -0.01f)
 			transform.rotation = Quaternion.Euler(0, 0, 0);
 		else if (agent.velocity.x > 0.01f)
 			transform.rotation = Quaternion.Euler(0, 180, 0);
 
-		// »W¤O¤¤¡G­ì¦aµ¥«İª½¨ì¥X¤â
+		// è“„åŠ›æœŸé–“ä¸ç§»å‹•
 		if (isCharging)
 		{
 			if (Time.time - chargeStartTime >= chargeTime)
@@ -114,54 +139,41 @@ public class TroubleGusetController : MonoBehaviour
 			}
 		}
 
-		// °lÀ»ª±®a
+		// è¿½ç©å®¶
 		agent.isStopped = false;
 		agent.SetDestination(player.position);
 
-		// ¶i¤J§ğÀ»½d³ò¥B§N«oµ²§ô ¡÷ ¶}©l»W¤O
+		// é€²å…¥æ”»æ“Šç¯„åœå°±é–‹å§‹è“„åŠ›
 		if (Time.time - lastAttackTime >= attackCooldown && IsPlayerInRange())
 		{
 			StartCharge();
 		}
 	}
 
-	/// <summary>
-	/// ±q attackRangeBox ±À±o§ğÀ»¥b®|¡F­Y¥¢±Ñ«h°h¦^ attackRange¡C
-	/// Àu¥ı¶¶§Ç¡GCircleCollider2D.radius(§tÁY©ñ) ¡÷ SpriteRenderer.bounds.extents ¡÷ attackRange
-	/// </summary>
+	/// <summary>å¾ attackRangeBox å–å¾—æ”»æ“ŠåŠå¾‘</summary>
 	private float GetAttackRadius()
 	{
-		// ¦³§ğÀ»½d³òª«¥ó¤~¦³§P©w
 		if (attackRangeBox != null)
 		{
 			var t = attackRangeBox.transform;
 
-			// 1) CircleCollider2D¡]³ÌÃ­¡^
 			var circle = attackRangeBox.GetComponent<CircleCollider2D>();
 			if (circle != null)
 			{
-				// ¥b®|»İ­¼¤W³Ì¤j¶b¦VÁY©ñ¡]Á×§K«Dµ¥¤ñÁY©ñ¾É­P¥b®|¥¢¯u¡^
 				float scale = Mathf.Max(Mathf.Abs(t.lossyScale.x), Mathf.Abs(t.lossyScale.y));
 				return circle.radius * scale;
 			}
 
-			// 2) SpriteRenderer¡]¥Î bounds ±À¥b®|¡^
 			var sr = attackRangeBox.GetComponent<SpriteRenderer>();
 			if (sr != null && sr.sprite != null)
 			{
-				// ¨ú x/y ªº extents ¥­§¡§@¬°ªñ¦ü¥b®|
 				var ext = sr.bounds.extents;
 				return (ext.x + ext.y) * 0.5f;
 			}
 		}
-
-		// 3) «á³Æ¡G¥Î³]©w­È
 		return 2f;
 	}
 
-	/// <summary>
-	/// ¥H attackRangeBox ªº¤¤¤ß»P¤j¤p¡]©Î«á³Æ¥b®|¡^ÀË´úª±®a¬O§_¦b§ğÀ»½d³ò¡C
-	/// </summary>
 	private bool IsPlayerInRange()
 	{
 		if (attackRangeBox != null && attackOrigin == null)
@@ -187,13 +199,11 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		agent.isStopped = true;
 
-		// µøÄ±/­µ®Ä
 		if (attackHitBox != null) attackHitBox.SetActive(true);
 		var fxPos = (attackOrigin != null ? attackOrigin.position : transform.position);
 		VFXPool.Instance.SpawnVFX("Attack", fxPos, Quaternion.identity, 1f);
 		AudioManager.Instance.PlayOneShot(FMODEvents.Instance.enemyAttack, transform.position);
 
-		// ©R¤¤ÀË´ú¡]¦P¤@­Ó¶ê¡^
 		float radius = GetAttackRadius();
 		if (attackOrigin == null) attackOrigin = transform;
 
@@ -205,17 +215,14 @@ public class TroubleGusetController : MonoBehaviour
 				playerStatus.TakeDamage(atk);
 		}
 
-		// ³o¸Ì¥i¯à¤§«á 0.2 ¬í¤ºª«¥ó³Q¦^¦¬ ¡÷ ¥Ñ OnDisable() ªº CancelInvoke «OÅ@
 		Invoke(nameof(EndAttack), 0.2f);
 	}
 
 	private void EndAttack()
 	{
-		// ª«¥ó¥i¯à¤w³Q¦^¦¬/°±¥Î¡G¥ı°µ¦w¥şÀË¬d
 		if (this == null || !gameObject.activeInHierarchy) return;
 		if (agent == null || !agent.isActiveAndEnabled) return;
 
-		// ­Y¤£¦b NavMesh¡A¹Á¸Õ´Nªñ©ñ¦^ NavMesh¡F¥¢±Ñ´N§O«ì´_²¾°Ê
 		if (!agent.isOnNavMesh && !TryEnsureOnNavMesh(2f))
 			return;
 
@@ -225,7 +232,7 @@ public class TroubleGusetController : MonoBehaviour
 		agent.isStopped = false;
 	}
 
-	/// <summary>¹Á¸Õ§â Agent ©ñ¦^³Ìªñªº NavMesh ¦ì¸m¡C</summary>
+	/// <summary>å˜—è©¦æŠŠ Agent æ”¾å› NavMesh åˆæ³•ä½ç½®ã€‚</summary>
 	private bool TryEnsureOnNavMesh(float searchRadius = 2f)
 	{
 		if (agent == null || !agent.isActiveAndEnabled) return false;
@@ -237,7 +244,6 @@ public class TroubleGusetController : MonoBehaviour
 		}
 		return false;
 	}
-
 
 	public void SetSprite(Sprite sprite = null)
 	{
@@ -284,33 +290,37 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (agent == null) yield break;
 
-		//isKnockback = true;
-		agent.isStopped = true; // ¼È°± NavMeshAgent ±±¨î
+		agent.isStopped = true;
 
-		animator.SetTrigger("BeAttack"); // ¼·©ñ¨üÀ»°Êµe
+		if (animator != null) animator.SetTrigger("BeAttack");
 		float elapsed = 0f;
 		while (elapsed < knockbackDuration)
 		{
-			// ª½±µ¦ì²¾
 			transform.position += (Vector3)(direction * knockbackForce * Time.deltaTime);
-
 			elapsed += Time.deltaTime;
 			yield return null;
 		}
 
-		// À»°hµ²§ô¡A«ì´_°lÂÜ
 		agent.isStopped = false;
-		//isKnockback = false;
 		TakeDamage(1);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		// è¢«ä»»ä½•æ”»æ“Šåˆ° â†’ é¡¯ç¤ºæšˆçœ©æ¢
+		if (stunBar != null) stunBar.SetActive(true);
+
+		// ä½ åŸæœ¬çš„æ“Šé€€ä¾†æº
 		if (other.CompareTag("AttackObject"))
 		{
-			// À»°h®ÄªG
 			Vector2 knockDir = (transform.position - other.transform.position).normalized;
 			StartCoroutine(ApplyKnockback(knockDir));
+		}
+
+		// æ–°å¢ï¼šè¢«ã€ŒBasicAttackã€çš„ hitbox æ”»æ“Šï¼Œæšˆçœ©å€¼ +1
+		if (other.CompareTag("BasicAttack"))
+		{
+			AddStun(1);
 		}
 	}
 
@@ -324,4 +334,55 @@ public class TroubleGusetController : MonoBehaviour
 		Gizmos.DrawWireSphere(attackOrigin.position, r);
 	}
 #endif
+
+	// =========================
+	// ===== æšˆçœ©ï¼šæ ¸å¿ƒå€ =====
+	// =========================
+
+	/// <summary>å¤–éƒ¨æˆ–äº‹ä»¶å‘¼å«ï¼šå¢åŠ æšˆçœ©å€¼ã€‚</summary>
+	private void AddStun(int amount)
+	{
+		currentStun = Mathf.Clamp(currentStun + amount, 0, maxStun);
+		UpdateStunBarFill();
+
+		if (currentStun >= maxStun)
+			OnStunFull();
+	}
+
+	/// <summary>ç•¶æšˆçœ©å€¼é”ä¸Šé™ï¼šåœæ­¢ç§»å‹•æ§åˆ¶ã€‚</summary>
+	private void OnStunFull()
+	{
+		isStunned = true;
+		if (agent != null) agent.isStopped = true;
+
+		// è‹¥æœ‰å‹•ç•«å¯ç”¨ï¼Œé€™è£¡å¯åˆ‡æ›æšˆçœ©ç‹€æ…‹
+		if (animator != null)
+		{
+			// å»ºè­°åšä¸€å€‹æšˆçœ©è¿´åœˆå‹•ç•«ï¼›é€™è£¡ç”¨ Bool ç¯„ä¾‹
+			// animator.SetBool("IsStunned", true);
+		}
+	}
+
+	/// <summary>ï¼ˆå¯é¸ï¼‰å¤–éƒ¨å¯å‘¼å«ï¼šè§£é™¤æšˆçœ©ä¸¦æ¸…ç©ºæšˆçœ©å€¼ã€‚</summary>
+	public void ResetStun()
+	{
+		isStunned = false;
+		currentStun = 0;
+		if (agent != null) agent.isStopped = false;
+
+		UpdateStunBarFill();
+
+		// if (stunBar != null) stunBar.SetActive(false);
+		// if (animator != null) animator.SetBool("IsStunned", false);
+	}
+
+	/// <summary>æ›´æ–°æšˆçœ©æ¢çš„é¡¯ç¤ºï¼ˆ0â†’1ï¼‰ã€‚</summary>
+	private void UpdateStunBarFill()
+	{
+		if (stunBarFill != null && maxStun > 0)
+		{
+			float ratio = (float)currentStun / maxStun;
+			stunBarFill.localScale = new Vector3(ratio, 1f, 1f);
+		}
+	}
 }

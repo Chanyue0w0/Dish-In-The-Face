@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static PlayerAttackController;
 
 public class PlayerMovement : MonoBehaviour
 {
+	#region ===== Inspector：移動/衝刺設定 =====
 	[Header("-------- Move Setting ---------")]
 	[SerializeField] private bool isSlideAutoPullDish = false;
 	[SerializeField] private float moveSpeed = 10f;
@@ -18,86 +18,100 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float dashVirbation = 0.7f;
 	[SerializeField] private List<string> passThroughTags;
 
-	// === Slide Interrupt Settings ===
 	[Header("Slide Interrupt")]
-	[SerializeField] private bool canInterruptSlide = true;           // Can interrupt slide
-	[SerializeField, Min(0f)] private float slideInterruptDelay = 0f; // Delay before slide can be interrupted (seconds)
+	[SerializeField] private bool canInterruptSlide = true;           // 是否允許中斷滑行
+	[SerializeField, Min(0f)] private float slideInterruptDelay = 0f; // 開始滑行後，經過幾秒才允許被中斷
+	#endregion
 
+	#region ===== Inspector：參考腳本/物件 =====
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 	[SerializeField] private bool isSlide = false;
 	[SerializeField] private bool isEnableMoveControll = true;
+
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private PlayerAttackController attackController;
 	[SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private HandItemUI handItemUI;
+
 	[Header("Object")]
 	[SerializeField] private GameObject handItemNow;
+	#endregion
 
+	#region ===== 私有欄位 =====
 	private Collider2D currentTableCollider;
-
 	private Rigidbody2D rb;
 	private Collider2D playerCollider;
 	private PlayerInteraction playerInteraction;
-	//private PlayerInput playerInput;
-	//private SpriteRenderer spriteRenderer;
 
-	// ======= Animation Manager (Spine) =======
-
+	// 移動相關
 	private Vector2 moveInput;
 	private Vector2 moveVelocity;
-
 	private float dashDuration;
 	private float lastDashTime = -999f;
 
-	// Slide variables
+	// 滑行相關
 	private float slideS;
 	private int slideDir;
-	private bool slideCancelRequested = false; // Slide interrupt requested
-	private float slideStartTime;              // Time when slide started
+	private bool slideCancelRequested = false;
+	private float slideStartTime;
+	#endregion
 
+	#region ===== Unity 生命週期 =====
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
-		//spriteRenderer = GetComponent<SpriteRenderer>();
 		playerCollider = GetComponent<Collider2D>();
-		//playerInput = GetComponent<PlayerInput>();
 		playerInteraction = GetComponent<PlayerInteraction>();
 	}
-	void Start()
+
+	private void Start()
 	{
 		moveSpeed = defaultMoveSpeed;
 		isDashing = false;
 		dashDuration = dashDistance / dashSpeed;
+
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 	}
 
-	void Update()
+	private void Update()
 	{
-		// Update Spine animation
+		// 更新 Spine 動畫
 		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
 	}
 
-	void FixedUpdate()
+	private void FixedUpdate()
 	{
 		Move();
 	}
+	#endregion
 
-	// ===== New Input System =====
+	#region ===== 新輸入系統：輸入處理 =====
 	public void InputMovement(InputAction.CallbackContext context)
 	{
 		Vector2 move = context.ReadValue<Vector2>();
 		HandleMovementInput(move.x, move.y);
 	}
+
+	/// <summary> 攻擊鍵：按下→BeginCharge；放開→ReleaseChargeAndAttack（邏輯已搬到 AttackController） </summary>
 	public void InputAttack(InputAction.CallbackContext context)
 	{
-		if (context.performed) Attack();
+		if (context.started)
+		{
+			attackController.BeginCharge();
+		}
+		else if (context.canceled)
+		{
+			attackController.ReleaseChargeAndAttack();
+		}
 	}
+
 	public void InputDash(InputAction.CallbackContext context)
 	{
 		if (context.performed) StartDash();
 	}
+
 	public void InputInteract(InputAction.CallbackContext context)
 	{
 		if (context.performed) playerInteraction.Interact();
@@ -112,67 +126,80 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (context.performed) SwitchWeapon();
 	}
+	#endregion
 
-	// ===== Actions =====
-	void HandleMovementInput(float moveX, float moveY)
+	#region ===== 角色移動/旋轉 =====
+	private void HandleMovementInput(float moveX, float moveY)
 	{
 		moveInput = new Vector2(moveX, moveY).normalized;
 
 		if (isDashing) moveVelocity = moveInput * dashSpeed;
 		else moveVelocity = moveInput * moveSpeed;
 
+		// X 朝向翻轉（你的美術若相反可調整）
 		if (moveX != 0)
 			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 	}
 
-	void Move()
+	private void Move()
 	{
-		if (isSlide) return; // Handled by Slide() coroutine
+		if (isSlide) return; // 滑行時由 Slide() 控制位置
 		if (!isEnableMoveControll)
 		{
 			rb.velocity = Vector2.zero;
 			return;
 		}
-
 		rb.velocity = moveVelocity;
 	}
-	void Attack()
+	#endregion
+
+	#region ===== 攻擊（由 AttackController 呼回） =====
+	/// <summary>
+	/// 由 AttackController.ReleaseChargeAndAttack 結算後呼叫。
+	/// 這裡維持你原本流程：先更新手上道具 UI，再把是否為重攻傳給 AttackController.IsAttackSuccess。
+	/// </summary>
+	public void PerformAttack(bool isPowerAttack)
 	{
 		if (handItemUI) handItemUI.ChangeHandItemUI();
-		attackController.IsAttackSuccess();
+		attackController.IsAttackSuccess(isPowerAttack);
 	}
+	#endregion
 
-	void SwitchWeapon()
+	#region ===== 切換武器 / 使用物品 =====
+	private void SwitchWeapon()
 	{
-		AttackMode mode = attackController.GetAttackMode();
+		var mode = attackController.GetAttackMode();
 		if (mode == AttackMode.Basic)
 			attackController.SetAttackModeUI(AttackMode.Food);
 		else if (mode == AttackMode.Food)
 			attackController.SetAttackModeUI(AttackMode.Basic);
-		else attackController.SetAttackModeUI(AttackMode.Basic);
+		else
+			attackController.SetAttackModeUI(AttackMode.Basic);
 	}
 
-	void UseItem()
+	private void UseItem()
 	{
 		if (attackController.GetAttackMode() == AttackMode.Food)
 		{
 			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
 			DestoryFirstItem();
 		}
-
 	}
-	void StartDash()
+	#endregion
+
+	#region ===== 衝刺/滑行 =====
+	private void StartDash()
 	{
-		// If sliding, check if you can be interrupted
+		// 衝刺前若正在滑行：判斷是否可中斷，否則直接返回
 		if (isSlide)
 		{
 			if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
-			{
 				slideCancelRequested = true;
-			}
-			// Cannot interrupt or delay not met, ignore dash
 			return;
 		}
+
+		// 衝刺開始時取消蓄力（避免邊衝刺邊蓄力）
+		attackController.CancelChargeIfAny();
 
 		if (isDashing || Time.time - lastDashTime < dashCooldown) return;
 		StartCoroutine(PerformDash());
@@ -189,14 +216,13 @@ public class PlayerMovement : MonoBehaviour
 		{
 			moveVelocity = moveInput * dashSpeed;
 
-			// Touching table + dashing => Enter slide
+			// 觸碰桌面 + 衝刺 → 轉為滑行
 			if (currentTableCollider != null)
 			{
 				yield return StartCoroutine(Slide());
 				break;
 			}
 
-			//ShadowPool.instance.GetFormPool();
 			yield return null;
 			elapsed += Time.deltaTime;
 		}
@@ -206,27 +232,27 @@ public class PlayerMovement : MonoBehaviour
 		moveVelocity = moveInput * moveSpeed;
 	}
 
-	
-
-	/// Table slide coroutine
 	private IEnumerator Slide()
 	{
 		isSlide = true;
 		isDashing = false;
-		slideCancelRequested = false;     // Clear cancel request
-		slideStartTime = Time.time;       // Record slide start time
+		slideCancelRequested = false;
+		slideStartTime = Time.time;
 		RumbleManager.Instance.StopRumble();
+
+		// 滑行開始時取消蓄力（避免 UI 殘留）
+		attackController.CancelChargeIfAny();
 
 		TableConveyorBelt belt = currentTableCollider.GetComponent<TableConveyorBelt>();
 
-		// Ignore collision during slide
+		// 滑行期間忽略與桌面的碰撞
 		if (belt.BoardCollider && playerCollider)
 			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, true);
 
-		// Initialize start point and direction
+		// 初始化起點與方向
 		belt.DecideStartAndDirection(transform.position, out slideS, out slideDir);
 
-		// Snap to start position
+		// 若需要對齊到路徑起點
 		if (belt.SnapOnStart)
 		{
 			Vector3 snap = belt.EvaluatePositionByDistance(slideS);
@@ -240,59 +266,54 @@ public class PlayerMovement : MonoBehaviour
 
 		while (!stop)
 		{
-			// Check if you can interrupt and delay has passed
+			// 檢查是否提出中斷請求
 			if (slideCancelRequested)
 			{
-				slideCancelRequested = false; // consume the cancel request
+				slideCancelRequested = false; // 消耗請求
 				if (canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay)
 				{
-					// Use current moveInput as eject direction
+					// 使用目前移動輸入作為噴出方向
 					bool cancelled = belt.TryCancelSlideAndEject(rb, slideS, slideDir, moveInput);
-					if (cancelled)
-					{
-						// Successfully ejected, stop sliding
-						break;
-					}
-					// Cannot eject (direction mismatch), continue sliding
+					if (cancelled) break; // 成功噴出，結束滑行
 				}
-				// Cannot interrupt or delay not met, continue sliding
 			}
 
 			if (isSlideAutoPullDish) playerInteraction.TryPullDownDish();
 
-			// Move along path
+			// 沿著路徑移動
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
 			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
 			rb.MovePosition(nextPos);
 
-			// Update facing direction
+			// 依切線調整朝向
 			Vector3 tan = belt.EvaluateTangentByDistance(slideS);
 			if (tan.x != 0f)
 				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 
-			// Non-loop: auto-stop at endpoints
+			// 非循環：到端點自動停止
 			if (!belt.Loop && (Mathf.Approximately(slideS, 0f) || Mathf.Approximately(slideS, belt.TotalLength)))
 				stop = true;
 
 			yield return waiter;
 		}
 
-		// Restore collision
+		// 還原碰撞
 		if (belt.BoardCollider && playerCollider)
 			Physics2D.IgnoreCollision(playerCollider, belt.BoardCollider, false);
 
 		isSlide = false;
 
-		// Restore normal movement
+		// 還原一般移動
 		moveVelocity = moveInput * moveSpeed;
 	}
+	#endregion
 
-	// Move backwards for a distance
+	#region ===== 位移工具 =====
 	private IEnumerator MoveDistanceCoroutine(float distance, float duration, Vector2 direction)
 	{
 		SetEnableMoveControll(false);
 
-		// Determine move direction
+		// 決定方向（若未給方向，依當前朝向）
 		if (direction == Vector2.zero)
 		{
 			direction = transform.rotation.y >= 0 ? new Vector2(-1, 0) : new Vector2(1, 0);
@@ -301,7 +322,6 @@ public class PlayerMovement : MonoBehaviour
 		direction = direction.normalized;
 		float elapsed = 0f;
 
-		// Fix initial position to prevent direction changes
 		Vector2 start = rb.position;
 		Vector2 target = start + direction * distance;
 
@@ -309,7 +329,6 @@ public class PlayerMovement : MonoBehaviour
 		{
 			if (isEnableMoveControll) break;
 
-			// Calculate interpolation (0 to 1)
 			float t = elapsed / duration;
 			Vector2 nextPos = Vector2.Lerp(start, target, t);
 			rb.MovePosition(nextPos);
@@ -318,56 +337,57 @@ public class PlayerMovement : MonoBehaviour
 			yield return new WaitForFixedUpdate();
 		}
 
-		// Ensure reaches target
 		if (!isEnableMoveControll)
 			rb.MovePosition(target);
 
-		// Restore control
 		SetEnableMoveControll(true);
 	}
+	#endregion
 
-
-	// ===== Table collision detection =====
-	void OnCollisionStay2D(Collision2D collision)
+	#region ===== 碰撞檢測（桌面） =====
+	private void OnCollisionStay2D(Collision2D collision)
 	{
 		if (collision.collider.CompareTag("Table"))
 		{
 			currentTableCollider = collision.collider;
 		}
 	}
-	void OnCollisionExit2D(Collision2D collision)
+
+	private void OnCollisionExit2D(Collision2D collision)
 	{
 		if (collision.collider == currentTableCollider)
 		{
 			currentTableCollider = null;
 		}
 	}
+	#endregion
 
-	// ===== Public API =====
+	#region ===== Public API =====
 	public void SetDashSpeed(float newSpeed) { dashSpeed = newSpeed; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
 	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
 	public void SetEnableMoveControll(bool isEnable) { isEnableMoveControll = isEnable; }
+
 	public void DestoryFirstItem()
 	{
-		if (handItemNow.transform.childCount > 0)
+		if (handItemNow != null && handItemNow.transform.childCount > 0)
 		{
 			Destroy(handItemNow.transform.GetChild(0).gameObject);
-			handItemUI.ChangeHandItemUI();
+			if (handItemUI) handItemUI.ChangeHandItemUI();
 		}
 	}
 
-	/// Move backwards based on current moveInput direction
+	/// <summary> 依當前輸入方向移動一段距離/秒數 </summary>
 	public void MoveDistance(float distance, float duration, Vector2 direction)
 	{
 		StartCoroutine(MoveDistanceCoroutine(distance, duration, direction));
 	}
 
 	public float GetMoveSpeed() => moveSpeed;
-
 	public Vector2 GetMoveInput() => moveInput;
-	/// Get slide direction based on tangent y (for external API)
+
+	/// <summary> 取得滑行切線方向（y 軸） </summary>
 	public int GetSlideDirection()
 	{
 		TableConveyorBelt belt = currentTableCollider?.GetComponent<TableConveyorBelt>();
@@ -381,9 +401,10 @@ public class PlayerMovement : MonoBehaviour
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 
-	// Check if slide can be interrupted now
+	/// <summary> 當下是否可以中斷滑行 </summary>
 	public bool IsSlideInterruptibleNow()
 	{
 		return isSlide && canInterruptSlide && (Time.time - slideStartTime) >= slideInterruptDelay;
 	}
+	#endregion
 }

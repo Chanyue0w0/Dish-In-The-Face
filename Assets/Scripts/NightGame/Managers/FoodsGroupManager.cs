@@ -32,7 +32,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private List<GameObject> currentfoods;
 	private Transform currentFoodTarget = null;
-	private bool isPlayerInsideTrigger = false;
+	private bool isPlayerInsideTrigger;
 
 	private float dessertCdRemain = 0f;
 	private bool IsDessertOnCd => dessertCdRemain > 0f;
@@ -46,6 +46,8 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void Start()
 	{
+		isPlayerInsideTrigger = false;
+		
 		currentfoods = new List<GameObject>();
 
 		if (yellowFrame != null)
