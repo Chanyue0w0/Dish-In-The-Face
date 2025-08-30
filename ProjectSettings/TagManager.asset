@@ -57,6 +57,9 @@ TagManager:
   - name: Background Furniture
     uniqueID: 3720169445
     locked: 0
+  - name: Shadow
+    uniqueID: 205331411
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
