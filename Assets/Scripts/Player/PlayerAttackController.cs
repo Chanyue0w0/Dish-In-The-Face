@@ -17,8 +17,6 @@ public class PlayerAttackController : MonoBehaviour
 	[Tooltip("食物攻擊時，玩家向前位移花費的時間（一般攻擊）。")]
 	[SerializeField] private float attackMoveDuration = 0.5f;
 
-	[Tooltip("用於偵測敵人的 Layer。")]
-	[SerializeField] private LayerMask enemyLayer;
 	#endregion
 
 	#region ===== Inspector：蓄力/重攻擊設定與 UI =====
@@ -237,8 +235,6 @@ public class PlayerAttackController : MonoBehaviour
 		foreach (var c in results)
 		{
 			if (c == null) continue;
-			// 改成
-			if (!c.CompareTag("Enemy")) continue;
 			var grab = c.GetComponent<BeGrabByPlayer>();
 			if (grab == null || !grab.GetIsCanBeGrabByPlayer()) continue;
 
