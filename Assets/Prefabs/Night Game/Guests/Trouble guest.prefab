@@ -629,6 +629,7 @@ MonoBehaviour:
   attackVFX: {fileID: 5192635012641438716, guid: cccd9dc9b1ecb4442bf0c2bcbceb1535, type: 3}
   beGrabByPlayer: {fileID: 8611612011161764490}
   maxStun: 10
+  stunDuration: 10
   stunBar: {fileID: 5880965921080836440}
   stunBarFill: {fileID: 3091230537802931495}
 --- !u!212 &4479673166966749816
@@ -824,6 +825,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isCanBeGrabByPlayer: 0
+  isOnBeGrabing: 0
+  onGrabbed:
+    m_PersistentCalls:
+      m_Calls: []
+  onReleased:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7591430462144331241
 GameObject:
   m_ObjectHideFlags: 0

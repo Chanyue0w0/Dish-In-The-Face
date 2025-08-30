@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Item/BeGrabByPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Item/BeGrabByPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGusetController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGusetController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +129,7 @@
       <workItem from="1756299910023" duration="1076000" />
       <workItem from="1756301041620" duration="656000" />
       <workItem from="1756301753266" duration="5297000" />
-      <workItem from="1756530728989" duration="10726000" />
+      <workItem from="1756530728989" duration="12316000" />
     </task>
     <servers />
   </component>

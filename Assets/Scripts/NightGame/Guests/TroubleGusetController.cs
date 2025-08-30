@@ -36,29 +36,34 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private GameObject dieVFX;
 	[SerializeField] private GameObject attackVFX;
 	[SerializeField] private BeGrabByPlayer beGrabByPlayer;
-	
-	// === 新增：暈眩系統 ===
+
+	// === 暈眩系統（累積→爆表→倒數） ===
 	[Header("----- Stun (暈眩) -----")]
-	[SerializeField] private int maxStun = 10;             // 暈眩最大值（可調）
-	[SerializeField] private GameObject stunBar;           // 暈眩條（被攻擊時顯示）
-	[SerializeField] private Transform stunBarFill;        // 暈眩條填滿（縮放 X 0→1）
-	private int currentStun = 0;                           // 從 0 開始
-	private bool isStunned = false;                        // 是否已暈眩（停止移動控制）
+	[SerializeField] private int maxStun = 10;              // 累積暈眩上限
+	[SerializeField] private float stunDuration = 3f;       // NEW 進入暈眩後的倒數秒數
+	[SerializeField] private GameObject stunBar;            // 暈眩條根物件
+	[SerializeField] private Transform stunBarFill;         // X 縮放顯示
+	private int currentStun = 0;                            // 累積值（0 → maxStun）
+	private bool isStunned = false;                         // 是否處於「暈眩中/倒數中」
+	private float stunRemaining = 0f;                       // NEW 暈眩剩餘秒數（滿→0）
+	private bool stunCountdownPaused = false;               // NEW 是否暫停倒數（被抓時）
 
 	private Transform player;
 	private float lastAttackTime;
 	private bool isCharging;
 	private float chargeStartTime;
 
-	//private bool isKnockback = false;
 	private GuestPoolHandler poolHandler;
 
 	private void Awake()
 	{
-		agent = GetComponent<NavMeshAgent>();
-		agent.updateRotation = false;
-		agent.updateUpAxis = false;
-		agent.speed = moveSpeed;
+		if (agent == null) agent = GetComponent<NavMeshAgent>();
+		if (agent != null)
+		{
+			agent.updateRotation = false;
+			agent.updateUpAxis = false;
+			agent.speed = moveSpeed;
+		}
 
 		poolHandler = GetComponent<GuestPoolHandler>();
 
@@ -80,10 +85,12 @@ public class TroubleGusetController : MonoBehaviour
 		maxHp = Random.Range(1, 4);
 		currentHp = maxHp;
 
-		// 重置暈眩
+		// 初始化暈眩狀態
 		currentStun = 0;
 		isStunned = false;
-		stunBar.SetActive(false);
+		stunRemaining = 0f;
+		stunCountdownPaused = false;
+		if (stunBar != null) stunBar.SetActive(false);
 		UpdateStunBarFill();
 
 		if (hpBar != null) hpBar.SetActive(false);
@@ -93,6 +100,13 @@ public class TroubleGusetController : MonoBehaviour
 		lastAttackTime = -Mathf.Infinity;
 		isCharging = false;
 
+		// 事件註冊：被抓/放下時的處理（停/啟 NavMeshAgent、暫停/恢復倒數） // NEW
+		if (beGrabByPlayer != null)
+		{
+			beGrabByPlayer.RegisterOnBeGrabbingAction(true, OnGrabbedByPlayer);
+			beGrabByPlayer.RegisterOnBeGrabbingAction(false, OnReleasedByPlayer);
+		}
+
 		TryEnsureOnNavMesh(2f);
 	}
 
@@ -100,31 +114,48 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		CancelInvoke(nameof(EndAttack));
 		isCharging = false;
+
+		// 解除註冊，避免記憶體洩漏 // NEW
+		if (beGrabByPlayer != null)
+		{
+			beGrabByPlayer.UnregisterOnBeGrabbingAction(true, OnGrabbedByPlayer);
+			beGrabByPlayer.UnregisterOnBeGrabbingAction(false, OnReleasedByPlayer);
+		}
 	}
 
 	private void Update()
 	{
 		if (player == null) return;
 
-		// 如果已暈眩，完全停止移動控制
+		// ===== 暈眩倒數邏輯（即使不能移動，也要在 Update 內持續跑） ===== // NEW
 		if (isStunned)
 		{
-			agent.isStopped = true;
-			beGrabByPlayer.SetIsCanBeGrabByPlayer(true);
+			if (!stunCountdownPaused && stunDuration > 0f)
+			{
+				stunRemaining -= Time.deltaTime;
+				if (stunRemaining <= 0f)
+				{
+					RecoverFromStun(); // 自動恢復：清空暈眩、關條、恢復行動
+				}
+				else
+				{
+					UpdateStunBarFill(); // 用「剩餘/總長」更新 1→0
+				}
+			}
+			// 暈眩中不進行移動/攻擊
 			return;
 		}
-		else
+
+		// ===== 角色左右翻面（非暈眩）=====
+		if (agent != null && agent.enabled)
 		{
-			beGrabByPlayer.SetIsCanBeGrabByPlayer(false);
+			if (agent.velocity.x < -0.01f)
+				transform.rotation = Quaternion.Euler(0, 0, 0);
+			else if (agent.velocity.x > 0.01f)
+				transform.rotation = Quaternion.Euler(0, 180, 0);
 		}
 
-		// 角色左右翻面
-		if (agent.velocity.x < -0.01f)
-			transform.rotation = Quaternion.Euler(0, 0, 0);
-		else if (agent.velocity.x > 0.01f)
-			transform.rotation = Quaternion.Euler(0, 180, 0);
-
-		// 蓄力期間不移動
+		// ===== 蓄力期間不移動 =====
 		if (isCharging)
 		{
 			if (Time.time - chargeStartTime >= chargeTime)
@@ -134,16 +165,19 @@ public class TroubleGusetController : MonoBehaviour
 			}
 			else
 			{
-				agent.isStopped = true;
+				if (agent != null && agent.enabled) agent.isStopped = true;
 				return;
 			}
 		}
 
-		// 追玩家
-		agent.isStopped = false;
-		agent.SetDestination(player.position);
+		// ===== 追玩家 =====
+		if (agent != null && agent.enabled)
+		{
+			agent.isStopped = false;
+			agent.SetDestination(player.position);
+		}
 
-		// 進入攻擊範圍就開始蓄力
+		// ===== 進入攻擊範圍就開始蓄力 =====
 		if (Time.time - lastAttackTime >= attackCooldown && IsPlayerInRange())
 		{
 			StartCharge();
@@ -192,12 +226,12 @@ public class TroubleGusetController : MonoBehaviour
 		isCharging = true;
 		chargeStartTime = Time.time;
 		lastAttackTime = Time.time;
-		agent.isStopped = true;
+		if (agent != null && agent.enabled) agent.isStopped = true;
 	}
 
 	private void PerformAttack()
 	{
-		agent.isStopped = true;
+		if (agent != null && agent.enabled) agent.isStopped = true;
 
 		if (attackHitBox != null) attackHitBox.SetActive(true);
 		var fxPos = (attackOrigin != null ? attackOrigin.position : transform.position);
@@ -221,7 +255,7 @@ public class TroubleGusetController : MonoBehaviour
 	private void EndAttack()
 	{
 		if (this == null || !gameObject.activeInHierarchy) return;
-		if (agent == null || !agent.isActiveAndEnabled) return;
+		if (agent == null || !agent.isActiveAndEnabled || !agent.enabled) return;
 
 		if (!agent.isOnNavMesh && !TryEnsureOnNavMesh(2f))
 			return;
@@ -235,7 +269,7 @@ public class TroubleGusetController : MonoBehaviour
 	/// <summary>嘗試把 Agent 放回 NavMesh 合法位置。</summary>
 	private bool TryEnsureOnNavMesh(float searchRadius = 2f)
 	{
-		if (agent == null || !agent.isActiveAndEnabled) return false;
+		if (agent == null || !agent.isActiveAndEnabled || !agent.enabled) return false;
 		if (agent.isOnNavMesh) return true;
 
 		if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
@@ -290,7 +324,14 @@ public class TroubleGusetController : MonoBehaviour
 	{
 		if (agent == null) yield break;
 
-		agent.isStopped = true;
+		// 被擊退時先暫停 NavMesh 控制，直接位移 Transform
+		bool reEnableAfter = false;
+		if (agent.enabled)
+		{
+			agent.isStopped = true;
+			agent.enabled = false; // CHG：短暫關閉避免滾回 NavMesh 控制
+			reEnableAfter = true;
+		}
 
 		if (animator != null) animator.SetTrigger("BeAttack");
 		float elapsed = 0f;
@@ -301,7 +342,14 @@ public class TroubleGusetController : MonoBehaviour
 			yield return null;
 		}
 
-		agent.isStopped = false;
+		// 恢復 NavMesh
+		if (reEnableAfter && agent != null)
+		{
+			agent.enabled = true;
+			TryEnsureOnNavMesh(2f);
+			agent.isStopped = false;
+		}
+
 		TakeDamage(1);
 	}
 
@@ -310,14 +358,14 @@ public class TroubleGusetController : MonoBehaviour
 		// 被任何攻擊到 → 顯示暈眩條
 		if (stunBar != null) stunBar.SetActive(true);
 
-		// 你原本的擊退來源
+		// 原本的擊退
 		if (other.CompareTag("AttackObject"))
 		{
 			Vector2 knockDir = (transform.position - other.transform.position).normalized;
 			StartCoroutine(ApplyKnockback(knockDir));
 		}
 
-		// 新增：被「BasicAttack」的 hitbox 攻擊，暈眩值 +1
+		// 被「BasicAttack」的 hitbox 攻擊，暈眩值 +1（示例）
 		if (other.CompareTag("BasicAttack"))
 		{
 			AddStun(1);
@@ -342,47 +390,118 @@ public class TroubleGusetController : MonoBehaviour
 	/// <summary>外部或事件呼叫：增加暈眩值。</summary>
 	private void AddStun(int amount)
 	{
+		// 已在暈眩倒數中就不再累積
+		if (isStunned) return;
+
 		currentStun = Mathf.Clamp(currentStun + amount, 0, maxStun);
-		UpdateStunBarFill();
+		if (stunBar != null) stunBar.SetActive(true);
+		UpdateStunBarFill(); // 用「累積/maxStun」顯示 0→1
 
 		if (currentStun >= maxStun)
 			OnStunFull();
 	}
 
-	/// <summary>當暈眩值達上限：停止移動控制。</summary>
+	/// <summary>暈眩值達上限：進入暈眩狀態並開始倒數。</summary>
 	private void OnStunFull()
 	{
 		isStunned = true;
-		if (agent != null) agent.isStopped = true;
+		stunRemaining = Mathf.Max(0f, stunDuration); // NEW：從滿秒開始倒數
+		stunCountdownPaused = false;
 
-		// 若有動畫可用，這裡可切換暈眩狀態
+		if (stunBar != null) stunBar.SetActive(true);
+		UpdateStunBarFill(); // 這時顯示「剩餘/總秒」= 1
+
+		if (agent != null && agent.enabled) agent.isStopped = true;
+
+		// 可被玩家抓
+		if (beGrabByPlayer != null) beGrabByPlayer.SetIsCanBeGrabByPlayer(true);
+
+		// 動畫（可選）
 		if (animator != null)
 		{
-			// 建議做一個暈眩迴圈動畫；這裡用 Bool 範例
 			// animator.SetBool("IsStunned", true);
 		}
 	}
 
-	/// <summary>（可選）外部可呼叫：解除暈眩並清空暈眩值。</summary>
-	public void ResetStun()
+	/// <summary>倒數結束或外部強制解除時的恢復流程。</summary>
+	private void RecoverFromStun()
 	{
 		isStunned = false;
 		currentStun = 0;
-		if (agent != null) agent.isStopped = false;
+		stunRemaining = 0f;
+		stunCountdownPaused = false;
 
+		// 關閉暈眩條
+		if (stunBar != null) stunBar.SetActive(false);
 		UpdateStunBarFill();
 
-		// if (stunBar != null) stunBar.SetActive(false);
-		// if (animator != null) animator.SetBool("IsStunned", false);
+		// 不可再被抓（回到一般狀態）
+		if (beGrabByPlayer != null) beGrabByPlayer.SetIsCanBeGrabByPlayer(false);
+
+		if (agent != null && agent.enabled)
+			agent.isStopped = false;
+
+		if (animator != null)
+		{
+			// animator.SetBool("IsStunned", false);
+		}
 	}
 
-	/// <summary>更新暈眩條的顯示（0→1）。</summary>
+	/// <summary>（保留原 API）外部可呼叫：解除暈眩並清空暈眩值。</summary>
+	public void ResetStun()
+	{
+		RecoverFromStun();
+	}
+
+	/// <summary>更新暈眩條的顯示。</summary>
 	private void UpdateStunBarFill()
 	{
-		if (stunBarFill != null && maxStun > 0)
+		if (stunBarFill == null) return;
+
+		float ratio = 0f;
+		if (isStunned)
 		{
-			float ratio = (float)currentStun / maxStun;
-			stunBarFill.localScale = new Vector3(ratio, 1f, 1f);
+			// 暈眩中：顯示剩餘時間（1 → 0）
+			ratio = (stunDuration > 0f) ? Mathf.Clamp01(stunRemaining / stunDuration) : 0f;
 		}
+		else
+		{
+			// 累積中：顯示累積比例（0 → 1）
+			ratio = (maxStun > 0) ? Mathf.Clamp01((float)currentStun / maxStun) : 0f;
+		}
+		stunBarFill.localScale = new Vector3(ratio, 1f, 1f);
+	}
+
+	// =========================
+	// ===== 被抓/放下 事件 =====
+	// =========================
+
+	// 被抓：停用 NavMeshAgent（允許自由位移/丟擲），暫停暈眩倒數 // NEW
+	private void OnGrabbedByPlayer()
+	{
+		// 暫停倒數
+		stunCountdownPaused = true;
+
+		// 停用 NavMeshAgent 以解除 NavMesh 限制
+		if (agent != null && agent.enabled)
+		{
+			agent.isStopped = true;
+			agent.enabled = false;
+		}
+	}
+
+	// 被放下：恢復 NavMeshAgent（嘗試回到合法 NavMesh），恢復暈眩倒數 // NEW
+	private void OnReleasedByPlayer()
+	{
+		// 先恢復 Agent
+		if (agent != null && !agent.enabled)
+		{
+			agent.enabled = true;
+			TryEnsureOnNavMesh(2f);
+			agent.isStopped = isStunned || isCharging;
+		}
+
+		// 恢復倒數（如果仍在暈眩中）
+		if (isStunned) stunCountdownPaused = false;
 	}
 }
