@@ -31671,9 +31671,6 @@ MonoBehaviour:
   attackMode: 0
   attackMoveDistance: 5
   attackMoveDuration: 0.05
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 0
   heavyAttackThreshold: 0.35
   maxChargeTime: 1.2
   powerAttackBar: {fileID: 631024267}
@@ -31681,6 +31678,8 @@ MonoBehaviour:
   grabPickClosest: 1
   grabForwardOffset: 0.9
   grabBoxSize: {x: 1.2, y: 1}
+  throwDistance: 10
+  throwDuration: 0.25
   handItem: {fileID: 1126725960}
   grabOverHeadItem: {fileID: 511927824}
   foodAttackHitBox: {fileID: 1225431441}

@@ -38,11 +38,19 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private bool grabPickClosest = true;
 
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
+	
 	[Tooltip("Gizmos 顯示：抓取檢測盒中心沿著面向方向的位移量（視覺化用）。")]
 	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
 
 	[Tooltip("Gizmos 顯示：抓取檢測盒的寬x高（視覺化用）。")]
 	[SerializeField] private Vector2 grabBoxSize = new Vector2(1.2f, 1.0f);
+	[Header("----- Throw Settings -----")]
+	[Tooltip("把頭上的子物件往面向方向丟出的距離")]
+	[SerializeField, Min(0f)] private float throwDistance = 3f;
+
+	[Tooltip("丟出移動所花時間")]
+	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
+	
 	#endregion
 
 	#region ===== Inspector：參考物件 =====
@@ -172,9 +180,16 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== Basic 模式：普/重/抓取 =====
+	#region ===== Basic 模式：普/重/抓取/丟出 =====
 	private bool BasicAttack(bool isPowerAttack)
 	{
+		// 若頭上已有被抓的物件：優先丟出，然後就結束這次 Basic 攻擊
+		if (grabOverHeadItem != null && grabOverHeadItem.transform.childCount > 0)
+		{
+			Transform carried = grabOverHeadItem.transform.GetChild(0);
+			return ThrowCarriedObject(carried);
+		}
+
 		// 重攻：先嘗試抓取，抓不到就當強化普攻
 		if (isPowerAttack)
 		{
@@ -255,6 +270,7 @@ public class PlayerAttackController : MonoBehaviour
 		}
 
 		// 真的抓起來：改父物件→放頭上→維持世界尺度
+		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabing(true);
 		Transform t = best.transform;
 		Vector3 worldScale = t.lossyScale;// 記住目前的世界尺度
 		// 設為子物件但保留世界座標/旋轉/尺度
@@ -282,6 +298,53 @@ public class PlayerAttackController : MonoBehaviour
 		}
 
 		Debug.Log("Grab success");
+		return true;
+	}
+	
+	/// <summary>
+	/// 將頭上的子物件往目前面向方向丟出一段距離；維持世界尺度不變。
+	/// </summary>
+	private bool ThrowCarriedObject(Transform t)
+	{
+		if (t == null) return false;
+
+		// 從頭上取下：保留世界座標/旋轉/尺度
+		Vector3 worldScale = t.lossyScale;
+		t.SetParent(null, true);
+		t.localScale = worldScale;
+
+		// 若有可抓取腳本，解除「被抓」狀態
+		if (t.TryGetComponent<BeGrabByPlayer>(out var grab))
+		{
+			grab.SetIsOnBeGrabing(false);
+		}
+
+		// 若有剛體：先暫時設為運動學避免與 tween 打架
+		Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
+		if (rb != null)
+		{
+			rb.velocity = Vector2.zero;
+			rb.angularVelocity = 0f;
+			rb.isKinematic = true;
+			// 丟完再恢復重力（避免丟的過程受重力影響偏移）
+		}
+
+		// 計算丟擲方向與目標位置
+		Vector2 dir = GetAimDir().sqrMagnitude > 0f ? GetAimDir().normalized : Vector2.right;
+		Vector3 start = t.position;
+		Vector3 end = start + (Vector3)(dir * throwDistance);
+
+		// 以 PrimeTween 做世界座標位移（線性）
+		Tween.Position(t, end, throwDuration).OnComplete(() =>
+		{
+			// 丟完恢復物理
+			if (t && rb != null)
+			{
+				rb.isKinematic = false;
+				rb.gravityScale = 1f; // 如需自訂原始值，可在抓取時記錄後還原
+			}
+		});
+
 		return true;
 	}
 	#endregion
