@@ -149,8 +149,8 @@ public class NormalGuestController : MonoBehaviour
 
 		if (targetChair != null)
 			agent.SetDestination(targetChair.position);
-		else
-			Leave();
+		// else
+		// 	Leave();
 		
 		lastPosition = transform.position;
 	}
