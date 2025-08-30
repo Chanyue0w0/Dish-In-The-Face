@@ -73,14 +73,14 @@ public class TroubleGusetController : MonoBehaviour
 
 	private void Start()
 	{
-		if (RoundManager.Instance) player = RoundManager.Instance.Player;
+		if (RoundManager.Instance) player = RoundManager.Instance.player;
 	}
 
 	private void OnEnable()
 	{
 		SetSprite();
 
-		if (RoundManager.Instance) player = RoundManager.Instance.Player;
+		if (RoundManager.Instance) player = RoundManager.Instance.player;
 
 		maxHp = Random.Range(1, 4);
 		currentHp = maxHp;

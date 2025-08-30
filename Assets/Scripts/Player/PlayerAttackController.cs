@@ -265,8 +265,8 @@ public class PlayerAttackController : MonoBehaviour
 
 		if (best == null)
 		{
-			Debug.Log("Grab null");
-		 return false;
+			// Debug.Log("Grab null");
+			return false;
 		}
 
 		// 真的抓起來：改父物件→放頭上→維持世界尺度
@@ -297,7 +297,7 @@ public class PlayerAttackController : MonoBehaviour
 			rb.gravityScale = 0f;
 		}
 
-		Debug.Log("Grab success");
+		// Debug.Log("Grab success");
 		return true;
 	}
 	

@@ -20,8 +20,8 @@ public class RoundManager : MonoBehaviour
 	public TimeLimitCounter timeLimitCounter;
 
 	[Header("Public GameObject")]
-	public Transform Player;
-	public Transform ObstaclesGroup;
+	public Transform player;
+	public Transform obstaclesGroup;
 
 	[Header("GameObject")]
 	[SerializeField] private GameObject endPane;
@@ -50,7 +50,7 @@ public class RoundManager : MonoBehaviour
 	// Successfully placed dish
 	public void PullDownDishSuccess()
 	{
-		hotPointManager.AddHotPoint(finishDishHotPoint);
+		hotPointManager.DeliverDish();
 	}
 
 	// Dish finished and eaten by guest
@@ -61,7 +61,7 @@ public class RoundManager : MonoBehaviour
 
 	public void DefeatEnemySuccess()
 	{
-		hotPointManager.AddHotPoint(attackEnemyHotPoint);
+		hotPointManager.DefeatEnemy(1);
 		GetCoin(defeatEnemyrewardCoin);
 	}
 

@@ -2,28 +2,28 @@ using UnityEngine;
 
 public class GarbageOnGround : MonoBehaviour
 {
-    [SerializeField] private string playerTag = "Player"; // ¹w³] Tag ¦WºÙ
+    [SerializeField] private string playerTag = "Player"; // ï¿½wï¿½] Tag ï¿½Wï¿½ï¿½
 
     private PlayerMovement player;
 
     void Start()
     {
-        transform.SetParent(RoundManager.Instance.ObstaclesGroup);
+        transform.SetParent(RoundManager.Instance.obstaclesGroup);
 
-        // §ä¨ì³õ´º¤¤±a¦³¯S©w tag ªºª±®a¡A¨Ã¨ú±o¨ä PlayerMovement ¸}¥»
-        player = RoundManager.Instance.Player.GetComponent<PlayerMovement>();
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½ï¿½ï¿½Sï¿½w tag ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Aï¿½Ã¨ï¿½ï¿½oï¿½ï¿½ PlayerMovement ï¿½}ï¿½ï¿½
+        player = RoundManager.Instance.player.GetComponent<PlayerMovement>();
         if (player == null)
         {
-            Debug.LogWarning("Garbage µLªk§ä¨ìª±®aª«¥ó¡I");
+            Debug.LogWarning("Garbage ï¿½Lï¿½kï¿½ï¿½ìª±ï¿½aï¿½ï¿½ï¿½ï¿½I");
         }
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
-        // ÀË¬d¬O§_¬Oª±®a¸I¨ì
+        // ï¿½Ë¬dï¿½Oï¿½_ï¿½Oï¿½ï¿½ï¿½aï¿½Iï¿½ï¿½
         if (other.CompareTag(playerTag))
         {
-            // ¦pªGª±®a¥Ø«e¥¿¦b·Æ¦æ¡A´N§R°£¦Û¤v
+            // ï¿½pï¿½Gï¿½ï¿½ï¿½aï¿½Ø«eï¿½ï¿½ï¿½bï¿½Æ¦ï¿½Aï¿½Nï¿½Rï¿½ï¿½ï¿½Û¤v
             if (player.IsPlayerDash())
             {
                 Destroy(gameObject);

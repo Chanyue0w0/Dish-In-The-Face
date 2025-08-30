@@ -9243,8 +9243,8 @@ MonoBehaviour:
   coinUIController: {fileID: 1414407264}
   globalLightManager: {fileID: 1781125744}
   timeLimitCounter: {fileID: 328136578}
-  Player: {fileID: 632101736}
-  ObstaclesGroup: {fileID: 1100314838}
+  player: {fileID: 632101736}
+  obstaclesGroup: {fileID: 1100314838}
   endPane: {fileID: 1256561644}
   stopPanel: {fileID: 1535621857}
 --- !u!1 &184068751

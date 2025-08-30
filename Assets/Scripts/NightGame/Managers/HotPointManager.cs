@@ -1,148 +1,353 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HotPointManager : MonoBehaviour
 {
-	[SerializeField] private float hotPoint = 0f;
+    #region ===== Public Types / Properties =====
 
-	[Header("-------- Setting ---------")]
-	[SerializeField] private float decreaseRate = 0.1f;
-	[SerializeField] private float decayDelay = 3f;
-	[SerializeField] private float[] stageMaxHotPoint = { 2f, 4f, 6f, 8f, 10f };
+    public enum HeatLevel { C, B, A, S }
 
-	// ¦b³Ì°ª¼ö«×®É¡A¥ıºû«ùªº¬í¼Æ¡]¥i½Õ¾ã¡^
-	[SerializeField] private float maxHoldDuration = 10f;
+    public float Heat => heat;
+    public HeatLevel Level => currentLevel;
+    public bool IsSLocked => Time.time < sLockUntil;
 
-	[SerializeField] private float currentMinHotPoint = 0f;
-	[SerializeField] private float currentMaxHotPoint = 10f;
+    #endregion
 
-	[Header("-------- Reference ---------")]
-	[SerializeField] private Sprite[] hotLevelSprites; // D~S ¹ïÀ³ 0~4
-	[SerializeField] private Image hotPointImage;
-	[SerializeField] private Image hotPointFillBar;
-	[SerializeField] private Slider hotPointSlider;
+    #region ===== Events (å¤–éƒ¨å¯ += è¨‚é–±) =====
 
-	private float lastHotIncreaseTime;
-	private int currentLevelIndex;
-	private float maxHotPointValue;
+    public Action<float, float> OnHeatChanged;
+    public Action<HeatLevel, HeatLevel> OnLevelChanged;
+    public Action<float> OnSLockStarted;
+    public Action OnSLockEnded;
+    public Action<int, float> OnComboChanged;
 
-	// ³Ì°ª¼ö«×ªº«O¯d¨ì´Á®É¶¡¡]>Time.time ªí¥Ü¤´¦b«O¯d´Á¡^
-	private float maxHoldUntil = 0f;
+    #endregion
 
-	private void Start()
-	{
-		RoundManager.Instance.globalLightManager.SetLightGroupActive(0, false);
+    #region ===== Inspector: Base / Thresholds / S-Lock / Combo / Penalties / UI =====
 
-		currentLevelIndex = GetHotLevelIndex();
-		currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
-		currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
+    [Header("-------- Base --------")]
+    [SerializeField] private float HEAT_MIN = 0f;
+    [SerializeField] private float HEAT_MAX = 100f;
+    [SerializeField] private float HEAT_INIT = 30f;
 
-		maxHotPointValue = stageMaxHotPoint[stageMaxHotPoint.Length - 1];
-		UpdateHotUI();
-	}
+    [Header("-------- Level Thresholds --------")]
+    [Tooltip("C:[0,25), B:[25,50), A:[50,90), S:[90,100]")]
+    [SerializeField] private float thresholdB = 25f;
+    [SerializeField] private float thresholdA = 50f;
+    [SerializeField] private float thresholdS = 90f;
 
-	private void Update()
-	{
-		// ¬O§_³B¦b³Ì°ª¼ö«×
-		bool atAbsoluteMax = hotPoint >= maxHotPointValue - 0.0001f;
+    [Header("-------- S Lock --------")]
+    [SerializeField] private float sLockDuration = 30f; // é€² S å¾Œé–å®šç§’æ•¸
+    [SerializeField] private float sExitDropTo = 30f;   // S çµæŸå¾Œå›è½åˆ°æ­¤æ•¸å€¼ï¼ˆé è¨­ 30ï¼‰
 
-		// ­Y­è¦n¦b³Ì°ª¼ö«×¡A¥B©|¥¼³]©w«O¯d´Á¡A³]©w«O¯d¨ì´Á®É¶¡¡]³B²z¸ü¤J/ªì©l¤Æª½±µº¡ªº±¡ªp¡^
-		if (atAbsoluteMax && maxHoldUntil <= 0f)
-			maxHoldUntil = Time.time + maxHoldDuration;
+    [Header("-------- Combo (Deliver) --------")]
+    [SerializeField] private float comboWindowSeconds = 3f;
+    [SerializeField] private int   comboMaxStack = 3;
+    [SerializeField] private int[] comboPoints = new int[] { 1, 3, 5 }; // stack=1/2/3
 
-		// ¬O§_¥i¥H¶}©l°I´î
-		bool canDecay;
-		if (atAbsoluteMax)
-		{
-			// ³Ì°ª¼ö«×¡G«O¯d´Á¹L«á¤~°I´î
-			canDecay = Time.time >= maxHoldUntil;
-		}
-		else
-		{
-			// «D³Ì°ª¼ö«×¡Gªu¥Î­ì¥» decayDelay ³W«h
-			canDecay = (Time.time - lastHotIncreaseTime > decayDelay);
-			// Â÷¶}³Ì°ª¼ö«×´N²MªÅ«O¯d´Á
-			maxHoldUntil = 0f;
-		}
+    // [Header("-------- Continuous Penalties --------")]
+    // [SerializeField] private float riotPerSecond = 1f;      // å®¢äººæš´èµ°é è¨­æ‰£åˆ†/ç§’
+    // [SerializeField] private float riotDuration = 5f;
+    // [SerializeField] private float spreadPerSecond = 1f;    // æ“´æ•£é è¨­æ‰£åˆ†/ç§’
+    // [SerializeField] private float spreadDuration = 5f;
 
-		// °I´î
-		if (canDecay && hotPoint > 0f)
-		{
-			hotPoint -= decreaseRate * Time.deltaTime;
-			hotPoint = Mathf.Clamp(hotPoint, 0f, maxHotPointValue);
-		}
+    [Header("-------- UI (Optional) --------")]
+    [SerializeField] private Sprite[] hotLevelSprites; // C/B/A/S -> 0/1/2/3
+    [SerializeField] private Image hotPointImage;
+    [SerializeField] private Image hotPointFillBar;
+    [SerializeField] private Slider hotPointSlider;    // 0~1
 
-		// µ¥¯Å¤Á´«ÀË¬d
-		int newLevelIndex = GetHotLevelIndex();
-		if (newLevelIndex != currentLevelIndex)
-		{
-			currentLevelIndex = newLevelIndex;
-			currentMinHotPoint = currentLevelIndex == 0 ? 0f : stageMaxHotPoint[currentLevelIndex - 1];
-			currentMaxHotPoint = stageMaxHotPoint[currentLevelIndex];
+    #endregion
 
-			if (currentLevelIndex == stageMaxHotPoint.Length - 2)
-			{
-				RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(false);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(0, true);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(1, false);
-			}
-			else if (currentLevelIndex == stageMaxHotPoint.Length - 1)
-			{
-				RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(true);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(0, true);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(1, true);
-			}
-			else
-			{
-				RoundManager.Instance.globalLightManager.SetLightCycleLoopEnabled(false);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(0, false);
-				RoundManager.Instance.globalLightManager.SetLightGroupActive(1, false);
-			}
-		}
+    #region ===== Runtime State =====
 
-		UpdateHotUI();
-	}
+    private float heat;
+    private HeatLevel currentLevel;
 
-	public void AddHotPoint(float value)
-	{
-		float before = hotPoint;
+    // é€é¤é€£æ“Š
+    private int comboStack = 0;            // 0 è¡¨ç¤ºç›®å‰ç„¡é€£æ“Šï¼Œä¸‹ä¸€æ¬¡é€é¤æœƒé€²å…¥ stack=1
+    private float lastDeliverTime = -999f; // æœ€å¾Œä¸€æ¬¡é€é¤æ™‚é–“
 
-		hotPoint += value;
-		hotPoint = Mathf.Clamp(hotPoint, 0f, stageMaxHotPoint[^1]);
-		lastHotIncreaseTime = Time.time;
+    // S é–å®š
+    private float sLockUntil = -1f;
 
-		// ­Y³o¦¸¥[¦¨«á¹F¨ì³Ì°ª¼ö«×¡A¨ê·s/³]©w«O¯d´Á
-		if (before < stageMaxHotPoint[^1] && hotPoint >= stageMaxHotPoint[^1] - 0.0001f)
-		{
-			maxHoldUntil = Time.time + maxHoldDuration;
-		}
-	}
+    // æŒçºŒæ‰£åˆ†ï¼ˆå¤šæ¢ä¸¦è¡Œï¼‰
+    private readonly List<Drain> drains = new List<Drain>();
+    private struct Drain { public float until; public float perSec; }
 
-	private void UpdateHotUI()
-	{
-		// §ó·s¹Ï¥Ü
-		if (hotLevelSprites != null && hotLevelSprites.Length > currentLevelIndex)
-		{
-			hotPointImage.sprite = hotLevelSprites[currentLevelIndex];
-			hotPointFillBar.sprite = hotLevelSprites[currentLevelIndex];
-		}
+    #endregion
 
-		// Slider 0~1¡G¼Æ­È¶V°ª¡A·Æ±ø¶V±µªñ 0¡]ªu¥Î§Aªº³]­p¡^
-		hotPointSlider.value = (maxHotPointValue - hotPoint) / maxHotPointValue;
-	}
+    #region ===== Unity Lifecycle =====
 
-	public int GetMoneyMultiplier()
-	{
-		return currentLevelIndex + 1;
-	}
+    private void Awake()
+    {
+        // åˆå§‹åŒ–
+        heat = Mathf.Clamp(HEAT_INIT, HEAT_MIN, HEAT_MAX);
+        currentLevel = ComputeLevel(heat);
+        UpdateUI();
+    }
 
-	private int GetHotLevelIndex()
-	{
-		for (int i = stageMaxHotPoint.Length - 1; i >= 1; i--)
-		{
-			if (hotPoint >= stageMaxHotPoint[i - 1])
-				return i;
-		}
-		return 0;
-	}
+    private void Update()
+    {
+        // S é–å®šä¸­ï¼šå¿½ç•¥æ‰€æœ‰æ­£å¸¸åŠ æ¸›èˆ‡é€£æ“Šèˆ‡æŒçºŒæ‰£åˆ†ï¼ˆåªæ˜¯å‡çµï¼‰
+        if (IsSLocked)
+        {
+            // é¡¯ç¤º UIï¼ˆå«æ»‘æ¢ï¼‰ï¼Œä½†ä¸æ”¹è®Š heat
+            UpdateUI();
+            // å›å ±ä¸€ä¸‹ combo è¦–è¦ºï¼ˆæ™‚é–“å‰©é¤˜ï¼‰
+            float windowRemain = Mathf.Max(0f, comboWindowSeconds - (Time.time - lastDeliverTime));
+            OnComboChanged?.Invoke(comboStack, windowRemain);
+            return;
+        }
+
+        // 1) å¥—ç”¨æŒçºŒæ‰£åˆ†
+        if (drains.Count > 0)
+        {
+            float delta = 0f;
+            for (int i = drains.Count - 1; i >= 0; i--)
+            {
+                var d = drains[i];
+                if (Time.time >= d.until)
+                {
+                    drains.RemoveAt(i);
+                    continue;
+                }
+                delta += d.perSec * Time.deltaTime;
+            }
+            if (Mathf.Abs(delta) > 0.0001f)
+            {
+                ApplyDelta(-delta); // perSec æ˜¯æ­£å€¼ï¼Œé€™è£¡è¦æ‰£åˆ†
+            }
+        }
+
+        // 2) é€£æ“Šè¦–è¦ºå‰©é¤˜æ™‚é–“å›å‘¼
+        float windowRemaining = Mathf.Max(0f, comboWindowSeconds - (Time.time - lastDeliverTime));
+        if (windowRemaining <= 0f && comboStack > 0)
+        {
+            comboStack = 0; // è¶…æ™‚é‡ç½®
+        }
+        OnComboChanged?.Invoke(comboStack, windowRemaining);
+
+        // 3) UI
+        UpdateUI();
+    }
+
+    private void LateUpdate()
+    {
+        // é–å®šåˆ°æœŸçš„æ™‚æ©Ÿé»åœ¨ LateUpdate æª¢æŸ¥ï¼Œ
+        // å¯é¿å… Update ç•¶ç¦®ç‰©/æ‰£åˆ†èˆ‡è§£é–è¡çª
+        if (!IsSLocked && sLockUntil > 0f) // å‰›å¥½åœ¨é€™å¹€åˆ°æœŸ
+        {
+            EndSLock();
+        }
+    }
+
+    #endregion
+
+    #region ===== Public API =====
+
+    public void ResetHeat()
+    {
+        comboStack = 0;
+        drains.Clear();
+        sLockUntil = -1f;
+        SetHeat(HEAT_INIT);
+    }
+
+    public void DeliverDish()
+    {
+        if (IsSLocked) return;
+
+        // åˆ¤å®šæ˜¯å¦ä»åœ¨é€£æ“Šçª—
+        bool inWindow = (Time.time - lastDeliverTime) <= comboWindowSeconds;
+        if (!inWindow) comboStack = 0;
+
+        comboStack = Mathf.Min(comboStack + 1, comboMaxStack);
+        lastDeliverTime = Time.time;
+
+        int gain = comboPoints[Mathf.Clamp(comboStack - 1, 0, comboPoints.Length - 1)];
+        AddHeat(gain);
+
+        // å›å ±
+        float windowRemain = Mathf.Max(0f, comboWindowSeconds - (Time.time - lastDeliverTime));
+        OnComboChanged?.Invoke(comboStack, windowRemain);
+    }
+
+    public void DefeatEnemy(float amount = 1f)
+    {
+        if (IsSLocked) return;
+        AddHeat(amount);
+    }
+
+    public void TakeDamage(float damage, float scale = 1f)
+    {
+        if (IsSLocked) return;
+        ApplyDelta(-Mathf.Abs(damage) * Mathf.Max(0f, scale));
+    }
+
+    public void StartRiotPenalty(float perSecond = -1f, float duration = 5f)
+    {
+        if (perSecond < 0f) perSecond = -perSecond; // å‚³è² ä¹Ÿå¯
+        AddDrain(perSecond, duration);
+    }
+
+    public void StartRiotSpreadPenalty(float perSecond = -1f, float duration = 5f)
+    {
+        if (perSecond < 0f) perSecond = -perSecond;
+        AddDrain(perSecond, duration);
+    }
+
+    /// å¯èª¿è©¦ï¼šç›´æ¥é€²å…¥ S ä¸¦é–å®š
+    public void ForceEnterSAndLock(float duration = 30f)
+    {
+        SetHeat(Mathf.Max(thresholdS, HEAT_MIN));
+        StartSLock(duration);
+    }
+
+    public int GetMoneyMultiplier()
+    {
+        // C=1, B=2, A=3, S=4
+        return ((int)currentLevel) + 1;
+    }
+
+    #endregion
+
+    #region ===== Internal: Drain / Heat Apply / State =====
+
+    private void AddDrain(float perSec, float duration)
+    {
+        if (IsSLocked) return;
+        drains.Add(new Drain
+        {
+            perSec = perSec,
+            until = Time.time + duration
+        });
+    }
+
+    private void AddHeat(float amount)
+    {
+        if (IsSLocked) return;
+
+        float before = heat;
+        heat = Mathf.Clamp(heat + amount, HEAT_MIN, HEAT_MAX);
+
+        // é€² Sï¼šç«‹å³é–å®š
+        if (before < thresholdS && heat >= thresholdS)
+        {
+            StartSLock(sLockDuration);
+        }
+
+        AfterHeatChanged(before, heat);
+    }
+
+    private void ApplyDelta(float delta)
+    {
+        if (IsSLocked) return;
+
+        float before = heat;
+        heat = Mathf.Clamp(heat + delta, HEAT_MIN, HEAT_MAX);
+        AfterHeatChanged(before, heat);
+    }
+
+    private void SetHeat(float value)
+    {
+        float before = heat;
+        heat = Mathf.Clamp(value, HEAT_MIN, HEAT_MAX);
+        AfterHeatChanged(before, heat);
+    }
+
+    private void AfterHeatChanged(float before, float after)
+    {
+        if (Mathf.Approximately(before, after) == false)
+        {
+            OnHeatChanged?.Invoke(before, after);
+        }
+
+        var newLevel = ComputeLevel(after);
+        if (newLevel != currentLevel)
+        {
+            var old = currentLevel;
+            currentLevel = newLevel;
+            OnLevelChanged?.Invoke(old, newLevel);
+            HookLevelVFX(newLevel);
+        }
+
+        UpdateUI();
+    }
+
+    #endregion
+
+    #region ===== Internal: Compute / UI / VFX =====
+
+    private HeatLevel ComputeLevel(float value)
+    {
+        if (value >= thresholdS) return HeatLevel.S;
+        if (value >= thresholdA) return HeatLevel.A;
+        if (value >= thresholdB) return HeatLevel.B;
+        return HeatLevel.C;
+    }
+
+    private void UpdateUI()
+    {
+        // Icon / Fill
+        int idx = (int)currentLevel; // C=0, B=1, A=2, S=3
+        if (hotLevelSprites != null && hotLevelSprites.Length > idx)
+        {
+            if (hotPointImage)    hotPointImage.sprite = hotLevelSprites[idx];
+            if (hotPointFillBar)  hotPointFillBar.sprite = hotLevelSprites[idx];
+        }
+        // Sliderï¼š0~1 = ä½â†’é«˜
+        if (hotPointSlider)
+        {
+            hotPointSlider.value = Mathf.InverseLerp(HEAT_MIN, HEAT_MAX, heat);
+        }
+    }
+
+    private void HookLevelVFX(HeatLevel level)
+    {
+        // TODO: ä¾ä½ ç¾æœ‰çš„ RoundManager / GlobalLightManager ä¾†æ›ç‡ˆæ•ˆ/éŸ³æ•ˆ
+        // ä¾‹å¦‚ï¼š
+        // var gl = RoundManager.Instance.globalLightManager;
+        // switch (level)
+        // {
+        //     case HeatLevel.A:
+        //         // Aï¼šçƒå…‰é–‹å•Ÿ
+        //         gl.SetLightGroupActive(0, true);
+        //         gl.SetLightCycleLoopEnabled(false);
+        //         break;
+        //     case HeatLevel.S:
+        //         // Sï¼šèšå…‰ç‡ˆ + çƒå…‰
+        //         gl.SetLightGroupActive(0, true);
+        //         gl.SetLightGroupActive(1, true);
+        //         gl.SetLightCycleLoopEnabled(true);
+        //         break;
+        //     default:
+        //         // C/Bï¼šé—œé–‰ç‰¹æ•ˆ
+        //         gl.SetLightGroupActive(0, false);
+        //         gl.SetLightGroupActive(1, false);
+        //         gl.SetLightCycleLoopEnabled(false);
+        //         break;
+        // }
+    }
+
+    private void StartSLock(float duration)
+    {
+        sLockUntil = Time.time + duration;
+        OnSLockStarted?.Invoke(duration);
+        // é€™è£¡å¯ç«‹å³åˆ‡ S ç‰¹æ•ˆ
+        HookLevelVFX(HeatLevel.S);
+    }
+
+    private void EndSLock()
+    {
+        sLockUntil = -1f;
+        // è¦æ ¼ï¼šS çµæŸå¾Œæ•¸å€¼ç›´æ¥å›è½åˆ° 30
+        SetHeat(sExitDropTo);
+        comboStack = 0;
+        OnSLockEnded?.Invoke();
+    }
+
+    #endregion
 }
