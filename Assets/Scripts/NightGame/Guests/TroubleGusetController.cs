@@ -90,9 +90,9 @@ public class TroubleGusetController : MonoBehaviour
 		isStunned = false;
 		stunRemaining = 0f;
 		stunCountdownPaused = false;
-		if (stunBar != null) stunBar.SetActive(false);
 		UpdateStunBarFill();
 
+		if (stunBar != null) stunBar.SetActive(false);
 		if (hpBar != null) hpBar.SetActive(false);
 		if (attackHitBox != null) attackHitBox.SetActive(false);
 		if (attackRangeBox != null) attackRangeBox.SetActive(false);
@@ -353,11 +353,10 @@ public class TroubleGusetController : MonoBehaviour
 		TakeDamage(1);
 	}
 
+#if UNITY_EDITOR
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		// 被任何攻擊到 → 顯示暈眩條
-		if (stunBar != null) stunBar.SetActive(true);
-
+		
 		// 原本的擊退
 		if (other.CompareTag("AttackObject"))
 		{
@@ -372,7 +371,6 @@ public class TroubleGusetController : MonoBehaviour
 		}
 	}
 
-#if UNITY_EDITOR
 	private void OnDrawGizmosSelected()
 	{
 		if (attackRangeBox == null && attackOrigin == null) return;
@@ -381,6 +379,7 @@ public class TroubleGusetController : MonoBehaviour
 		float r = GetAttackRadius();
 		Gizmos.DrawWireSphere(attackOrigin.position, r);
 	}
+
 #endif
 
 	// =========================
@@ -390,6 +389,9 @@ public class TroubleGusetController : MonoBehaviour
 	/// <summary>外部或事件呼叫：增加暈眩值。</summary>
 	private void AddStun(int amount)
 	{
+		// 顯示暈眩條
+		stunBar.SetActive(true);
+
 		// 已在暈眩倒數中就不再累積
 		if (isStunned) return;
 
