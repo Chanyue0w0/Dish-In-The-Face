@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using PrimeTween;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -25,6 +26,7 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
 
 	[Header("----- Reference -----")]
+	[SerializeField] private Rigidbody2D rb;
 	[SerializeField] private SpriteRenderer guestSpriteRenderer;
 	[SerializeField] private Animator animator;
 	[SerializeField] private GameObject attackHitBox;
@@ -307,15 +309,18 @@ public class TroubleGusetController : MonoBehaviour
 
 		if (currentHp <= 0)
 		{
-			Dead();
+			Dead(true);
 		}
 	}
 
-	private void Dead()
+	private void Dead(bool isDefeated)
 	{
-		VFXPool.Instance.SpawnVFX("CoinFountain", (attackOrigin != null ? attackOrigin.position : transform.position), Quaternion.identity, 2f);
-		RoundManager.Instance.DefeatEnemySuccess();
-
+		if (isDefeated)
+		{
+			VFXPool.Instance.SpawnVFX("CoinFountain", (attackOrigin != null ? attackOrigin.position : transform.position), Quaternion.identity, 2f);
+			RoundManager.Instance.DefeatEnemySuccess();
+		}
+		
 		if (poolHandler != null) poolHandler.Release();
 		else gameObject.SetActive(false);
 	}
@@ -353,7 +358,6 @@ public class TroubleGusetController : MonoBehaviour
 		TakeDamage(1);
 	}
 
-#if UNITY_EDITOR
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		
@@ -369,8 +373,37 @@ public class TroubleGusetController : MonoBehaviour
 		{
 			AddStun(1);
 		}
+		
+		if (other.CompareTag("ExitDoor"))
+		{
+			BeForceOut();
+		}
 	}
 
+	private void BeForceOut()
+	{
+		// 取得原本的移動方向
+		Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
+		if (moveDir == Vector2.zero && agent != null)
+		{
+			moveDir = agent.velocity.normalized;
+		}
+		if (moveDir == Vector2.zero)
+		{
+			moveDir = Vector2.right; // 預設一個方向，避免沒有速度時完全不動
+		}
+
+		// 計算目標位置（往前一段距離）
+		float forwardDistance = 2f;   // 可調
+		Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
+
+		// 播放 Tween（0.5 秒推進），結束後呼叫 Dead(false)
+		Tween.Position(transform, targetPos, 0.5f)
+			.OnComplete(() => Dead(false));
+	}
+	
+	
+#if UNITY_EDITOR
 	private void OnDrawGizmosSelected()
 	{
 		if (attackRangeBox == null && attackOrigin == null) return;

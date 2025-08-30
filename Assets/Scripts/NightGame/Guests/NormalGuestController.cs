@@ -106,7 +106,7 @@ public class NormalGuestController : MonoBehaviour
 		{
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
-			// ��y��
+			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
 		}
 	}
 
@@ -151,7 +151,7 @@ public class NormalGuestController : MonoBehaviour
 			agent.SetDestination(targetChair.position);
 		else
 			Leave();
-
+		
 		lastPosition = transform.position;
 	}
 

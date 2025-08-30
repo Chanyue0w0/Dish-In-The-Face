@@ -16,6 +16,7 @@ TagManager:
   - Obstacle
   - Dessert
   - BasicAttack
+  - ExitDoor
   layers:
   - Default
   - TransparentFX
