@@ -92,6 +92,7 @@ public class TroubleGusetController : MonoBehaviour
 		isStunned = false;
 		stunRemaining = 0f;
 		stunCountdownPaused = false;
+		beGrabByPlayer.SetIsCanBeGrabByPlayer(false);
 		UpdateStunBarFill();
 
 		if (stunBar != null) stunBar.SetActive(false);
