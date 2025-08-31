@@ -9404,7 +9404,7 @@ MonoBehaviour:
   foodsGroupManager: {fileID: 381182771}
   guestGroupManager: {fileID: 761160831}
   chairGroupManager: {fileID: 1245954770}
-  coinManager: {fileID: 0}
+  coinManager: {fileID: 1414407264}
   globalLightManager: {fileID: 1781125744}
   timeLimitCounter: {fileID: 328136578}
   player: {fileID: 632101736}
@@ -13372,63 +13372,6 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!1001 &271880450
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -3.0328
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -1.9962
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4699623705060983603, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7394560797054130701, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_Name
-      value: Trouble guest
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
 --- !u!1 &272320616
 GameObject:
   m_ObjectHideFlags: 0
@@ -32143,7 +32086,7 @@ MonoBehaviour:
   runFront: run/run
   runBack: run/run_back
   runSide: run/run_side
-  dashNormal: dash/dash_angry  eye
+  dashNormal: dash/dash_angry  eye1
   dashSlide: dash/tabledash
   drumStick1: battle/drumstick_1
   drumStick2: battle/drumstick_2
@@ -32291,7 +32234,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   getFoodCount: 1
-  isGetOneFood: 1
   movement: {fileID: 632101737}
   handItemUI: {fileID: 1603619951}
   handItemRoot: {fileID: 1126725960}
@@ -100955,4 +100897,3 @@ SceneRoots:
   - {fileID: 2063143629}
   - {fileID: 1814491289}
   - {fileID: 309499588}
-  - {fileID: 271880450}
