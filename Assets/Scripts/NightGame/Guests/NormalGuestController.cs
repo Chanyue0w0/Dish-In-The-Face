@@ -497,9 +497,9 @@ public class NormalGuestController : MonoBehaviour
 		dishPatienceLeft = maxDishPatience;
 	}
 
-	public Sprite GetOrderFood()
+	public FoodStatus GetOrderFood()
 	{
-		return foodSpriteRenderer.sprite;
+		return orderFoodStatus;
 	}
 	#endregion
 

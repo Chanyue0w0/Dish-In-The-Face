@@ -10,7 +10,7 @@ public class PlayerInteraction : MonoBehaviour
 
 	[Header("-------- Setting ---------")]
 	[SerializeField] private int getFoodCount = 1;
-	[SerializeField] private bool isGetOneFood = true;
+	// [SerializeField] private bool isGetOneFood = true;
 
 
 	[Header("-------- Reference ---------")]
@@ -73,7 +73,8 @@ public class PlayerInteraction : MonoBehaviour
 
 		for (var i = 0; i < getFoodCount; i++)
 		{
-			GameObject newItem = isGetOneFood ? currentFood : Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+			// GameObject newItem = isGetOneFood ? currentFood : Instantiate(currentFood, handItemRoot.position, Quaternion.identity);
+			GameObject newItem = currentFood;
 			newItem.transform.SetParent(handItemRoot);
 			newItem.GetComponent<Collider2D>().enabled = false;
 

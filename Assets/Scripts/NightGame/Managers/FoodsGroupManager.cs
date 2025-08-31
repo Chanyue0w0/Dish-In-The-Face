@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FoodsGroup;
 using UnityEngine;
 
 public class FoodsGroupManager : MonoBehaviour
@@ -198,7 +199,7 @@ public class FoodsGroupManager : MonoBehaviour
 				continue;
 			}
 
-			Sprite needed = guest.GetOrderFood();
+			FoodStatus needed = guest.GetOrderFood();
 			if (!needed)
 			{
 				ClearChildren(spawn);
@@ -208,12 +209,12 @@ public class FoodsGroupManager : MonoBehaviour
 			Transform child = (spawn.childCount > 0) ? spawn.GetChild(0) : null;
 			if (child)
 			{
-				var sr = child.GetComponent<SpriteRenderer>();
-				if (sr && sr.sprite == needed) continue;
+				FoodStatus foodStatus = child.GetComponent<FoodStatus>();
+				if (foodStatus.foodType == needed.foodType) continue;
 				Object.Destroy(child.gameObject);
 			}
 
-			GameObject prefab = FindPrefabBySprite(needed);
+			GameObject prefab = FindPrefabByFoodType(needed.foodType);
 			if (prefab)
 			{
 				GameObject go = Instantiate(prefab, spawn);
@@ -233,14 +234,13 @@ public class FoodsGroupManager : MonoBehaviour
 			ClearChildren(foodsSpawnPositions[i]);
 	}
 
-	private GameObject FindPrefabBySprite(Sprite sprite)
+	private GameObject FindPrefabByFoodType(FoodType type)
 	{
-		if (sprite == null) return null;
-		foreach (var pf in foodPrefabs)
+		foreach (GameObject pf in foodPrefabs)
 		{
 			if (!pf) continue;
-			var sr = pf.GetComponent<SpriteRenderer>();
-			if (sr && sr.sprite == sprite) return pf;
+			FoodType t = pf.GetComponent<FoodStatus>().foodType;
+			if (t == type) return pf;
 		}
 		return null;
 	}
