@@ -451,7 +451,7 @@ MonoBehaviour:
   maxDishPatience: 10
   stateTransitionDelay: 0.2
   eatTime: 10
-  reorderProbability: 0.3
+  reorderProbability: 0
   stuckCheckInterval: 1.5
   stuckThreshold: 0.05
   retryDelay: 2

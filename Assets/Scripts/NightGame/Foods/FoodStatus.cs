@@ -2,5 +2,12 @@ using UnityEngine;
 using FoodsGroup;
 public class FoodStatus : MonoBehaviour
 {
-	[SerializeField] public FoodType foodType;
+	public FoodType foodType;
+	public int Price;
+	public class AttackCombo
+	{
+		public string animationName;
+
+		[Min(0)] public int attackDamage = 0;
+	}
 }

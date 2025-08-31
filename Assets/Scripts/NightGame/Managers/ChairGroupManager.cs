@@ -6,19 +6,19 @@ public class ChairGroupManager : MonoBehaviour
 	#region Inspector
 
 	[Header("Chair List")]
-	[SerializeField] private List<Transform> chairList;            // ©Ò¦³´È¤l¦ì¸m¡]·|¦b Awake ¥H Tag=Chair ­«·s»`¶°¨Ã±Æ§Ç¡^
-	[SerializeField] private Transform guestEnterPoistion;         // ¨Ì¶ZÂ÷¦¹ÂI±Æ§Ç¡]«O«ù©R¦W¥H§K§Ç¦C¤Æ¯}Ãa¡^
+	[SerializeField] private List<Transform> chairList;            // ï¿½Ò¦ï¿½ï¿½È¤lï¿½ï¿½mï¿½]ï¿½|ï¿½b Awake ï¿½H Tag=Chair ï¿½ï¿½ï¿½sï¿½`ï¿½ï¿½ï¿½Ã±Æ§Ç¡^
+	[SerializeField] private Transform guestEnterPoistion;         // ï¿½Ì¶Zï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½Æ§Ç¡]ï¿½Oï¿½ï¿½ï¿½Rï¿½Wï¿½Hï¿½Kï¿½Ç¦Cï¿½Æ¯}ï¿½aï¿½^
 
 	[Header("Reference")]
-	[SerializeField] private GameObject coinPrefab;                // ®à¤Wª÷¹ô Prefab
+	[SerializeField] private GameObject coinPrefab;                // ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ Prefab
 
 	#endregion
 
 
 	#region Runtime State / Collections
 
-	private HashSet<Transform> occupiedChairs;                     // ¥¿¦b³Q¨Ï¥Îªº´È¤l¶°¦X
-	private List<NormalGuestController> guestsOrderList = new List<NormalGuestController>(); // ¤w¤U³æ¡]©Îµ¥«Ý¤WÀ\¡^ªº«È¤H²M³æ
+	private HashSet<Transform> occupiedChairs;                     // ï¿½ï¿½ï¿½bï¿½Qï¿½Ï¥Îªï¿½ï¿½È¤lï¿½ï¿½ï¿½X
+	private List<NormalGuestController> guestsOrderList = new List<NormalGuestController>(); // ï¿½wï¿½Uï¿½ï¿½]ï¿½Îµï¿½ï¿½Ý¤Wï¿½\ï¿½^ï¿½ï¿½ï¿½È¤Hï¿½Mï¿½ï¿½
 
 	#endregion
 
@@ -30,20 +30,20 @@ public class ChairGroupManager : MonoBehaviour
 		chairList.Clear();
 		occupiedChairs = new HashSet<Transform>();
 
-		// ¥H Tag ¨ú±o©Ò¦³´È¤l
+		// ï¿½H Tag ï¿½ï¿½ï¿½oï¿½Ò¦ï¿½ï¿½È¤l
 		GameObject[] allChairs = GameObject.FindGameObjectsWithTag("Chair");
 		foreach (GameObject chairObj in allChairs)
 		{
 			chairList.Add(chairObj.transform);
 		}
 
-		// ¨Ì¾aªñ­«¥ÍÂI±Æ§Ç
+		// ï¿½Ì¾aï¿½ñ­«¥ï¿½ï¿½Iï¿½Æ§ï¿½
 		SortChairList();
 	}
 
 	private void Start()
 	{
-		// ²MªÅ©Ò¦³´È¤l®à­±ª«¥ó
+		// ï¿½Mï¿½Å©Ò¦ï¿½ï¿½È¤lï¿½à­±ï¿½ï¿½ï¿½ï¿½
 		foreach (Transform obj in chairList)
 		{
 			ClearChairItem(obj);
@@ -53,15 +53,15 @@ public class ChairGroupManager : MonoBehaviour
 	#endregion
 
 
-	#region Public API - ¬d§ä / ÄÀ©ñ´È¤l
+	#region Public API - ï¿½dï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½È¤l
 
 	/// <summary>
-	/// ÀH¾÷´M§ä¤@­ÓªÅªº´È¤l¨Ã¼Ð°O¬°¤w¦û¥Î¡]§ä¤£¨ì«h¦^¶Ç null¡^¡C
-	/// ·|¦P®É§â¸Ó«È¤H¥[¤J guestsOrderList¡C
+	/// ï¿½Hï¿½ï¿½ï¿½Mï¿½ï¿½@ï¿½ÓªÅªï¿½ï¿½È¤lï¿½Ã¼Ð°Oï¿½ï¿½ï¿½wï¿½ï¿½ï¿½Î¡]ï¿½ä¤£ï¿½ï¿½hï¿½^ï¿½ï¿½ nullï¿½^ï¿½C
+	/// ï¿½|ï¿½Pï¿½É§ï¿½Ó«È¤Hï¿½[ï¿½J guestsOrderListï¿½C
 	/// </summary>
 	public Transform FindEmptyChair(NormalGuestController normalGuest)
 	{
-		// »`¶°¥¼¦û¥Î´È¤l
+		// ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´È¤l
 		List<Transform> availableChairs = new List<Transform>();
 		foreach (Transform chair in chairList)
 		{
@@ -72,16 +72,16 @@ public class ChairGroupManager : MonoBehaviour
 		if (availableChairs.Count == 0)
 			return null;
 
-		// ÀH¾÷¬D¿ï
+		// ï¿½Hï¿½ï¿½ï¿½Dï¿½ï¿½
 		Transform selectedChair = availableChairs[Random.Range(0, availableChairs.Count)];
 
-		// ¬ö¿ý­q³æ«È¤H»P¦û¥Î¼Ð°O
+		// ï¿½ï¿½ï¿½ï¿½ï¿½qï¿½ï¿½È¤Hï¿½Pï¿½ï¿½ï¿½Î¼Ð°O
 		occupiedChairs.Add(selectedChair);
 		return selectedChair;
 	}
 
 	/// <summary>
-	/// «È¤HÂ÷®u®ÉÄÀ©ñ´È¤l¦û¥Î¡C
+	/// ï¿½È¤Hï¿½ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¤lï¿½ï¿½ï¿½Î¡C
 	/// </summary>
 	public void ReleaseChair(Transform targetChair)
 	{
@@ -93,7 +93,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¸ß°Ý´È¤l¬O§_¤w³Q¦û¥Î¡C
+	/// ï¿½ß°Ý´È¤lï¿½Oï¿½_ï¿½wï¿½Qï¿½ï¿½ï¿½Î¡C
 	/// </summary>
 	public bool IsChairccupied(Transform chair)
 	{
@@ -103,10 +103,10 @@ public class ChairGroupManager : MonoBehaviour
 	#endregion
 
 
-	#region Public API - ¤WÀ\ / ¤¬°ÊÅã¥Ü / ª÷¹ô
+	#region Public API - ï¿½Wï¿½\ / ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½ï¿½
 
 	/// <summary>
-	/// ±Ò¥Î/Ãö³¬´È¦ì¤Wªº¤¬°Ê´£¥Ü¹Ï¥Ü¡]§âª±®a¤â¤Wª««~ªº Sprite ¶Çµ¹«È¤HÅã¥Ü¡^¡C
+	/// ï¿½Ò¥ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½È¦ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Ê´ï¿½ï¿½Ü¹Ï¥Ü¡]ï¿½âª±ï¿½aï¿½ï¿½Wï¿½ï¿½ï¿½~ï¿½ï¿½ Sprite ï¿½Çµï¿½ï¿½È¤Hï¿½ï¿½Ü¡^ï¿½C
 	/// </summary>
 	public void EnableInteracSignal(Transform chair, GameObject handItem, bool onEnable)
 	{
@@ -118,7 +118,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¹Á¸Õ±Nª±®a¤â¤WÀ\ÂI©ñ¨ì´È¦ì®à­±¤W¡F­Y«È¤H½T»{¦¬¨ì¥¿½TÀ\ÂI«h¦^³ø¦¨¥\¡A¨ÃÄ²µo¼ö«×µ¥¬yµ{¡C
+	/// ï¿½ï¿½ï¿½Õ±Nï¿½ï¿½ï¿½aï¿½ï¿½Wï¿½\ï¿½Iï¿½ï¿½ï¿½È¦ï¿½à­±ï¿½Wï¿½Fï¿½Yï¿½È¤Hï¿½Tï¿½{ï¿½ï¿½ï¿½ì¥¿ï¿½Tï¿½\ï¿½Iï¿½hï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½Aï¿½ï¿½Ä²ï¿½oï¿½ï¿½ï¿½×µï¿½ï¿½yï¿½{ï¿½C
 	/// </summary>
 	public bool PullDownChairItem(Transform chair, GameObject handItem)
 	{
@@ -126,24 +126,24 @@ public class ChairGroupManager : MonoBehaviour
 		if (chair.childCount < 2) return false;
 
 		Transform chairItem = chair.transform.GetChild(0);
-		Sprite foodSprite = handItem.transform.GetComponent<SpriteRenderer>()?.sprite;
+		FoodStatus foodStatus = handItem.transform.GetComponent<FoodStatus>();
 
 		NormalGuestController npc = chair.GetComponentInChildren<NormalGuestController>();
-		if (npc == null || foodSprite == null) return false;
+		if (npc == null || foodStatus == null) return false;
 
-		// ¦^³ø¤w¤WÀ\¡]§PÂ_¬O§_¬O¸Ó«È¤H­nªº­¹ª«¡^
-		if (npc.IsReceiveFood(foodSprite))
+		// ï¿½^ï¿½ï¿½ï¿½wï¿½Wï¿½\ï¿½]ï¿½Pï¿½_ï¿½Oï¿½_ï¿½Oï¿½Ó«È¤Hï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^
+		if (npc.IsReceiveFood(foodStatus))
 		{
 			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pullDownDish, transform.position);
 
-			// ©ñ¸mÀ\ÂI¨ì®à­±¡]§âª±®a¤â¤Wªºª«¥ó²¾¨ì®à¤W¡^
+			// ï¿½ï¿½mï¿½\ï¿½Iï¿½ï¿½à­±ï¿½]ï¿½âª±ï¿½aï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ó²¾¨ï¿½ï¿½Wï¿½^
 			handItem.transform.SetParent(chairItem.transform);
 			handItem.transform.localPosition = Vector3.zero;
 
-			// ±q­q³æ«È¤H²M³æ²¾°£
+			// ï¿½qï¿½qï¿½ï¿½È¤Hï¿½Mï¿½æ²¾ï¿½ï¿½
 			RemovOrderGuest(npc);
 
-			// ¤WÀ\¦¨¥\¡G¼W¥[¼ö«×µ¥
+			// ï¿½Wï¿½\ï¿½ï¿½ï¿½\ï¿½Gï¿½Wï¿½[ï¿½ï¿½ï¿½×µï¿½
 			RoundManager.Instance.PullDownDishSuccess();
 			return true;
 		}
@@ -152,7 +152,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// À°«È¤H½T»{ÂI³æ¡]¶È WaitingOrder ª¬ºA·|¦¨¥\¡^¡C
+	/// ï¿½ï¿½ï¿½È¤Hï¿½Tï¿½{ï¿½Iï¿½ï¿½]ï¿½ï¿½ WaitingOrder ï¿½ï¿½ï¿½Aï¿½|ï¿½ï¿½ï¿½\ï¿½^ï¿½C
 	/// </summary>
 	public bool ConfirmOrderChair(Transform chair)
 	{
@@ -165,7 +165,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¦b´È¦ì®à­±©ñ¸mª÷¹ôª«¥ó¡]¨Ã³]©wª÷¹ô¼Æ¶q¡^¡C
+	/// ï¿½bï¿½È¦ï¿½à­±ï¿½ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½]ï¿½Ã³]ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½Æ¶qï¿½^ï¿½C
 	/// </summary>
 	public void PullDownCoin(Transform chair, int coinCount)
 	{
@@ -181,7 +181,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ²MªÅ´È¦ì®à­±¤Wªº²Ä¤@­Ó¤lª«¥ó¡]­Y¦³¡^¡C
+	/// ï¿½Mï¿½Å´È¦ï¿½à­±ï¿½Wï¿½ï¿½ï¿½Ä¤@ï¿½Ó¤lï¿½ï¿½ï¿½ï¿½]ï¿½Yï¿½ï¿½ï¿½^ï¿½C
 	/// </summary>
 	public void ClearChairItem(Transform chair)
 	{
@@ -197,10 +197,10 @@ public class ChairGroupManager : MonoBehaviour
 	#endregion
 
 
-	#region Public API - «È¤H­@¤ß / ­q³æ²M³æ
+	#region Public API - ï¿½È¤Hï¿½@ï¿½ï¿½ / ï¿½qï¿½ï¿½Mï¿½ï¿½
 
 	/// <summary>
-	/// Åý©Ò¦³´È¦ì¤W§¤µÛªº«È¤H­«³]­@¤ß­È¡C
+	/// ï¿½ï¿½ï¿½Ò¦ï¿½ï¿½È¦ï¿½Wï¿½ï¿½ï¿½Ûªï¿½ï¿½È¤Hï¿½ï¿½ï¿½]ï¿½@ï¿½ß­È¡C
 	/// </summary>
 	public void ResetAllSetGuestsPatience()
 	{
@@ -213,7 +213,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¨ú±o¥Ø«e guestsOrderList¡]¤w¤U³æ©Îµ¥«Ý¤WÀ\ªº«È¤H¡^¡C
+	/// ï¿½ï¿½ï¿½oï¿½Ø«e guestsOrderListï¿½]ï¿½wï¿½Uï¿½ï¿½Îµï¿½ï¿½Ý¤Wï¿½\ï¿½ï¿½ï¿½È¤Hï¿½^ï¿½C
 	/// </summary>
 	public List<NormalGuestController> GetGuestsOrderList()
 	{
@@ -221,7 +221,7 @@ public class ChairGroupManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¥[¤J«ü©w«È¤H¨ì guestsOrderList ¡F­Y¤£¦s¦b«h¿é¥XÄµ§i¡C
+	/// ï¿½[ï¿½Jï¿½ï¿½ï¿½wï¿½È¤Hï¿½ï¿½ guestsOrderList ï¿½Fï¿½Yï¿½ï¿½ï¿½sï¿½bï¿½hï¿½ï¿½XÄµï¿½iï¿½C
 	/// </summary>
 	public void AddOrderGuest(NormalGuestController normalGuest)
 	{
@@ -229,14 +229,14 @@ public class ChairGroupManager : MonoBehaviour
 
 		if (guestsOrderList.Contains(normalGuest))
 		{
-			//Debug.Log($"¤w¦s¦b {normalGuest.name} ¦b guestsOrderList");
+			//Debug.Log($"ï¿½wï¿½sï¿½b {normalGuest.name} ï¿½b guestsOrderList");
 			return;
 		}
 		guestsOrderList.Add(normalGuest);
 	}
 
 	/// <summary>
-	/// ±q guestsOrderList ²¾°£«ü©w«È¤H¡F­Y¤£¦s¦b«h¿é¥XÄµ§i¡C
+	/// ï¿½q guestsOrderList ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½wï¿½È¤Hï¿½Fï¿½Yï¿½ï¿½ï¿½sï¿½bï¿½hï¿½ï¿½XÄµï¿½iï¿½C
 	/// </summary>
 	public void RemovOrderGuest(NormalGuestController normalGuest)
 	{
@@ -245,11 +245,11 @@ public class ChairGroupManager : MonoBehaviour
 		if (guestsOrderList.Contains(normalGuest))
 		{
 			guestsOrderList.Remove(normalGuest);
-			//Debug.Log($"¤w²¾°£«È¤H {normalGuest.name} ±q guestsOrderList");
+			//Debug.Log($"ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½È¤H {normalGuest.name} ï¿½q guestsOrderList");
 			return;
 		}
 
-		//Debug.Log($"­n²¾°£ªº«È¤H {normalGuest?.name} ¤£¦b guestsOrderList ¸Ì");
+		//Debug.Log($"ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¤H {normalGuest?.name} ï¿½ï¿½ï¿½b guestsOrderList ï¿½ï¿½");
 	}
 	#endregion
 
@@ -257,7 +257,7 @@ public class ChairGroupManager : MonoBehaviour
 	#region Private Helpers
 
 	/// <summary>
-	/// ¨Ì´È¤l¨ì guestEnterPoistion ªº¶ZÂ÷¥Ñªñ¨ì»·±Æ§Ç¡C
+	/// ï¿½Ì´È¤lï¿½ï¿½ guestEnterPoistion ï¿½ï¿½ï¿½Zï¿½ï¿½ï¿½Ñªï¿½ì»·ï¿½Æ§Ç¡C
 	/// </summary>
 	private void SortChairList()
 	{

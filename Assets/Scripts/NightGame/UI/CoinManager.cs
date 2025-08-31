@@ -2,7 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class CoinUIController : MonoBehaviour
+public class CoinManager : MonoBehaviour
 {
 	[SerializeField] private int currentCoin = 0;
 	[Header("---------- Setting ----------")]
@@ -38,15 +38,15 @@ public class CoinUIController : MonoBehaviour
 		StartCoroutine(ShowTemporary(addCoinUI));
 	}
 
-	public void SubtractCoin(int amount)
-	{
-		currentCoin -= amount;
-		if (currentCoin < 0) currentCoin = 0;
-
-		subtractCoinUI.GetComponent<TextMeshProUGUI>().text = "-" + amount.ToString();
-		UpdateCoinText();
-		StartCoroutine(ShowTemporary(subtractCoinUI));
-	}
+	// public void SubtractCoin(int amount)
+	// {
+	// 	currentCoin -= amount;
+	// 	if (currentCoin < 0) currentCoin = 0;
+	//
+	// 	subtractCoinUI.GetComponent<TextMeshProUGUI>().text = "-" + amount.ToString();
+	// 	UpdateCoinText();
+	// 	StartCoroutine(ShowTemporary(subtractCoinUI));
+	// }
 
 	private IEnumerator ShowTemporary(GameObject uiObject)
 	{

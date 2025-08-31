@@ -330,21 +330,21 @@ public class FoodsGroupManager : MonoBehaviour
 	#region ===== 外部取得與流程觸發 =====
 
 	/// <summary>隨機抽餐點並開始製作</summary>
-	public Sprite OrderFoodRandomly()
+	public FoodStatus OrderFoodRandomly()
 	{
 		if (foodPrefabs == null || foodPrefabs.Length == 0) return null;
 
 		int randomIndex = Random.Range(0, foodPrefabs.Length);
 		GameObject selected = foodPrefabs[randomIndex];
-		Sprite sprite = selected.GetComponent<SpriteRenderer>()?.sprite;
+		FoodStatus food = selected.GetComponent<FoodStatus>();
 
-		if (sprite != null && !IsMaking())
+		if (food != null && !IsMaking())
 		{
-			makingTargetSprite = sprite;
+			makingTargetSprite = food.GetComponent<SpriteRenderer>().sprite;
 			makeRoutine = StartCoroutine(MakeFoodRoutine());
 		}
 
-		return sprite;
+		return food;
 	}
 
 	/// <summary>目前選中的餐點 GameObject（可用於互動）</summary>

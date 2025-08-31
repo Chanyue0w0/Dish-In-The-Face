@@ -5,9 +5,7 @@ public class RoundManager : MonoBehaviour
 	public static RoundManager Instance { get; private set; } // Singleton
 
 	[Header("-------- Setting ---------")]
-	[SerializeField] private float finishDishHotPoint = 0.5f;
-	[SerializeField] private float attackEnemyHotPoint = 0.5f;
-	[SerializeField] private int defeatEnemyrewardCoin = 10;
+	[SerializeField] private int enemyReward = 10;
 
 	[Header("-------- Reference ---------")]
 	[Header("Manager")]
@@ -15,7 +13,7 @@ public class RoundManager : MonoBehaviour
 	public FoodsGroupManager foodsGroupManager;
 	public GuestGroupManager guestGroupManager;
 	public ChairGroupManager chairGroupManager;
-	public CoinUIController coinUIController;
+	public CoinManager coinManager;
 	public GlobalLightManager globalLightManager;
 	public TimeLimitCounter timeLimitCounter;
 
@@ -56,28 +54,18 @@ public class RoundManager : MonoBehaviour
 	// Dish finished and eaten by guest
 	public void FinishDishSuccess(Transform targetChair, int coinCount)
 	{
-		chairGroupManager.PullDownCoin(targetChair, coinCount);
+		// chairGroupManager.PullDownCoin(targetChair, coinCount);
 	}
 
 	public void DefeatEnemySuccess()
 	{
-		hotPointManager.DefeatEnemy(1);
-		GetCoin(defeatEnemyrewardCoin);
+		hotPointManager.DefeatEnemy();
+		GetCoin(enemyReward);
 	}
 
 	public void GetCoin(int coinCount)
 	{
-		coinUIController.AddCoin(coinCount * hotPointManager.GetMoneyMultiplier());
-	}
-
-	public void SetFinishDishHotPoint(float point)
-	{
-		finishDishHotPoint = point;
-	}
-
-	public void SetAttackEnemyHotPoint(float point)
-	{
-		attackEnemyHotPoint = point;
+		coinManager.AddCoin(coinCount * hotPointManager.GetMoneyMultiplier());
 	}
 
 	public void GameOver()

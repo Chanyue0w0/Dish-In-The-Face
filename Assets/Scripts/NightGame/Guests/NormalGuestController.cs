@@ -76,7 +76,9 @@ public class NormalGuestController : MonoBehaviour
 	private bool isRetrying;
 	private bool isLeaving;
 
-	private Sprite orderFoodSprite = null;
+	private int spendCoin;
+	
+	private FoodStatus orderFoodStatus;
 	private NavMeshAgent agent;
 
 	private Vector3 lastPosition;
@@ -106,7 +108,7 @@ public class NormalGuestController : MonoBehaviour
 		{
 			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
-			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
+			// ��y��
 		}
 	}
 
@@ -137,7 +139,9 @@ public class NormalGuestController : MonoBehaviour
 		patienceBar.SetActive(false);
 		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
 		foodSpriteRenderer.sprite = null;
-
+		orderFoodStatus = null;
+		spendCoin = 0;
+		
 		// �_�I�P�X�f
 		if (RoundManager.Instance)
 		{
@@ -149,9 +153,9 @@ public class NormalGuestController : MonoBehaviour
 
 		if (targetChair != null)
 			agent.SetDestination(targetChair.position);
-		// else
-		// 	Leave();
-		
+		else
+			Leave(false);
+
 		lastPosition = transform.position;
 	}
 
@@ -162,7 +166,7 @@ public class NormalGuestController : MonoBehaviour
 		{
 			RoundManager.Instance.chairGroupManager.ReleaseChair(targetChair);
 			targetChair = null;
-			Leave();
+			Leave(false);
 		}
 
 		// ��F�y��
@@ -201,7 +205,7 @@ public class NormalGuestController : MonoBehaviour
 		foodSpriteRenderer.sprite = null; // ��Үɤ���ܭ���
 
 		// ��ҧ��u�M�w�v�\�I�A���|�������a�ݨ�F�����a�Ӥ��ʤ~��ܭq��ϥ�
-		orderFoodSprite = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
+		orderFoodStatus = RoundManager.Instance.foodsGroupManager.OrderFoodRandomly();
 		thinkTimeLeft = thinkOrderTime;
 
 		if (barFill != null) barFill.localScale = new Vector3(1f, 1f, 1f);
@@ -231,7 +235,7 @@ public class NormalGuestController : MonoBehaviour
 		questionIconObj.SetActive(false);
 
 		// �b��ܮؤW�i���\�I��
-		foodSpriteRenderer.sprite = orderFoodSprite;
+		foodSpriteRenderer.sprite = orderFoodStatus.GetComponent<SpriteRenderer>().sprite;
 		RoundManager.Instance.chairGroupManager.AddOrderGuest(this);
 
 		// �T�w�@�߮ɶ�
@@ -266,7 +270,7 @@ public class NormalGuestController : MonoBehaviour
 		}
 		else
 		{
-			Leave();
+			Leave(true);
 		}
 	}
 
@@ -291,12 +295,15 @@ public class NormalGuestController : MonoBehaviour
 	/// <summary>
 	/// ���a�e�\�C�Ȧb WaitingDish ���A�B�\�I���T�ɦ��ߡA�öi�J Eating�C
 	/// </summary>
-	public bool IsReceiveFood(Sprite foods)
+	public bool IsReceiveFood(FoodStatus foods)
 	{
-		if (!isSeated || state != GuestState.WaitingDish || foods != orderFoodSprite)
+		if (!isSeated || state != GuestState.WaitingDish || foods.foodType != orderFoodStatus.foodType)
 			return false;
 
 		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
+		
+		spendCoin += orderFoodStatus.Price;
+		
 		EnterEating();
 		return true;
 	}
@@ -310,7 +317,7 @@ public class NormalGuestController : MonoBehaviour
 		// �Y�O���ݪ��a���I�\ rawBtn ���
 		if (state == GuestState.WaitingOrder) return;
 		// �Ȧb�����\�I�B�B�������T����ܥi��I����
-		if (isSeated && state == GuestState.WaitingDish && food == orderFoodSprite) return;
+		if (isSeated && state == GuestState.WaitingDish && food == orderFoodStatus) return;
 		
 		
 		rawBtnIconObj.SetActive(false);
@@ -369,7 +376,7 @@ public class NormalGuestController : MonoBehaviour
 		if (barFill != null) barFill.localScale = new Vector3(ratio, 1f, 1f);
 	}
 
-	private void Leave()
+	private void Leave(bool isFinishDish)
 	{
 		if (isLeaving) return;
 		isLeaving = true;
@@ -388,6 +395,11 @@ public class NormalGuestController : MonoBehaviour
 		Vector3 exitPos = endPosition.position;
 		agent.SetDestination(exitPos);
 
+		if (isFinishDish)
+		{
+			RoundManager.Instance.coinManager.AddCoin(spendCoin);
+		}
+		
 		RoundManager.Instance.StartCoroutine(CheckExitReached(exitPos));
 	}
 
