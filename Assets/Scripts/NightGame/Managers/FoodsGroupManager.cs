@@ -10,18 +10,13 @@ public class FoodsGroupManager : MonoBehaviour
 	[Header("-------- Food Setting ---------")]
 	[SerializeField] private float foodSpawnInerval = 3f;
 
-	[Header("-------- Dessert Cooldown ---------")]
-	[SerializeField, Min(0f)] private float dessertColdownSeconds = 5f;
-	[SerializeField] private bool hideBarWhenReady = true;
-
 	[Header("-------- Reference ---------")]
 	[SerializeField] private GameObject[] foodPrefabs;
 	[SerializeField] private Transform[] foodsSpawnPositions;
 	[SerializeField] private SpriteRenderer foodSprite;
 	[SerializeField] private GameObject foodMakingBarFill;
-	[SerializeField] private Transform dessertBarFill;
-	[SerializeField] private Animator dessertAnimator;
-
+	[SerializeField] public DessertController dessertController;
+	
 	[Header("-------- Highlight ---------")]
 	[SerializeField] private GameObject yellowFrame;
 	[SerializeField] private Collider2D playerCollider;
@@ -34,9 +29,6 @@ public class FoodsGroupManager : MonoBehaviour
 	private List<GameObject> currentfoods;
 	private Transform currentFoodTarget = null;
 	private bool isPlayerInsideTrigger;
-
-	private float dessertCdRemain = 0f;
-	private bool IsDessertOnCd => dessertCdRemain > 0f;
 
 	private Coroutine makeRoutine = null;
 	private Sprite makingTargetSprite = null;
@@ -54,12 +46,6 @@ public class FoodsGroupManager : MonoBehaviour
 		if (yellowFrame != null)
 			yellowFrame.SetActive(false);
 
-		if (dessertBarFill != null)
-		{
-			dessertBarFill.gameObject.SetActive(false);
-			dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
-		}
-
 		SetupFoodMakingBar(false, 0f);
 
 		if (foodSprite != null)
@@ -68,7 +54,6 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void Update()
 	{
-		UpdateDesertColdDown();
 		UpdateSelectFood();
 		UpdateFoodOnTable();
 	}
@@ -117,62 +102,6 @@ public class FoodsGroupManager : MonoBehaviour
 	}
 
 	private bool IsMaking() => makeRoutine != null;
-
-	#endregion
-
-	#region ===== 點心技能 =====
-
-	private void UpdateDesertColdDown()
-	{
-		if (!IsDessertOnCd) return;
-
-		dessertCdRemain = Mathf.Max(0f, dessertCdRemain - Time.deltaTime);
-		float p = (dessertColdownSeconds <= 0f) ? 0f : (dessertCdRemain / dessertColdownSeconds);
-
-		if (dessertBarFill != null)
-			dessertBarFill.localScale = new Vector3(Mathf.Clamp01(p), 1f, 1f);
-
-		if (!IsDessertOnCd)
-		{
-			if (dessertBarFill != null)
-				dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
-			if (dessertBarFill != null && hideBarWhenReady)
-				dessertBarFill.gameObject.SetActive(false);
-		}
-	}
-
-	private void StartDessertColdown()
-	{
-		if (dessertColdownSeconds <= 0f)
-		{
-			dessertCdRemain = 0f;
-			if (dessertBarFill != null)
-				dessertBarFill.localScale = new Vector3(0f, 1f, 1f);
-			if (dessertBarFill != null && hideBarWhenReady)
-				dessertBarFill.gameObject.SetActive(false);
-			return;
-		}
-
-		dessertCdRemain = dessertColdownSeconds;
-
-		if (dessertBarFill != null)
-		{
-			dessertBarFill.gameObject.SetActive(true);
-			dessertBarFill.localScale = new Vector3(1f, 1f, 1f);
-		}
-	}
-
-	public bool UseDessert()
-	{
-		if (IsDessertOnCd) return false;
-
-		if (dessertAnimator != null)
-			dessertAnimator.Play("DessertEffect", -1, 0f);
-
-		RoundManager.Instance.chairGroupManager.ResetAllSetGuestsPatience();
-		StartDessertColdown();
-		return true;
-	}
 
 	#endregion
 

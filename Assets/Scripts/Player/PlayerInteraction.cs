@@ -116,7 +116,7 @@ public class PlayerInteraction : MonoBehaviour
 	private bool TryUseDessert()
 	{
 		if (!isEnableUseDessert) return false;
-		return RoundManager.Instance.foodsGroupManager.UseDessert();
+		return RoundManager.Instance.foodsGroupManager.dessertController.UseDessert();
 	}
 
 	// ===== Chair trigger handling =====

@@ -19450,8 +19450,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodSpawnInerval: 10
-  dessertColdownSeconds: 15
-  hideBarWhenReady: 1
   foodPrefabs:
   - {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
   - {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
@@ -19462,8 +19460,7 @@ MonoBehaviour:
   - {fileID: 1196872053}
   foodSprite: {fileID: 246241580}
   foodMakingBarFill: {fileID: 556635255}
-  dessertBarFill: {fileID: 675473783}
-  dessertAnimator: {fileID: 1347125700}
+  dessertController: {fileID: 1347125701}
   yellowFrame: {fileID: 1714105293}
   playerCollider: {fileID: 632101733}
   foodLayerMask:
@@ -64414,6 +64411,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1347125697}
   - component: {fileID: 1347125699}
+  - component: {fileID: 1347125701}
   - component: {fileID: 1347125698}
   - component: {fileID: 1347125700}
   m_Layer: 0
@@ -64559,6 +64557,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1347125701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1347125696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72192fc016133dc41aeb748da637fe6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dessertColdownSeconds: 5
+  hideBarWhenReady: 1
+  barFill: {fileID: 675473783}
+  dessertAnimator: {fileID: 1347125700}
 --- !u!1 &1347145860
 GameObject:
   m_ObjectHideFlags: 0
