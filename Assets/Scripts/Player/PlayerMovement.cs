@@ -137,7 +137,7 @@ public class PlayerMovement : MonoBehaviour
 		else moveVelocity = moveInput * moveSpeed;
 
 		// X 朝向翻轉（你的美術若相反可調整）
-		if (moveX != 0)
+		if (!isSlide && moveX != 0)
 			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 	}
 
@@ -283,12 +283,8 @@ public class PlayerMovement : MonoBehaviour
 			// 沿著路徑移動
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
 			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
+			transform.rotation = (nextPos.x >  transform.position.x) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
 			rb.MovePosition(nextPos);
-
-			// 依切線調整朝向
-			Vector3 tan = belt.EvaluateTangentByDistance(slideS);
-			if (tan.x != 0f)
-				transform.rotation = (tan.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
 
 			// 非循環：到端點自動停止
 			if (!belt.Loop && (Mathf.Approximately(slideS, 0f) || Mathf.Approximately(slideS, belt.TotalLength)))
