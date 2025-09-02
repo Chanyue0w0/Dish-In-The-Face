@@ -145,7 +145,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodType: 1
-  Price: 10
+  price: 10
+  attackList:
+  - animationName: 
+    attackDamage: 0
 --- !u!1 &2283782939565454668
 GameObject:
   m_ObjectHideFlags: 0

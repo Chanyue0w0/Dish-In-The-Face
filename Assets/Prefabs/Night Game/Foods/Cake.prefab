@@ -145,6 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodType: 2
+  price: 0
 --- !u!1 &8343058390338176394
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,7 +7,6 @@ public class DessertController : MonoBehaviour
     [SerializeField, Min(0f)] private float dessertColdownSeconds = 5f;
     // [SerializeField] private bool hideBarWhenReady = true;
     
-    
     [Header("-------- Reference ---------")]
     [SerializeField] private Transform barFill;
     [SerializeField] private Animator dessertAnimator;

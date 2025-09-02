@@ -299,7 +299,7 @@ public class NormalGuestController : MonoBehaviour
 
 		RoundManager.Instance.chairGroupManager.RemovOrderGuest(this);
 		
-		spendCoin += orderFoodStatus.Price;
+		spendCoin += orderFoodStatus.price;
 		
 		EnterEating();
 		return true;
