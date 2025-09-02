@@ -31,7 +31,6 @@ public class TroubleGusetController : MonoBehaviour
 	[SerializeField] private Animator animator;
 	[SerializeField] private GameObject attackHitBox;
 	[SerializeField] private NavMeshAgent agent;
-	[SerializeField] private SpriteRenderer spriteRenderer;
 	[SerializeField] private GameObject attackRangeBox;
 	[SerializeField] private GameObject hpBar;
 	[SerializeField] private Transform barFill;
@@ -284,6 +283,7 @@ public class TroubleGusetController : MonoBehaviour
 
 	public void SetSprite(Sprite sprite = null)
 	{
+		guestSpriteRenderer.color = Color.white;;
 		if (sprite != null)
 		{
 			guestSpriteRenderer.sprite = sprite;

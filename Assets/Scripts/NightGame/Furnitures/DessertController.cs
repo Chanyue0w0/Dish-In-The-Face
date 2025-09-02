@@ -5,7 +5,7 @@ public class DessertController : MonoBehaviour
     
     [Header("-------- Dessert Cooldown ---------")]
     [SerializeField, Min(0f)] private float dessertColdownSeconds = 5f;
-    [SerializeField] private bool hideBarWhenReady = true;
+    // [SerializeField] private bool hideBarWhenReady = true;
     
     
     [Header("-------- Reference ---------")]

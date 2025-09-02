@@ -17769,6 +17769,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 350722913}
+  - component: {fileID: 350722914}
   m_Layer: 0
   m_Name: Foos Spawn Position (1)
   m_TagString: Untagged
@@ -17791,6 +17792,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 580758480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &350722914
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350722912}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -1.2850932, y: 1.5352886}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 4.7074385, y: 5.0713563}
+  m_EdgeRadius: 0
 --- !u!1 &350845111
 GameObject:
   m_ObjectHideFlags: 0
@@ -19449,7 +19495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f94174b522f852448b52dfa5a48687c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodSpawnInerval: 10
+  foodSpawnInterval: 3
   foodPrefabs:
   - {fileID: 699073217482796172, guid: aa97f76c4869afc40a8e872fd35aca8d, type: 3}
   - {fileID: 1451790106902628493, guid: 23b0d432740a9fe40b314000e22ee8da, type: 3}
@@ -47484,6 +47530,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 934708409}
+  - component: {fileID: 934708410}
   m_Layer: 0
   m_Name: Foos Spawn Position (2)
   m_TagString: Untagged
@@ -47506,6 +47553,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 580758480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &934708410
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934708408}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 1.4470458, y: 1.2150832}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 4.7056894, y: 4.305128}
+  m_EdgeRadius: 0
 --- !u!1 &944209921
 GameObject:
   m_ObjectHideFlags: 0
@@ -57673,6 +57765,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1196872053}
+  - component: {fileID: 1196872054}
   m_Layer: 0
   m_Name: Foos Spawn Position (4)
   m_TagString: Untagged
@@ -57695,6 +57788,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 580758480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1196872054
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196872052}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 1.2857277, y: -1.047871}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 4.4485106, y: 4.1555157}
+  m_EdgeRadius: 0
 --- !u!1 &1199398895
 GameObject:
   m_ObjectHideFlags: 0
@@ -88411,6 +88549,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1865163220}
+  - component: {fileID: 1865163221}
   m_Layer: 0
   m_Name: Foos Spawn Position (3)
   m_TagString: Untagged
@@ -88433,6 +88572,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 580758480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1865163221
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1865163219}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -1.2837381, y: -1.0055195}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 4.6827965, y: 3.7474759}
+  m_EdgeRadius: 0
 --- !u!1 &1865364310
 GameObject:
   m_ObjectHideFlags: 0
