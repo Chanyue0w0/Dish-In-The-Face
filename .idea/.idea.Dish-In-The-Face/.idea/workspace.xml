@@ -6,15 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Beer.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Beer.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Cake.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Cake.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Pizza.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Pizza.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Art Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Art Test.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +139,8 @@
       <workItem from="1756530728989" duration="12614000" />
       <workItem from="1756629277824" duration="15651000" />
       <workItem from="1756706907655" duration="5696000" />
-      <workItem from="1756791010600" duration="6213000" />
+      <workItem from="1756791010600" duration="6844000" />
+      <workItem from="1756883785512" duration="12000" />
     </task>
     <servers />
   </component>

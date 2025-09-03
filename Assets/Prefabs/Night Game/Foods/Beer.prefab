@@ -146,9 +146,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodType: 1
   price: 10
+  skeletonAnim: {fileID: 7612120009292307888, guid: 1a0c204cf2d2c434e854161ac4979447, type: 3}
   attackList:
-  - animationName: 
-    attackDamage: 0
+  - animationName: battle/drumstick_1
+    attackDamage: 1
+  - animationName: battle/drumstick_2
+    attackDamage: 2
 --- !u!1 &2283782939565454668
 GameObject:
   m_ObjectHideFlags: 0

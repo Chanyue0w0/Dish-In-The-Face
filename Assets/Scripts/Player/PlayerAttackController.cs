@@ -16,7 +16,6 @@ public class PlayerAttackController : MonoBehaviour
 
 	[Tooltip("食物攻擊時，玩家向前位移花費的時間（一般攻擊）。")]
 	[SerializeField] private float attackMoveDuration = 0.5f;
-
 	#endregion
 
 	#region ===== Inspector：蓄力/重攻擊設定與 UI =====
@@ -38,19 +37,24 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private bool grabPickClosest = true;
 
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
-	
 	[Tooltip("Gizmos 顯示：抓取檢測盒中心沿著面向方向的位移量（視覺化用）。")]
 	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
 
 	[Tooltip("Gizmos 顯示：抓取檢測盒的寬x高（視覺化用）。")]
 	[SerializeField] private Vector2 grabBoxSize = new Vector2(1.2f, 1.0f);
+
 	[Header("----- Throw Settings -----")]
 	[Tooltip("把頭上的子物件往面向方向丟出的距離")]
 	[SerializeField, Min(0f)] private float throwDistance = 3f;
 
 	[Tooltip("丟出移動所花時間")]
 	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
-	
+	#endregion
+
+	#region ===== Inspector：連段重置 =====
+	[Header("--------- Combo Settings ---------")]
+	[Tooltip("距離上次『成功出招』超過此秒數，所有攻擊連段會重置回第一段（Food/Basic 通用）。")]
+	[SerializeField, Min(0f)] private float comboResetSeconds = 1.2f;
 	#endregion
 
 	#region ===== Inspector：參考物件 =====
@@ -65,12 +69,19 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 私有狀態 =====
-	private int cakeComboIndex = 0;          // DrumStick1/2 切換
-	private bool isSwichWeaponFinish = true; // 切武器動畫是否完成
+	// Food 連段：不再寫死 2 段，會依手上食物的 FoodStatus.attackList 數量循環
+	private int foodComboIndex = 0;
+	// Basic 連段：三段（Glove1/2/3）
+	private int gloveComboIndex = 0;
+
+	private bool isSwichWeaponFinish = true;  // 切武器動畫是否完成
 
 	// 蓄力狀態
 	private bool isCharging = false;
 	private float currentChargeTime = 0f;
+
+	// 連段重置計時：每次「攻擊動畫播完」才算一次成功出招
+	private float lastAttackTime = -999f;
 	#endregion
 
 	#region ===== Unity =====
@@ -87,6 +98,7 @@ public class PlayerAttackController : MonoBehaviour
 		UpdatePowerBarFill(0f);
 
 		SetAttackModeUI(attackMode);
+		lastAttackTime = -999f;
 	}
 
 	private void Update()
@@ -102,7 +114,6 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 對外：蓄力控制 =====
-	/// <summary> 開始蓄力（按下攻擊鍵）。Food 模式沒餐點就不顯示 UI。 </summary>
 	public void BeginCharge()
 	{
 		if (playerMovement == null) return;
@@ -123,9 +134,6 @@ public class PlayerAttackController : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// 放開攻擊鍵：依蓄力結算 普攻/重攻擊。滿條一定是重攻；或超過 heavyAttackThreshold 也算重攻。
-	/// </summary>
 	public void ReleaseChargeAndAttack()
 	{
 		if (playerMovement == null) return;
@@ -147,7 +155,6 @@ public class PlayerAttackController : MonoBehaviour
 		playerMovement.PerformAttack(isPower);
 	}
 
-	/// <summary> 取消蓄力（如 Dash/Slide），不觸發攻擊並關 UI。 </summary>
 	public void CancelChargeIfAny()
 	{
 		if (!isCharging) return;
@@ -163,6 +170,9 @@ public class PlayerAttackController : MonoBehaviour
 	public bool IsAttackSuccess(bool isPowerAttack)
 	{
 		EnsureAnimationManager();
+
+		// 攻擊開始前先檢查是否需要重置連段
+		ResetCombosIfTimedOut();
 
 		if (attackMode == AttackMode.Basic)
 		{
@@ -180,10 +190,10 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== Basic 模式：普/重/抓取/丟出 =====
+	#region ===== Basic 模式：手套三段 =====
 	private bool BasicAttack(bool isPowerAttack)
 	{
-		// 若頭上已有被抓的物件：優先丟出，然後就結束這次 Basic 攻擊
+		// 若頭上已有被抓的物件：優先丟出
 		if (grabOverHeadItem != null && grabOverHeadItem.transform.childCount > 0)
 		{
 			Transform carried = grabOverHeadItem.transform.GetChild(0);
@@ -195,220 +205,121 @@ public class PlayerAttackController : MonoBehaviour
 		{
 			bool grabbed = TryGrabEnemyOverHead();
 			if (grabbed) return true;
-			return DoBasicHitboxSlash("BasicAttack", 0.5f, true);
 		}
-		// 普攻
-		return DoBasicHitboxSlash("BasicAttack", 0.5f, true);
+
+		return PlayGloveAttack(isPowerAttack);
 	}
 
-	private bool DoBasicHitboxSlash(string vfxKey, float autoOffDelay, bool sfxPie)
+	private bool PlayGloveAttack(bool isPowerAttack)
 	{
-		SafeSetActive(basicAttackHitBox, true);
-
-		VFXPool.Instance?.SpawnVFX(vfxKey, basicAttackHitBox.transform.position, transform.rotation, 1f);
-
-		if (sfxPie)
-			AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-
-		Tween.Delay(autoOffDelay, () => SafeSetActive(basicAttackHitBox, false));
-		return true;
-	}
-
-	/// <summary>
-	/// 使用 grabOverHeadItem 區域來搜尋可抓取的敵人：
-	/// 條件：tag=="Enemy" 或 "enemy"；且具 BeGrabByPlayer 並允許被抓。
-	/// 成功後將物件變成 grabOverHeadItem.transform 子物件，local 位置/旋轉歸零。
-	/// </summary>
-	private bool TryGrabEnemyOverHead()
-	{
-		if (grabOverHeadItem == null)
-		{
-			Debug.LogWarning("Grab failed: grabOverHeadItem is null.");
+		if (animationManager != null && animationManager.IsBusy())
 			return false;
-		}
 
-		// 收集與抓取區域重疊的碰撞器
-		var results = new List<Collider2D>(16);
-		ContactFilter2D filter = new ContactFilter2D
+		SafeSetActive(basicAttackHitBox, false);
+
+		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+
+		string anim = animationManager.gloveAttack[gloveComboIndex];
+
+		animationManager.PlayAnimationOnce(anim, basicAttackHitBox, null, () =>
 		{
-			useTriggers = true,
-			useLayerMask = false // 不使用 Layer，改由 Tag 篩選
-		};
-		int count = grabOverHeadItem.OverlapCollider(filter, results);
-
-		if (count <= 0)
-		{
-			Debug.Log("Grab null");
-			return false;
-		}
-
-		// 從重疊清單中挑選符合條件者
-		Collider2D best = null;
-		float bestDist = float.PositiveInfinity;
-		Vector2 center = grabOverHeadItem.bounds.center;
-
-		foreach (var c in results)
-		{
-			if (c == null) continue;
-			var grab = c.GetComponent<BeGrabByPlayer>();
-			if (grab == null || !grab.GetIsCanBeGrabByPlayer()) continue;
-
-			if (!grabPickClosest) { best = c; break; }
-
-			float d = ((Vector2)c.bounds.center - center).sqrMagnitude;
-			if (d < bestDist)
-			{
-				bestDist = d;
-				best = c;
-			}
-		}
-
-		if (best == null)
-		{
-			// Debug.Log("Grab null");
-			return false;
-		}
-
-		// 真的抓起來：改父物件→放頭上→維持世界尺度
-		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabing(true);
-		Transform t = best.transform;
-		Vector3 worldScale = t.lossyScale;// 記住目前的世界尺度
-		// 設為子物件但保留世界座標/旋轉/尺度
-		t.SetParent(grabOverHeadItem.transform, true);
-
-		// 移到頭上（不影響尺度）
-		t.localPosition = Vector3.zero;
-		t.localRotation = Quaternion.identity;
-
-		// （可選保險）重新套回世界尺度，以避免浮點誤差
-		Vector3 pScale = grabOverHeadItem.transform.lossyScale;
-		t.localScale = new Vector3(
-			worldScale.x / (pScale.x == 0 ? 1 : pScale.x),
-			worldScale.y / (pScale.y == 0 ? 1 : pScale.y),
-			worldScale.z / (pScale.z == 0 ? 1 : pScale.z)
-		);
-
-		// 可選：若有剛體，讓它在頭上穩定
-		if (best.attachedRigidbody is Rigidbody2D rb)
-		{
-			rb.velocity = Vector2.zero;
-			rb.angularVelocity = 0f;
-			rb.isKinematic = true;
-			rb.gravityScale = 0f;
-		}
-
-		// Debug.Log("Grab success");
-		return true;
-	}
-	
-	/// <summary>
-	/// 將頭上的子物件往目前面向方向丟出一段距離；維持世界尺度不變。
-	/// </summary>
-	private bool ThrowCarriedObject(Transform t)
-	{
-		if (t == null) return false;
-
-		// 從頭上取下：保留世界座標/旋轉/尺度
-		Vector3 worldScale = t.lossyScale;
-		t.SetParent(null, true);
-		t.localScale = worldScale;
-
-		// 若有可抓取腳本，解除「被抓」狀態
-		if (t.TryGetComponent<BeGrabByPlayer>(out var grab))
-		{
-			grab.SetIsOnBeGrabing(false);
-		}
-
-		// 若有剛體：先暫時設為運動學避免與 tween 打架
-		Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
-		if (rb != null)
-		{
-			rb.velocity = Vector2.zero;
-			rb.angularVelocity = 0f;
-			rb.isKinematic = true;
-			// 丟完再恢復重力（避免丟的過程受重力影響偏移）
-		}
-
-		// 計算丟擲方向與目標位置
-		Vector2 dir = GetAimDir().sqrMagnitude > 0f ? GetAimDir().normalized : Vector2.right;
-		Vector3 start = t.position;
-		Vector3 end = start + (Vector3)(dir * throwDistance);
-
-		// 以 PrimeTween 做世界座標位移（線性）
-		Tween.Position(t, end, throwDuration).OnComplete(() =>
-		{
-			// 丟完恢復物理
-			if (t && rb != null)
-			{
-				rb.isKinematic = false;
-				rb.gravityScale = 1f; // 如需自訂原始值，可在抓取時記錄後還原
-			}
+			// 下一段
+			gloveComboIndex = (gloveComboIndex + 1) % 3;
+			// 成功出招時間點（用於連段重置）
+			lastAttackTime = Time.time;
 		});
 
 		return true;
 	}
+
+	private string ResolveGloveVFX(bool isPower)
+	{
+		if (isPower)
+		{
+			switch (gloveComboIndex)
+			{
+				default:
+				case 0: return "Glove_PowerAttack_1";
+				case 1: return "Glove_PowerAttack_2";
+				case 2: return "Glove_PowerAttack_3";
+			}
+		}
+		else
+		{
+			switch (gloveComboIndex)
+			{
+				default:
+				case 0: return "Glove_NormalAttack_1";
+				case 1: return "Glove_NormalAttack_2";
+				case 2: return "Glove_NormalAttack_3";
+			}
+		}
+	}
 	#endregion
 
-	#region ===== Food 模式：普/重 =====
+	#region ===== Food 模式：由 FoodStatus 決定動畫與段數 =====
 	private bool FoodAttacks(bool isPowerAttack)
 	{
-		var status = handItem ? handItem.GetComponentInChildren<FoodStatus>() : null;
+		var status = GetFoodStatusInHand();
 		if (status == null)
 		{
 			Debug.LogWarning("FoodStatus not found on handItem children.");
 			return false;
 		}
 
-		switch (status.foodType)
+		// 讀取這個食物的攻擊清單
+		var list = status.attackList;
+		int count = (list != null) ? list.Count : 0;
+		if (count <= 0)
 		{
-			case FoodType.Beer:
-			case FoodType.Drumstick:
-			{
-				if (animationManager != null && animationManager.IsBusy())
-					return false;
-
-				// combo>0 先消耗第一個物品（沿用你的習慣）
-				if (cakeComboIndex > 0) playerMovement.DestoryFirstItem();
-
-				// 暫時隱藏手上物件、鎖定移動
-				if (handItem) handItem.gameObject.SetActive(false);
-				playerMovement.SetEnableMoveControll(false);
-
-				float moveDistance = isPowerAttack ? attackMoveDistance * 1.2f : attackMoveDistance;
-				float moveDuration = isPowerAttack ? Mathf.Max(0.3f, attackMoveDuration * 0.9f) : attackMoveDuration;
-
-				AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-				playerMovement.MoveDistance(moveDistance, moveDuration, playerMovement.GetMoveInput());
-
-				string anim = ResolveFoodAnim(isPowerAttack);
-				string vfxName = ResolveFoodVFX(isPowerAttack);
-
-				// 由 Spine 事件開關 HitBox/VFX
-				animationManager.PlayAnimationOnce(anim, foodAttackHitBox, vfxName, () =>
-				{
-					cakeComboIndex = 1 - cakeComboIndex;
-					if (handItem) handItem.gameObject.SetActive(true);
-					playerMovement.SetEnableMoveControll(true);
-				});
-				return true;
-			}
-			default:
-				Debug.Log("This food has not attack");
-				return false;
+			Debug.Log("This food has no attackList, cannot perform food attack.");
+			return false;
 		}
-	}
 
-	private string ResolveFoodAnim(bool isPower)
-	{
-		return (cakeComboIndex % 2 == 0) ? animationManager.drumStick1 : animationManager.drumStick2;
-	}
+		if (animationManager != null && animationManager.IsBusy())
+			return false;
 
-	private string ResolveFoodVFX(bool isPower)
-	{
-		if (isPower)
-			return (cakeComboIndex % 2 == 0) ? "DrumStick_PowerAttack_1" : "DrumStick_PowerAttack_2";
-		else
-			return (cakeComboIndex % 2 == 0) ? "DrumStick_NormalAttack_1" : "DrumStick_NormalAttack_2";
+		// 若有多段：第二段之後依你原本習慣可消耗/處理物品（若仍要沿用，保留這行；不需要可移除）
+		if (foodComboIndex > 0)
+			playerMovement.DestoryFirstItem();
+
+		// 暫時隱藏手上物件、鎖定移動
+		if (handItem) handItem.gameObject.SetActive(false);
+		playerMovement.SetEnableMoveControll(false);
+
+		float moveDistance = isPowerAttack ? attackMoveDistance * 1.2f : attackMoveDistance;
+		float moveDuration = isPowerAttack ? Mathf.Max(0.3f, attackMoveDuration * 0.9f) : attackMoveDuration;
+
+		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+		playerMovement.MoveDistance(moveDistance, moveDuration, playerMovement.GetMoveInput());
+
+		// 依當前段數索引（循環）取出要播的動畫名稱
+		int idx = Mathf.Abs(foodComboIndex) % count;
+		string animName = list[idx]?.animationName;
+		if (string.IsNullOrEmpty(animName))
+		{
+			Debug.LogWarning($"Food attack animation at index {idx} is null/empty. Abort.");
+			// 還原移動/顯示
+			if (handItem) handItem.gameObject.SetActive(true);
+			playerMovement.SetEnableMoveControll(true);
+			return false;
+		}
+
+		// 你原本使用 Spine 事件開關 HitBox/VFX，這裡仍沿用 hitbox 注入與完成回呼
+		animationManager.PlayAnimationOnce(animName, foodAttackHitBox, /*vfx*/ null, () =>
+		{
+			// 下一段（依 attackList 數量循環）
+			foodComboIndex = (foodComboIndex + 1) % count;
+
+			// 記錄成功出招時間點
+			lastAttackTime = Time.time;
+
+			// 還原移動/顯示
+			if (handItem) handItem.gameObject.SetActive(true);
+			playerMovement.SetEnableMoveControll(true);
+		});
+
+		return true;
 	}
 	#endregion
 
@@ -432,6 +343,16 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 私有工具 =====
+	private void ResetCombosIfTimedOut()
+	{
+		if (comboResetSeconds <= 0f) return; // 0 表示永不重置
+		if (Time.time - lastAttackTime > comboResetSeconds)
+		{
+			foodComboIndex  = 0;
+			gloveComboIndex = 0;
+		}
+	}
+
 	private bool HasFoodInHand() => handItem != null && handItem.childCount > 0;
 
 	private bool ShouldShowChargeBar()
@@ -464,6 +385,18 @@ public class PlayerAttackController : MonoBehaviour
 		powerAttackBarFill.localScale = new Vector3(ratio01, s.y, s.z);
 	}
 
+	/// <summary> 取得手上第一個食物的 FoodStatus（往下找 Children）。 </summary>
+	private FoodStatus GetFoodStatusInHand()
+	{
+		if (!HasFoodInHand()) return null;
+		// 取第一個子物件（你的專案通常把食物塞在第 0 個）
+		Transform first = handItem.GetChild(0);
+		if (first == null) return null;
+
+		// 允許在孫層內
+		return first.GetComponentInChildren<FoodStatus>();
+	}
+
 	/// <summary>
 	/// 取得「抓取」時的朝向：優先使用玩家當下移動輸入；若為零向量，以角色左右翻面判定。
 	/// </summary>
@@ -482,11 +415,114 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
+	#region ===== 抓取 / 丟擲 =====
+	private bool TryGrabEnemyOverHead()
+	{
+		if (grabOverHeadItem == null)
+		{
+			Debug.LogWarning("Grab failed: grabOverHeadItem is null.");
+			return false;
+		}
+
+		var results = new List<Collider2D>(16);
+		ContactFilter2D filter = new ContactFilter2D
+		{
+			useTriggers = true,
+			useLayerMask = false
+		};
+		int count = grabOverHeadItem.OverlapCollider(filter, results);
+
+		if (count <= 0) return false;
+
+		Collider2D best = null;
+		float bestDist = float.PositiveInfinity;
+		Vector2 center = grabOverHeadItem.bounds.center;
+
+		foreach (var c in results)
+		{
+			if (c == null) continue;
+			var grab = c.GetComponent<BeGrabByPlayer>();
+			if (grab == null || !grab.GetIsCanBeGrabByPlayer()) continue;
+
+			if (!grabPickClosest) { best = c; break; }
+
+			float d = ((Vector2)c.bounds.center - center).sqrMagnitude;
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = c;
+			}
+		}
+
+		if (best == null) return false;
+
+		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabing(true);
+		Transform t = best.transform;
+		Vector3 worldScale = t.lossyScale;
+		t.SetParent(grabOverHeadItem.transform, true);
+		t.localPosition = Vector3.zero;
+		t.localRotation = Quaternion.identity;
+
+		Vector3 pScale = grabOverHeadItem.transform.lossyScale;
+		t.localScale = new Vector3(
+			worldScale.x / (pScale.x == 0 ? 1 : pScale.x),
+			worldScale.y / (pScale.y == 0 ? 1 : pScale.y),
+			worldScale.z / (pScale.z == 0 ? 1 : pScale.z)
+		);
+
+		if (best.attachedRigidbody is Rigidbody2D rb)
+		{
+			rb.velocity = Vector2.zero;
+			rb.angularVelocity = 0f;
+			rb.isKinematic = true;
+			rb.gravityScale = 0f;
+		}
+
+		return true;
+	}
+
+	private bool ThrowCarriedObject(Transform t)
+	{
+		if (t == null) return false;
+
+		Vector3 worldScale = t.lossyScale;
+		t.SetParent(null, true);
+		t.localScale = worldScale;
+
+		if (t.TryGetComponent<BeGrabByPlayer>(out var grab))
+		{
+			grab.SetIsOnBeGrabing(false);
+		}
+
+		Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
+		if (rb != null)
+		{
+			rb.velocity = Vector2.zero;
+			rb.angularVelocity = 0f;
+			rb.isKinematic = true;
+		}
+
+		Vector2 dir = GetAimDir().sqrMagnitude > 0f ? GetAimDir().normalized : Vector2.right;
+		Vector3 start = t.position;
+		Vector3 end = start + (Vector3)(dir * throwDistance);
+
+		Tween.Position(t, end, throwDuration).OnComplete(() =>
+		{
+			if (t && rb != null)
+			{
+				rb.isKinematic = false;
+				rb.gravityScale = 1f;
+			}
+		});
+
+		return true;
+	}
+	#endregion
+
 	#region ===== Gizmos（除錯視覺化） =====
 #if UNITY_EDITOR
 	private void OnDrawGizmosSelected()
 	{
-		// 抓取檢測盒視覺化（僅供參考）
 		Vector2 aim = Application.isPlaying ? GetAimDir() : Vector2.right;
 		Vector2 center = (Vector2)transform.position + aim * grabForwardOffset;
 		float angleDeg = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;

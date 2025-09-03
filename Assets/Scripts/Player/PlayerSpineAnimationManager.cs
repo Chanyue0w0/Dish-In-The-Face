@@ -15,20 +15,19 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runSide;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string drumStick1;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string drumStick2;
+	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
 
 	[Header("Movement Judge")]
-	[SerializeField] private float idleDeadzone = 0.05f;   // 視為靜止門檻（向量長度）
+	[SerializeField] private float idleDeadline = 0.05f;   // 視為靜止門檻（向量長度）
 	[SerializeField] private float sideXThreshold = 0.05f; // 判定「有水平輸入」的 X 門檻
 														   // 放到 PlayerSpineAnimationManager 類別內
-	private bool isOneShotPlaying = false;
+	private bool _isOneShotPlaying = false;
 
 	[Header("Reference")]
 	[SerializeField] private PlayerMovement playerMovement;
 
-	private string currentAnimName = null;
-	private float initialScaleX = 1f;
+	private string _currentAnimName = null;
+	// private float initialScaleX = 1f;
 
 	private void Reset()
 	{
@@ -37,23 +36,24 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	private void Awake()
 	{
-		if (skeletonAnim && skeletonAnim.Skeleton != null)
-			initialScaleX = skeletonAnim.Skeleton.ScaleX;
+		// if (skeletonAnim && skeletonAnim.Skeleton != null)
+		// 	initialScaleX = skeletonAnim.Skeleton.ScaleX;
 
 		// 取消所有跨動畫混合（避免漸變）
 		if (skeletonAnim && skeletonAnim.AnimationState != null && skeletonAnim.AnimationState.Data != null)
 			skeletonAnim.AnimationState.Data.DefaultMix = 0f;
 	}
 
+	// ReSharper disable Unity.PerformanceAnalysis
 	/// <summary>由移動腳本每幀餵入目前移動向量</summary>
 	public void UpdateFromMovement(Vector2 moveInput, bool isDashingIgnored = false, bool isSlidingIgnored = false)
 	{
-		if (isOneShotPlaying) return;
+		if (_isOneShotPlaying) return;
 
 		if (!skeletonAnim || skeletonAnim.Skeleton == null) return;
 
 		float sqrMag = moveInput.sqrMagnitude;
-		bool isMoving = sqrMag > idleDeadzone * idleDeadzone;
+		bool isMoving = sqrMag > idleDeadline * idleDeadline;
 
 
 		// ===== Slide =====
@@ -86,22 +86,16 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		}
 
 		// ===== 非側向：只在純往後才用 back；否則用前視 run =====
-		if (moveInput.y > 0f) // 純往後
-		{
-			SetAnimIfChanged(runBack, true, snap: true);
-		}
-		else // 往前或斜前(此時 |x| < threshold)，一律視為前視 run
-		{
-			SetAnimIfChanged(runFront, true, snap: true);
-		}
+		// 往前或斜前(此時 |x| < threshold)，一律視為前視 run
+		SetAnimIfChanged(moveInput.y > 0f ? runBack : runFront, true, snap: true); // 純往後
 	}
 
 	/// <summary>如果動畫不同才切換；snap=true 會把 mixDuration 設為 0 直接切換</summary>
 	private void SetAnimIfChanged(string animName, bool loop, bool snap)
 	{
-		if (currentAnimName == animName) return;
+		if (_currentAnimName == animName) return;
 
-		currentAnimName = animName;
+		_currentAnimName = animName;
 		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, loop);
 		if (entry != null && snap)
 		{
@@ -126,7 +120,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		if (entry == null) return;
 
 		entry.MixDuration = 0f;  // 直接切，不做漸變
-		isOneShotPlaying = true;
+		_isOneShotPlaying = true;
 
 		// 事件：命中開始 / 顯示特效
 		entry.Event += (t, e) =>
@@ -150,7 +144,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 			if (closed) return;
 			closed = true;
 			if (hitBox) hitBox.SetActive(false);
-			isOneShotPlaying = false;
+			_isOneShotPlaying = false;
 			onComplete?.Invoke();
 		};
 
@@ -159,9 +153,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		entry.Interrupt += _ => close();
 	}
 
-	/// <summary>依 x 正負翻轉側向：x>0 面向右，x<0 面向左。</summary>
-	private void SetFlipByX(float x)
-	{
+	// /// <summary>依 x 正負翻轉側向：x>0 面向右，x<0 面向左。</summary>
+	// private void SetFlipByX(float x)
+	// {
 		//if (x > 0f)
 		//	skeletonAnim.Skeleton.ScaleX = -Mathf.Abs(initialScaleX);  // 右
 		//else if (x < 0f)
@@ -171,11 +165,11 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		//// 立刻強制刷新骨架（版本相容）
 		//skeletonAnim.Update(0f);
 		//skeletonAnim.LateUpdate();
-	}
+	// }
 
 	/// <summary>前/後動畫用：把 X 翻轉還原為初始。</summary>
-	private void ResetFlipX()
-	{
+	// private void ResetFlipX()
+	// {
 		//if (!Mathf.Approximately(skeletonAnim.Skeleton.ScaleX, initialScaleX))
 		//{
 		//	skeletonAnim.Skeleton.ScaleX = initialScaleX;
@@ -183,8 +177,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		//	skeletonAnim.Update(0f);
 		//	skeletonAnim.LateUpdate();
 		//}
-	}
+	// }
 
 
-	public bool IsBusy() => isOneShotPlaying;
+	public bool IsBusy() => _isOneShotPlaying;
 }

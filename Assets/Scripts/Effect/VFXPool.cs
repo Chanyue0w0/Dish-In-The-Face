@@ -63,6 +63,8 @@ public class VFXPool : MonoBehaviour
     /// </summary>
     public GameObject SpawnVFX(string key, Vector3 position, Quaternion rotation, float autoReleaseTime = -1f)
     {
+        if (key == null || string.IsNullOrEmpty(key)) return null;
+        
         if (!pools.ContainsKey(key))
         {
             Debug.LogWarning($"VFXPool: 找不到 Key '{key}' 對應的物件池。");
