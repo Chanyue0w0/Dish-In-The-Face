@@ -49,6 +49,7 @@ MonoBehaviour:
     - Sirenix.OdinInspector.Modules.Unity.Addressables
     - Sirenix.OdinInspector.Modules.UnityLocalization
     - spine-csharp
+    - spine-timeline
     - spine-unity
     - spine-unity-examples
     - UniTask

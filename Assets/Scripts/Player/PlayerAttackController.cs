@@ -1,5 +1,4 @@
 using UnityEngine;
-using FoodsGroup;
 using PrimeTween;
 using System.Collections.Generic;
 
@@ -7,6 +6,8 @@ public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
 {
+	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
+
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
@@ -74,7 +75,7 @@ public class PlayerAttackController : MonoBehaviour
 	// Basic 連段：三段（Glove1/2/3）
 	private int gloveComboIndex = 0;
 
-	private bool isSwichWeaponFinish = true;  // 切武器動畫是否完成
+	private bool isSwitchWeaponFinish = true;  // 切武器動畫是否完成
 
 	// 蓄力狀態
 	private bool isCharging = false;
@@ -87,7 +88,7 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== Unity =====
 	private void Start()
 	{
-		isSwichWeaponFinish = true;
+		isSwitchWeaponFinish = true;
 
 		// 保險關閉 hitbox
 		SafeSetActive(foodAttackHitBox, false);
@@ -207,15 +208,16 @@ public class PlayerAttackController : MonoBehaviour
 			if (grabbed) return true;
 		}
 
-		return PlayGloveAttack(isPowerAttack);
+		return PlayGloveAttack();
 	}
 
-	private bool PlayGloveAttack(bool isPowerAttack)
+	private bool PlayGloveAttack()
 	{
 		if (animationManager != null && animationManager.IsBusy())
 			return false;
 
 		SafeSetActive(basicAttackHitBox, false);
+		playerMovement.SetEnableMoveControl(false);
 
 		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 
@@ -227,34 +229,12 @@ public class PlayerAttackController : MonoBehaviour
 			gloveComboIndex = (gloveComboIndex + 1) % 3;
 			// 成功出招時間點（用於連段重置）
 			lastAttackTime = Time.time;
+			playerMovement.SetEnableMoveControl(true);
 		});
 
 		return true;
 	}
-
-	private string ResolveGloveVFX(bool isPower)
-	{
-		if (isPower)
-		{
-			switch (gloveComboIndex)
-			{
-				default:
-				case 0: return "Glove_PowerAttack_1";
-				case 1: return "Glove_PowerAttack_2";
-				case 2: return "Glove_PowerAttack_3";
-			}
-		}
-		else
-		{
-			switch (gloveComboIndex)
-			{
-				default:
-				case 0: return "Glove_NormalAttack_1";
-				case 1: return "Glove_NormalAttack_2";
-				case 2: return "Glove_NormalAttack_3";
-			}
-		}
-	}
+	
 	#endregion
 
 	#region ===== Food 模式：由 FoodStatus 決定動畫與段數 =====
@@ -269,7 +249,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		// 讀取這個食物的攻擊清單
 		var list = status.attackList;
-		int count = (list != null) ? list.Count : 0;
+		int count = list?.Count ?? 0;
 		if (count <= 0)
 		{
 			Debug.Log("This food has no attackList, cannot perform food attack.");
@@ -281,17 +261,13 @@ public class PlayerAttackController : MonoBehaviour
 
 		// 若有多段：第二段之後依你原本習慣可消耗/處理物品（若仍要沿用，保留這行；不需要可移除）
 		if (foodComboIndex > 0)
-			playerMovement.DestoryFirstItem();
+			playerMovement.DestroyFirstItem();
 
 		// 暫時隱藏手上物件、鎖定移動
 		if (handItem) handItem.gameObject.SetActive(false);
-		playerMovement.SetEnableMoveControll(false);
-
-		float moveDistance = isPowerAttack ? attackMoveDistance * 1.2f : attackMoveDistance;
-		float moveDuration = isPowerAttack ? Mathf.Max(0.3f, attackMoveDuration * 0.9f) : attackMoveDuration;
+		playerMovement.SetEnableMoveControl(false);
 
 		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-		playerMovement.MoveDistance(moveDistance, moveDuration, playerMovement.GetMoveInput());
 
 		// 依當前段數索引（循環）取出要播的動畫名稱
 		int idx = Mathf.Abs(foodComboIndex) % count;
@@ -301,7 +277,7 @@ public class PlayerAttackController : MonoBehaviour
 			Debug.LogWarning($"Food attack animation at index {idx} is null/empty. Abort.");
 			// 還原移動/顯示
 			if (handItem) handItem.gameObject.SetActive(true);
-			playerMovement.SetEnableMoveControll(true);
+			playerMovement.SetEnableMoveControl(true);
 			return false;
 		}
 
@@ -316,7 +292,7 @@ public class PlayerAttackController : MonoBehaviour
 
 			// 還原移動/顯示
 			if (handItem) handItem.gameObject.SetActive(true);
-			playerMovement.SetEnableMoveControll(true);
+			playerMovement.SetEnableMoveControl(true);
 		});
 
 		return true;
@@ -326,20 +302,20 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== UI / 武器切換 =====
 	public void SetAttackModeUI(AttackMode mode)
 	{
-		if (!isSwichWeaponFinish) return;
+		if (!isSwitchWeaponFinish) return;
 		attackMode = mode;
 
 		if (weaponUIAnimator == null) return;
 		switch (attackMode)
 		{
-			case AttackMode.Basic: weaponUIAnimator.SetInteger("WeaponType", 1); break;
-			case AttackMode.Food:  weaponUIAnimator.SetInteger("WeaponType", 2); break;
-			default:               weaponUIAnimator.SetInteger("WeaponType", 1); break;
+			case AttackMode.Basic: weaponUIAnimator.SetInteger(WeaponType, 1); break;
+			case AttackMode.Food:  weaponUIAnimator.SetInteger(WeaponType, 2); break;
+			default:               weaponUIAnimator.SetInteger(WeaponType, 1); break;
 		}
 	}
 
 	public AttackMode GetAttackMode() => attackMode;
-	public void SetIsSwichWeaponFinish(bool isFinish) => isSwichWeaponFinish = isFinish;
+	public void SetIsSwitchWeaponFinish(bool isFinish) => isSwitchWeaponFinish = isFinish;
 	#endregion
 
 	#region ===== 私有工具 =====
@@ -470,7 +446,7 @@ public class PlayerAttackController : MonoBehaviour
 			worldScale.z / (pScale.z == 0 ? 1 : pScale.z)
 		);
 
-		if (best.attachedRigidbody is Rigidbody2D rb)
+		if (best.attachedRigidbody is { } rb)
 		{
 			rb.velocity = Vector2.zero;
 			rb.angularVelocity = 0f;

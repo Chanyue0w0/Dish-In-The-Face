@@ -5,8 +5,19 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 {
 	[Header("Spine")]
 	[SerializeField] private SkeletonAnimation skeletonAnim; // 角色的 SkeletonAnimation
-	[SerializeField] private int baseTrack = 0;              // 主要動作 Track（一般用 0）
+	[SerializeField] private int baseTrack;              // 主要動作 Track（一般用 0）
 
+	[Header("Movement Judge")]
+	[SerializeField] private float attackMoveSpeed = 40f;   // 視為靜止門檻（向量長度）
+	[SerializeField] private float idleDeadline = 0.05f;   // 視為靜止門檻（向量長度）
+	[SerializeField] private float sideXThreshold = 0.05f; // 判定「有水平輸入」的 X 門檻
+	// 放到 PlayerSpineAnimationManager 類別內
+	private bool isOneShotPlaying;
+
+	[Header("Reference")]
+	[SerializeField] private PlayerMovement playerMovement;
+
+	
 	[Header("Animation Names")]
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
@@ -17,30 +28,16 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
 
-	[Header("Movement Judge")]
-	[SerializeField] private float idleDeadline = 0.05f;   // 視為靜止門檻（向量長度）
-	[SerializeField] private float sideXThreshold = 0.05f; // 判定「有水平輸入」的 X 門檻
-														   // 放到 PlayerSpineAnimationManager 類別內
-	private bool _isOneShotPlaying = false;
-
-	[Header("Reference")]
-	[SerializeField] private PlayerMovement playerMovement;
-
-	private string _currentAnimName = null;
-	// private float initialScaleX = 1f;
-
-	private void Reset()
-	{
-		if (!skeletonAnim) skeletonAnim = GetComponentInChildren<SkeletonAnimation>();
-	}
+	private string currentAnimName;
 
 	private void Awake()
 	{
-		// if (skeletonAnim && skeletonAnim.Skeleton != null)
-		// 	initialScaleX = skeletonAnim.Skeleton.ScaleX;
-
+		currentAnimName = null;
+		isOneShotPlaying = false;
+		baseTrack = 0;
+		if (!skeletonAnim) skeletonAnim = GetComponentInChildren<SkeletonAnimation>();
 		// 取消所有跨動畫混合（避免漸變）
-		if (skeletonAnim && skeletonAnim.AnimationState != null && skeletonAnim.AnimationState.Data != null)
+		if (skeletonAnim && skeletonAnim.AnimationState is { Data: not null })
 			skeletonAnim.AnimationState.Data.DefaultMix = 0f;
 	}
 
@@ -48,7 +45,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	/// <summary>由移動腳本每幀餵入目前移動向量</summary>
 	public void UpdateFromMovement(Vector2 moveInput, bool isDashingIgnored = false, bool isSlidingIgnored = false)
 	{
-		if (_isOneShotPlaying) return;
+		if (isOneShotPlaying) return;
 
 		if (!skeletonAnim || skeletonAnim.Skeleton == null) return;
 
@@ -93,9 +90,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	/// <summary>如果動畫不同才切換；snap=true 會把 mixDuration 設為 0 直接切換</summary>
 	private void SetAnimIfChanged(string animName, bool loop, bool snap)
 	{
-		if (_currentAnimName == animName) return;
+		if (currentAnimName == animName) return;
 
-		_currentAnimName = animName;
+		currentAnimName = animName;
 		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, loop);
 		if (entry != null && snap)
 		{
@@ -103,6 +100,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		}
 	}
 
+	// ReSharper disable Unity.PerformanceAnalysis
+	// ReSharper disable Unity.PerformanceAnalysis
+	// ReSharper disable Unity.PerformanceAnalysis
 	/// <summary>
 	/// 播放一段 Spine 動畫（不循環），並監聽事件：
 	/// - "Attack_HitStart": 啟用傳入的 hitBox
@@ -120,65 +120,60 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		if (entry == null) return;
 
 		entry.MixDuration = 0f;  // 直接切，不做漸變
-		_isOneShotPlaying = true;
+		isOneShotPlaying = true;
 
 		// 事件：命中開始 / 顯示特效
 		entry.Event += (t, e) =>
 		{
 			var evtName = e.Data.Name;
-			if (evtName == "Attack_HitStart")
+
+			switch (evtName)
 			{
-				if (hitBox) hitBox.SetActive(true);
-			}
-			else if (evtName == "FX_Show" && vfxName != "")
-			{
-				var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
-				VFXPool.Instance.SpawnVFX(vfxName, pos, transform.rotation, 2f);
+				case "Attack_HitStart":
+					if (hitBox) hitBox.SetActive(true);
+					break;
+				case "FX_Show":
+					if (!string.IsNullOrEmpty(vfxName))
+					{
+						var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
+						VFXPool.Instance.SpawnVFX(vfxName, pos, transform.rotation, 2f);
+					}
+					break;
+				case "Attack_MoveStart":
+					// playerMovement.SetEnableMoveControl(true);
+					// playerMovement.SetMoveSpeed(attackMoveSpeed);
+					break;
+				case "Attack_MoveEnd":
+					// playerMovement.SetEnableMoveControl(false);
+					// playerMovement.SetMoveSpeed(attackMoveSpeed);
+					break;
+				case "Dodge_CancelEnable":
+					// playerMovement.SetEnableMoveControl(true);
+					// 中斷動畫(動畫提前結束)，恢復操作(也可執行其他動作)
+					break;
+				default:
+					Debug.Log("Animation no progress by event name: " + evtName);
+					break;
 			}
 		};
 
 		// 收尾：不論完成 / 中斷都保證關閉 hitbox、解鎖與回呼
 		bool closed = false;
-		System.Action close = () =>
+
+		entry.Complete += _ => Close();
+		entry.End += _ => Close();
+		entry.Interrupt += _ => Close();
+		return;
+
+		void Close()
 		{
 			if (closed) return;
 			closed = true;
 			if (hitBox) hitBox.SetActive(false);
-			_isOneShotPlaying = false;
+			isOneShotPlaying = false;
 			onComplete?.Invoke();
-		};
-
-		entry.Complete += _ => close();
-		entry.End += _ => close();
-		entry.Interrupt += _ => close();
+		}
 	}
 
-	// /// <summary>依 x 正負翻轉側向：x>0 面向右，x<0 面向左。</summary>
-	// private void SetFlipByX(float x)
-	// {
-		//if (x > 0f)
-		//	skeletonAnim.Skeleton.ScaleX = -Mathf.Abs(initialScaleX);  // 右
-		//else if (x < 0f)
-		//	skeletonAnim.Skeleton.ScaleX = Mathf.Abs(initialScaleX); // 左
-		//															  // x≈0 不改變
-
-		//// 立刻強制刷新骨架（版本相容）
-		//skeletonAnim.Update(0f);
-		//skeletonAnim.LateUpdate();
-	// }
-
-	/// <summary>前/後動畫用：把 X 翻轉還原為初始。</summary>
-	// private void ResetFlipX()
-	// {
-		//if (!Mathf.Approximately(skeletonAnim.Skeleton.ScaleX, initialScaleX))
-		//{
-		//	skeletonAnim.Skeleton.ScaleX = initialScaleX;
-		//	// 強制刷新
-		//	skeletonAnim.Update(0f);
-		//	skeletonAnim.LateUpdate();
-		//}
-	// }
-
-
-	public bool IsBusy() => _isOneShotPlaying;
+	public bool IsBusy() => isOneShotPlaying;
 }

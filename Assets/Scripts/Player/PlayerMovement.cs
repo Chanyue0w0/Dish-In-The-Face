@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float dashSpeed = 10f;
 	[SerializeField] private float dashDistance = 2f;
 	[SerializeField] private float dashCooldown = 0.1f;
-	[SerializeField] private float dashVirbation = 0.7f;
+	[SerializeField] private float dashVibration = 0.7f;
 	[SerializeField] private List<string> passThroughTags;
 
 	[Header("Slide Interrupt")]
@@ -27,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 	[SerializeField] private bool isSlide = false;
-	[SerializeField] private bool isEnableMoveControll = true;
+	[SerializeField] private bool isEnableMoveControl = true;
 
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
@@ -144,7 +144,7 @@ public class PlayerMovement : MonoBehaviour
 	private void Move()
 	{
 		if (isSlide) return; // 滑行時由 Slide() 控制位置
-		if (!isEnableMoveControll)
+		if (!isEnableMoveControl)
 		{
 			rb.velocity = Vector2.zero;
 			return;
@@ -182,7 +182,7 @@ public class PlayerMovement : MonoBehaviour
 		if (attackController.GetAttackMode() == AttackMode.Food)
 		{
 			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
-			DestoryFirstItem();
+			DestroyFirstItem();
 		}
 	}
 	#endregion
@@ -209,7 +209,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		isDashing = true;
 		lastDashTime = Time.time;
-		RumbleManager.Instance.RumbleContinuous(dashVirbation, dashVirbation);
+		RumbleManager.Instance.RumbleContinuous(dashVibration, dashVibration);
 
 		float elapsed = 0f;
 		while (elapsed < dashDuration)
@@ -304,41 +304,6 @@ public class PlayerMovement : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== 位移工具 =====
-	private IEnumerator MoveDistanceCoroutine(float distance, float duration, Vector2 direction)
-	{
-		SetEnableMoveControll(false);
-
-		// 決定方向（若未給方向，依當前朝向）
-		if (direction == Vector2.zero)
-		{
-			direction = transform.rotation.y >= 0 ? new Vector2(-1, 0) : new Vector2(1, 0);
-		}
-
-		direction = direction.normalized;
-		float elapsed = 0f;
-
-		Vector2 start = rb.position;
-		Vector2 target = start + direction * distance;
-
-		while (elapsed < duration)
-		{
-			if (isEnableMoveControll) break;
-
-			float t = elapsed / duration;
-			Vector2 nextPos = Vector2.Lerp(start, target, t);
-			rb.MovePosition(nextPos);
-
-			elapsed += Time.fixedDeltaTime;
-			yield return new WaitForFixedUpdate();
-		}
-
-		if (!isEnableMoveControll)
-			rb.MovePosition(target);
-
-		SetEnableMoveControll(true);
-	}
-	#endregion
 
 	#region ===== 碰撞檢測（桌面） =====
 	private void OnCollisionStay2D(Collision2D collision)
@@ -363,9 +328,9 @@ public class PlayerMovement : MonoBehaviour
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
 	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
-	public void SetEnableMoveControll(bool isEnable) { isEnableMoveControll = isEnable; }
+	public void SetEnableMoveControl(bool isEnable) { isEnableMoveControl = isEnable; }
 
-	public void DestoryFirstItem()
+	public void DestroyFirstItem()
 	{
 		if (handItemNow != null && handItemNow.transform.childCount > 0)
 		{
@@ -373,14 +338,12 @@ public class PlayerMovement : MonoBehaviour
 			if (handItemUI) handItemUI.ChangeHandItemUI();
 		}
 	}
-
-	/// <summary> 依當前輸入方向移動一段距離/秒數 </summary>
-	public void MoveDistance(float distance, float duration, Vector2 direction)
-	{
-		StartCoroutine(MoveDistanceCoroutine(distance, duration, direction));
-	}
+	
+	
+	
 
 	public float GetMoveSpeed() => moveSpeed;
+	public void ResetMoveSpeed() => moveSpeed = defaultMoveSpeed;
 	public Vector2 GetMoveInput() => moveInput;
 
 	/// <summary> 取得滑行切線方向（y 軸） </summary>

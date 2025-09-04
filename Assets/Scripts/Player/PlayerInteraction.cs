@@ -12,7 +12,6 @@ public class PlayerInteraction : MonoBehaviour
 	[SerializeField] private int getFoodCount = 1;
 	// [SerializeField] private bool isGetOneFood = true;
 
-
 	[Header("-------- Reference ---------")]
 	[SerializeField] private PlayerMovement movement; // Reference to Movement component
 	[SerializeField] private HandItemUI handItemUI;   // Updates hand item UI
@@ -21,7 +20,6 @@ public class PlayerInteraction : MonoBehaviour
 	private List<Collider2D> currentChairTriggers;
 
 	private bool isEnableUseDessert ;
-
 
 	private void Start()
 	{

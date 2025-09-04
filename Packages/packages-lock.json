@@ -7,6 +7,14 @@
       "dependencies": {},
       "hash": "64285ae060c9fe2aeb2a73b076b160939ce3be1a"
     },
+    "com.esotericsoftware.spine.timeline": {
+      "version": "file:C:/Users/user/Downloads/com.esotericsoftware.spine.timeline-4.2-2024-04-17/com.esotericsoftware.spine.timeline-4.2",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.timeline": "1.2.10"
+      }
+    },
     "com.h8man.2d.navmeshplus": {
       "version": "https://github.com/h8man/NavMeshPlus.git",
       "depth": 0,

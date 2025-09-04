@@ -26608,7 +26608,7 @@ Transform:
   m_GameObject: {fileID: 532069160}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5300004, y: 5.18, z: -10}
+  m_LocalPosition: {x: 2.5100005, y: 5.18, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -100015,6 +100015,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skeletonAnim: {fileID: 7008780407143633419}
   baseTrack: 0
+  attackMoveSpeed: 40
+  idleDeadline: 0.05
+  sideXThreshold: 0.05
+  playerMovement: {fileID: 3886983120650489697}
   idleFront: idle/idle
   idleBack: idle/idle_back
   runFront: run/run
@@ -100022,15 +100026,10 @@ MonoBehaviour:
   runSide: run/run_side
   dashNormal: dash/dash_angry  eye1
   dashSlide: dash/tabledash
-  drumStick1: battle/drumstick_1
-  drumStick2: battle/drumstick_2
   gloveAttack:
   - Glove/GloveAttack_1
   - Glove/GloveAttack_2
   - Glove/GloveAttack_3
-  idleDeadline: 0.05
-  sideXThreshold: 0.05
-  playerMovement: {fileID: 3886983120650489697}
 --- !u!1001 &3302280276932599546
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -100158,7 +100157,7 @@ MonoBehaviour:
   dashSpeed: 30
   dashDistance: 6
   dashCooldown: 0.3
-  dashVirbation: 0.7
+  dashVibration: 0.7
   passThroughTags:
   - Table
   - Enemy
@@ -100168,7 +100167,7 @@ MonoBehaviour:
   slideInterruptDelay: 0.25
   isDashing: 0
   isSlide: 0
-  isEnableMoveControll: 1
+  isEnableMoveControl: 1
   attackController: {fileID: 4841083595368333348}
   animationManager: {fileID: 3196603359548987752}
   handItemUI: {fileID: 1603619951}
@@ -100388,7 +100387,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6611222884156134455}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.53, y: 5.18, z: 0}
   m_LocalScale: {x: 10.21437, y: 12.90537, z: 1.85309}
   m_ConstrainProportionsScale: 0
@@ -100401,7 +100400,7 @@ Transform:
   - {fileID: 2321388943298343809}
   - {fileID: 2622958310908609508}
   m_Father: {fileID: 806111023}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &4841083595368333348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100684,6 +100683,8 @@ GameObject:
   - component: {fileID: 8111366444164690051}
   - component: {fileID: 1960584702031759216}
   - component: {fileID: 5880536073360383864}
+  - component: {fileID: 8111366444164690052}
+  - component: {fileID: 8111366444164690053}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -101048,6 +101049,52 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.31550732, y: 0.32618523}
   m_EdgeRadius: 0
+--- !u!95 &8111366444164690052
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611222884156134455}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!320 &8111366444164690053
+PlayableDirector:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611222884156134455}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_PlayableAsset: {fileID: 11400000, guid: 97b5c1550e070a540b37a37fdeb3dd0a, type: 2}
+  m_InitialState: 1
+  m_WrapMode: 2
+  m_DirectorUpdateMode: 1
+  m_InitialTime: 0
+  m_SceneBindings:
+  - key: {fileID: -8374669475553063837, guid: 16bb3dacde794044eaf134209c93b3fc, type: 2}
+    value: {fileID: 7008780407143633419}
+  - key: {fileID: 4982164008022169620, guid: 16bb3dacde794044eaf134209c93b3fc, type: 2}
+    value: {fileID: 8111366444164690052}
+  - key: {fileID: -8374669475553063837, guid: 97b5c1550e070a540b37a37fdeb3dd0a, type: 2}
+    value: {fileID: 7008780407143633419}
+  - key: {fileID: 1044322423755394028, guid: 97b5c1550e070a540b37a37fdeb3dd0a, type: 2}
+    value: {fileID: 8111366444164690052}
+  m_ExposedReferences:
+    m_References: []
 --- !u!4 &8118503567517378019
 Transform:
   m_ObjectHideFlags: 0
