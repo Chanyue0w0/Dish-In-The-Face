@@ -1,24 +1,41 @@
-﻿﻿using UnityEngine;
+﻿using UnityEngine;
 using Spine.Unity;
 
+/// <summary>
+/// 控制玩家 Spine 與 Animator 之間的橋接：
+/// 1) 依移動/滑行/衝刺 更新 Animator Bool 與方向（isSide / isBack / isMove / isSlide / isDash）
+/// 2) 自動切換 Animator Layer 權重（Base、SpecialMove、Attack、React）
+/// 3) 提供攻擊/受傷的公開 API（Begin/EndAttack、SetAttackCombo、SetHurt）
+/// 4) 保留原本 Spine 播放與一次性播放（含事件）
+/// </summary>
 public class PlayerSpineAnimationManager : MonoBehaviour
 {
+	#region ===== Animator Hash =====
+	private static readonly int AnimIsSide       = Animator.StringToHash("isSide");
+	private static readonly int AnimIsBack       = Animator.StringToHash("isBack");
+	private static readonly int AnimIsMove       = Animator.StringToHash("isMove");
+	private static readonly int AnimIsSlide      = Animator.StringToHash("isSlide");
+	private static readonly int AnimIsDash       = Animator.StringToHash("isDash");
+	private static readonly int AnimAttackCombo  = Animator.StringToHash("AttackCombo");
+	private static readonly int AnimIsHurt       = Animator.StringToHash("isHurt");
+	#endregion
+
+	#region ===== Inspector：Spine / Animator 設定 =====
 	[Header("Spine")]
 	[SerializeField] private SkeletonAnimation skeletonAnim; // 角色的 SkeletonAnimation
-	[SerializeField] private int baseTrack;              // 主要動作 Track（一般用 0）
-
-	[Header("Movement Judge")]
-	[SerializeField] private float attackMoveSpeed = 40f;   // 視為靜止門檻（向量長度）
-	[SerializeField] private float idleDeadline = 0.05f;   // 視為靜止門檻（向量長度）
-	[SerializeField] private float sideXThreshold = 0.05f; // 判定「有水平輸入」的 X 門檻
-	// 放到 PlayerSpineAnimationManager 類別內
-	private bool isOneShotPlaying;
-
-	[Header("Reference")]
-	[SerializeField] private PlayerMovement playerMovement;
-
+	[SerializeField] private int baseTrack = 0;               // 主要動作 Track（一般用 0）
 	
-	[Header("Animation Names")]
+	[Header("Animator / Layers")]
+	[SerializeField] private Animator animator;               // 角色 Animator（含多個 Layer）
+	[SerializeField] private string baseLayerName      = "Base Move Layer";     // ex: idle / run
+	[SerializeField] private string specialMoveLayerName = "Spical Move Layer"; // ex: slide / dash
+	[SerializeField] private string attackLayerName    = "Attack Layer";        // 攻擊
+	[SerializeField] private string reactLayerName     = "React Layer";         // 受傷/硬直
+	#endregion
+
+
+	#region ===== Inspector：動畫名稱（Spine） =====
+	[Header("Spine Animation Names")]
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runFront;
@@ -27,153 +44,245 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
+	#endregion
 
+	#region ===== 參考 =====
+	[Header("Reference")]
+	[SerializeField] private PlayerMovement playerMovement;
+	#endregion
+
+	#region ===== 狀態與快取 =====
 	private string currentAnimName;
+	private bool isAttacking;     // 是否處於攻擊動畫期（由 Begin/EndAttack 控制）
+	private bool isHurt;          // 是否處於受傷/硬直（由 SetHurt 控制）
+	private bool isSide = false;
+	private bool isBack = false;
+	
+	private int baseLayerIndex;
+	private int specialMoveLayerIndex;
+	private int attackLayerIndex;
+	private int reactLayerIndex;
 
+	// 記錄目前啟用中的 Layer（用來偵測是否切換）
+	private int activeLayerIndex = -1;
+
+	// 本類別自己記錄的 idle 方向（當移動輸入為0時維持最後方向）
+	private Vector2 lastNonZeroDir = Vector2.right;
+	#endregion
+
+	#region ===== Unity 生命週期 =====
 	private void Awake()
 	{
-		currentAnimName = null;
-		isOneShotPlaying = false;
-		baseTrack = 0;
 		if (!skeletonAnim) skeletonAnim = GetComponentInChildren<SkeletonAnimation>();
-		// 取消所有跨動畫混合（避免漸變）
 		if (skeletonAnim && skeletonAnim.AnimationState is { Data: not null })
-			skeletonAnim.AnimationState.Data.DefaultMix = 0f;
+			skeletonAnim.AnimationState.Data.DefaultMix = 0f; // 關閉自動混合，保證瞬切
+
+		// 取得各 Layer Index（若名稱不正確，Index 會是 -1）
+		baseLayerIndex        = SafeGetLayerIndex(animator, baseLayerName);
+		specialMoveLayerIndex = SafeGetLayerIndex(animator, specialMoveLayerName);
+		attackLayerIndex      = SafeGetLayerIndex(animator, attackLayerName);
+		reactLayerIndex       = SafeGetLayerIndex(animator, reactLayerName);
 	}
 
-	// ReSharper disable Unity.PerformanceAnalysis
-	/// <summary>由移動腳本每幀餵入目前移動向量</summary>
-	public void UpdateFromMovement(Vector2 moveInput, bool isDashingIgnored = false, bool isSlidingIgnored = false)
+	private void Update()
 	{
-		if (isOneShotPlaying) return;
+		UpdateAnimatorFromMovement();
+	}
+	#endregion
 
-		if (!skeletonAnim || skeletonAnim.Skeleton == null) return;
+	#region ===== Animator 更新（由 PlayerMovement 狀態驅動） =====
+	private void UpdateAnimatorFromMovement()
+	{
+		// 取得 PlayerMovement 的輸入與狀態
+		Vector2 move = playerMovement.GetMoveInput();
 
-		float sqrMag = moveInput.sqrMagnitude;
-		bool isMoving = sqrMag > idleDeadline * idleDeadline;
+		bool isMoving = (move != Vector2.zero);
 
-
-		// ===== Slide =====
-		if (playerMovement.IsPlayerSlide())
+		if (move.x != 0)
 		{
-			SetAnimIfChanged(dashSlide, true, snap: true);
-			return;
+			isSide = true;
+			isBack = false;
+		}
+		else
+		{
+			isSide = false;
+			if (move.y > 0) isBack = true;
+			else if (move.y < 0) isBack = false;
 		}
 
-		// ===== Dash =====
-		if (playerMovement.IsPlayerDash())
+		// 寫入 Animator 參數
+		animator.SetBool(AnimIsSide, isSide);
+		animator.SetBool(AnimIsBack, isBack);
+		animator.SetBool(AnimIsMove, isMoving);
+		animator.SetBool(AnimIsSlide,  playerMovement.IsPlayerSlide());
+		animator.SetBool(AnimIsDash, playerMovement.IsPlayerDash());
+		
+		// 更新 Layer
+		if (animator.GetInteger(AnimAttackCombo) > 0)
 		{
-			SetAnimIfChanged(dashNormal, true, snap: true);
+			ChangeLayerWeights(attackLayerIndex);
 			return;
 		}
-
-		// ===== Idle =====
-		if (!isMoving)
+		
+		if (animator.GetBool(AnimIsSlide) || animator.GetBool(AnimIsDash))
 		{
-			string idleName = (moveInput.y > 0f) ? idleBack : idleFront;
-			SetAnimIfChanged(idleName, true, snap: true);
+			ChangeLayerWeights(specialMoveLayerIndex);
 			return;
 		}
-
-		// ===== 優先側向（只要 |x| 超過門檻就視為側向）=====
-		if (Mathf.Abs(moveInput.x) >= sideXThreshold)
-		{
-			SetAnimIfChanged(runSide, true, snap: true);
-			return;
-		}
-
-		// ===== 非側向：只在純往後才用 back；否則用前視 run =====
-		// 往前或斜前(此時 |x| < threshold)，一律視為前視 run
-		SetAnimIfChanged(moveInput.y > 0f ? runBack : runFront, true, snap: true); // 純往後
+		
+		ChangeLayerWeights(baseLayerIndex);
 	}
 
+	#endregion
+
+	#region ===== Animator Layer 權重切換 =====
+	private void ChangeLayerWeights(int targetLayer)
+	{
+		// 先全部歸 0，再依狀態開啟需要的 Layer
+		SetLayerWeightSafe(baseLayerIndex,        0f);
+		SetLayerWeightSafe(specialMoveLayerIndex, 0f);
+		SetLayerWeightSafe(attackLayerIndex,      0f);
+		SetLayerWeightSafe(reactLayerIndex,       0f);
+
+		SetLayerWeightSafe(targetLayer, 1f);
+		
+		if (activeLayerIndex != targetLayer)
+		{
+			// 先 Update(0) 讓 Animator 取得正確的當前 StateInfo
+			animator.Update(0f);
+
+			var info = animator.GetCurrentAnimatorStateInfo(targetLayer);
+			// 以 fullPathHash 重播當前狀態，時間歸 0
+			if (info.fullPathHash != 0)
+				animator.Play(info.fullPathHash, targetLayer, 0f);
+
+			activeLayerIndex = targetLayer;
+		}
+	}
+
+	private static int SafeGetLayerIndex(Animator ani, string layerName)
+	{
+		if (!ani || string.IsNullOrEmpty(layerName)) return -1;
+		return ani.GetLayerIndex(layerName);
+	}
+
+	private void SetLayerWeightSafe(int layerIndex, float weight)
+	{
+		if (animator && layerIndex >= 0 && layerIndex < animator.layerCount)
+			animator.SetLayerWeight(layerIndex, weight);
+	}
+	#endregion
+
+	#region ===== Spine：切換與一次性播放（保留原本功能） =====
 	/// <summary>如果動畫不同才切換；snap=true 會把 mixDuration 設為 0 直接切換</summary>
 	private void SetAnimIfChanged(string animName, bool loop, bool snap)
 	{
+		if (!skeletonAnim || string.IsNullOrEmpty(animName)) return;
 		if (currentAnimName == animName) return;
 
 		currentAnimName = animName;
 		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, loop);
-		if (entry != null && snap)
-		{
-			entry.MixDuration = 0f; // 強制這次切換不做漸變
-		}
+		if (entry != null && snap) entry.MixDuration = 0f;
 	}
 
-	// ReSharper disable Unity.PerformanceAnalysis
-	// ReSharper disable Unity.PerformanceAnalysis
-	// ReSharper disable Unity.PerformanceAnalysis
 	/// <summary>
 	/// 播放一段 Spine 動畫（不循環），並監聽事件：
-	/// - "Attack_HitStart": 啟用傳入的 hitBox
-	/// - "FX_Show": 於 hitBox（若為空則角色）位置生成傳入的 vfxName，生存 2 秒
-	/// 動畫結束/被中斷時會自動關閉 hitBox、解除鎖定，並呼叫 onComplete（若提供）。
+	/// - "Attack_HitStart": 可在此啟用 HitBox
+	/// - "FX_Show": 於指定位置生成 VFX
+	/// - "Attack_MoveStart"/"Attack_MoveEnd": 可臨時調整移動速度/控制
+	/// 完成或中斷時自動收尾。
 	/// </summary>
-	public void PlayAnimationOnce(string animName, GameObject hitBox, string vfxName, System.Action onComplete = null)
+	public void PlayAnimationOnce(string animName)
 	{
 		if (!skeletonAnim || string.IsNullOrEmpty(animName)) return;
 
-		// 開播前先關閉 hitbox
-		if (hitBox) hitBox.SetActive(false);
-
-		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, false); // 不循環
+		var entry = skeletonAnim.AnimationState.SetAnimation(baseTrack, animName, false);
 		if (entry == null) return;
+		entry.MixDuration = 0f;
 
-		entry.MixDuration = 0f;  // 直接切，不做漸變
-		isOneShotPlaying = true;
-
-		// 事件：命中開始 / 顯示特效
 		entry.Event += (t, e) =>
 		{
-			var evtName = e.Data.Name;
-
-			switch (evtName)
+			switch (e.Data.Name)
 			{
 				case "Attack_HitStart":
-					if (hitBox) hitBox.SetActive(true);
+					// TODO: 啟用 HitBox
 					break;
+
 				case "FX_Show":
-					if (!string.IsNullOrEmpty(vfxName))
-					{
-						var pos = hitBox ? hitBox.transform.position : skeletonAnim.transform.position;
-						VFXPool.Instance.SpawnVFX(vfxName, pos, transform.rotation, 2f);
-					}
+					// TODO: 生成特效（可用物件池）
 					break;
+
 				case "Attack_MoveStart":
-					// playerMovement.SetEnableMoveControl(true);
-					// playerMovement.SetMoveSpeed(attackMoveSpeed);
+					// TODO: playerMovement.SetEnableMoveControl(false); playerMovement.SetMoveSpeed(attackMoveSpeed);
 					break;
+
 				case "Attack_MoveEnd":
-					// playerMovement.SetEnableMoveControl(false);
-					// playerMovement.SetMoveSpeed(attackMoveSpeed);
+					// TODO: playerMovement.SetEnableMoveControl(true); playerMovement.ResetMoveSpeed();
 					break;
+
 				case "Dodge_CancelEnable":
-					// playerMovement.SetEnableMoveControl(true);
-					// 中斷動畫(動畫提前結束)，恢復操作(也可執行其他動作)
+					// 可在這裡允許翻滾取消
 					break;
+
 				default:
-					Debug.Log("Animation no progress by event name: " + evtName);
+					// Debug.Log("Animation event: " + e.Data.Name);
 					break;
 			}
 		};
 
-		// 收尾：不論完成 / 中斷都保證關閉 hitbox、解鎖與回呼
 		bool closed = false;
-
-		entry.Complete += _ => Close();
-		entry.End += _ => Close();
-		entry.Interrupt += _ => Close();
-		return;
-
 		void Close()
 		{
 			if (closed) return;
 			closed = true;
-			if (hitBox) hitBox.SetActive(false);
-			isOneShotPlaying = false;
-			onComplete?.Invoke();
+			// TODO: 關閉 HitBox / 還原控制
+		}
+
+		entry.Complete  += _ => Close();
+		entry.End       += _ => Close();
+		entry.Interrupt += _ => Close();
+	}
+
+	/// <summary>直接播放循環動畫（立即切換）</summary>
+	public void PlayAnimation(string animName)
+	{
+		SetAnimIfChanged(animName, true, true);
+	}
+	#endregion
+
+	#region ===== 攻擊 / 受傷：由外部系統呼叫 =====
+	/// <summary>設定當前攻擊段數（寫入 Animator 整數參數 AttackCombo）</summary>
+	public void SetAttackCombo(int comboIndex)
+	{
+		if (animator) animator.SetInteger(AnimAttackCombo, comboIndex);
+	}
+
+	/// <summary>開始攻擊：切 Attack Layer，並可選擇播放對應 Spine 攻擊動畫</summary>
+	public void BeginAttack(int comboIndex = 0, bool playSpine = true)
+	{
+		isAttacking = true;
+		SetAttackCombo(comboIndex);
+
+		if (playSpine && gloveAttack != null && gloveAttack.Length > 0)
+		{
+			var idx = Mathf.Clamp(comboIndex, 0, gloveAttack.Length - 1);
+			var anim = gloveAttack[idx];
+			if (!string.IsNullOrEmpty(anim))
+				PlayAnimationOnce(anim);
 		}
 	}
 
-	public bool IsBusy() => isOneShotPlaying;
+	/// <summary>結束攻擊：關 Attack Layer，回到循環動畫</summary>
+	public void EndAttack()
+	{
+		isAttacking = false;
+	}
+
+	/// <summary>設定受傷/硬直狀態；true=進入 React Layer，false=離開</summary>
+	public void SetHurt(bool value)
+	{
+		isHurt = value;
+		if (animator) animator.SetBool(AnimIsHurt, isHurt);
+	}
+	#endregion
 }

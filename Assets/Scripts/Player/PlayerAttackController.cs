@@ -6,7 +6,8 @@ public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
 {
-	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
+	private static readonly int WeaponType    = Animator.StringToHash("WeaponType");
+	private static readonly int AttackComboID = Animator.StringToHash("AttackCombo"); // 新增的 Animator int 參數
 
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
@@ -65,12 +66,11 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private GameObject foodAttackHitBox;  // 食物攻擊 HitBox
 	[SerializeField] private GameObject basicAttackHitBox; // 基礎攻擊 HitBox
 	[SerializeField] private PlayerMovement playerMovement;
-	[SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private Animator weaponUIAnimator;
 	#endregion
 
 	#region ===== 私有狀態 =====
-	// Food 連段：不再寫死 2 段，會依手上食物的 FoodStatus.attackList 數量循環
+	// Food 連段：依手上食物的 FoodStatus.attackList 數量循環
 	private int foodComboIndex = 0;
 	// Basic 連段：三段（Glove1/2/3）
 	private int gloveComboIndex = 0;
@@ -83,13 +83,14 @@ public class PlayerAttackController : MonoBehaviour
 
 	// 連段重置計時：每次「攻擊動畫播完」才算一次成功出招
 	private float lastAttackTime = -999f;
+
 	#endregion
 
 	#region ===== Unity =====
 	private void Start()
 	{
 		isSwitchWeaponFinish = true;
-
+		
 		// 保險關閉 hitbox
 		SafeSetActive(foodAttackHitBox, false);
 		SafeSetActive(basicAttackHitBox, false);
@@ -170,8 +171,6 @@ public class PlayerAttackController : MonoBehaviour
 	/// <summary> PlayerMovement.PerformAttack() 會回呼到這裡。 </summary>
 	public bool IsAttackSuccess(bool isPowerAttack)
 	{
-		EnsureAnimationManager();
-
 		// 攻擊開始前先檢查是否需要重置連段
 		ResetCombosIfTimedOut();
 
@@ -211,30 +210,18 @@ public class PlayerAttackController : MonoBehaviour
 		return PlayGloveAttack();
 	}
 
+	// ====== PlayGloveAttack() 內新增／修改 ======
 	private bool PlayGloveAttack()
 	{
-		if (animationManager != null && animationManager.IsBusy())
-			return false;
-
-		SafeSetActive(basicAttackHitBox, false);
-		playerMovement.SetEnableMoveControl(false);
-
 		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-
-		string anim = animationManager.gloveAttack[gloveComboIndex];
-
-		animationManager.PlayAnimationOnce(anim, basicAttackHitBox, null, () =>
-		{
-			// 下一段
-			gloveComboIndex = (gloveComboIndex + 1) % 3;
-			// 成功出招時間點（用於連段重置）
-			lastAttackTime = Time.time;
-			playerMovement.SetEnableMoveControl(true);
-		});
+		
+		// ===== 其餘原本邏輯 =====
+		gloveComboIndex = (gloveComboIndex + 1) % 3;
+		lastAttackTime = Time.time;
 
 		return true;
 	}
-	
+
 	#endregion
 
 	#region ===== Food 模式：由 FoodStatus 決定動畫與段數 =====
@@ -256,44 +243,39 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
-		if (animationManager != null && animationManager.IsBusy())
-			return false;
-
-		// 若有多段：第二段之後依你原本習慣可消耗/處理物品（若仍要沿用，保留這行；不需要可移除）
+		// 第二段之後可依需求消耗/處理物品（保留原行為）
 		if (foodComboIndex > 0)
 			playerMovement.DestroyFirstItem();
 
 		// 暫時隱藏手上物件、鎖定移動
 		if (handItem) handItem.gameObject.SetActive(false);
-		playerMovement.SetEnableMoveControl(false);
+		// playerMovement.SetEnableMoveControl(false);
 
 		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 
 		// 依當前段數索引（循環）取出要播的動畫名稱
 		int idx = Mathf.Abs(foodComboIndex) % count;
-		string animName = list[idx]?.animationName;
-		if (string.IsNullOrEmpty(animName))
+		string triggerOrStateName = list[idx]?.animationName;
+		if (string.IsNullOrEmpty(triggerOrStateName))
 		{
 			Debug.LogWarning($"Food attack animation at index {idx} is null/empty. Abort.");
-			// 還原移動/顯示
 			if (handItem) handItem.gameObject.SetActive(true);
-			playerMovement.SetEnableMoveControl(true);
+			// playerMovement.SetEnableMoveControl(true);
 			return false;
 		}
 
-		// 你原本使用 Spine 事件開關 HitBox/VFX，這裡仍沿用 hitbox 注入與完成回呼
-		animationManager.PlayAnimationOnce(animName, foodAttackHitBox, /*vfx*/ null, () =>
-		{
-			// 下一段（依 attackList 數量循環）
-			foodComboIndex = (foodComboIndex + 1) % count;
+		// // === 切換到 Attack 層 ===
+		// // 設定 AttackCombo（1..count）供 Animator 使用
+		// animator.SetInteger(AttackComboID, idx + 1);
+		//
+		// // 讓 trigger 名稱與 attackList 裡的 animationName 對上
+		// animator.SetTrigger(triggerOrStateName);
+		//
+		// // 下一段（依 attackList 數量循環）
+		// foodComboIndex = (foodComboIndex + 1) % count;
 
-			// 記錄成功出招時間點
-			lastAttackTime = Time.time;
-
-			// 還原移動/顯示
-			if (handItem) handItem.gameObject.SetActive(true);
-			playerMovement.SetEnableMoveControl(true);
-		});
+		// 記錄成功出招時間點
+		lastAttackTime = Time.time;
 
 		return true;
 	}
@@ -318,6 +300,9 @@ public class PlayerAttackController : MonoBehaviour
 	public void SetIsSwitchWeaponFinish(bool isFinish) => isSwitchWeaponFinish = isFinish;
 	#endregion
 
+	#region ===== 動畫撥放 =====
+
+	#endregion
 	#region ===== 私有工具 =====
 	private void ResetCombosIfTimedOut()
 	{
@@ -342,12 +327,6 @@ public class PlayerAttackController : MonoBehaviour
 		if (go != null && go.activeSelf != active) go.SetActive(active);
 	}
 
-	private void EnsureAnimationManager()
-	{
-		if (animationManager == null)
-			animationManager = GetComponent<PlayerSpineAnimationManager>();
-	}
-
 	private void SetPowerBarVisible(bool visible)
 	{
 		if (powerAttackBar) powerAttackBar.SetActive(visible);
@@ -365,16 +344,13 @@ public class PlayerAttackController : MonoBehaviour
 	private FoodStatus GetFoodStatusInHand()
 	{
 		if (!HasFoodInHand()) return null;
-		// 取第一個子物件（你的專案通常把食物塞在第 0 個）
 		Transform first = handItem.GetChild(0);
 		if (first == null) return null;
-
-		// 允許在孫層內
 		return first.GetComponentInChildren<FoodStatus>();
 	}
 
 	/// <summary>
-	/// 取得「抓取」時的朝向：優先使用玩家當下移動輸入；若為零向量，以角色左右翻面判定。
+	/// 取得「抓取/丟擲」時的朝向：優先使用玩家當下移動輸入；若為零向量，以角色左右翻面判定。
 	/// </summary>
 	private Vector2 GetAimDir()
 	{
@@ -384,7 +360,6 @@ public class PlayerAttackController : MonoBehaviour
 			if (inDir.sqrMagnitude > 0.0001f)
 				return inDir.normalized;
 		}
-		// y 角接近 180 視為向右，否則向左（你的翻面邏輯）
 		float y = transform.eulerAngles.y;
 		bool facingRight = Mathf.Abs(Mathf.DeltaAngle(y, 180f)) < 1f;
 		return facingRight ? Vector2.right : Vector2.left;
@@ -494,6 +469,7 @@ public class PlayerAttackController : MonoBehaviour
 		return true;
 	}
 	#endregion
+	
 
 	#region ===== Gizmos（除錯視覺化） =====
 #if UNITY_EDITOR

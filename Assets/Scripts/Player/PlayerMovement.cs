@@ -56,6 +56,9 @@ public class PlayerMovement : MonoBehaviour
 	private int slideDir;
 	private bool slideCancelRequested = false;
 	private float slideStartTime;
+
+	// 動畫方向緩存（Idle 時維持最後方向）
+	private Vector2 lastNonZeroDir = Vector2.right;
 	#endregion
 
 	#region ===== Unity 生命週期 =====
@@ -74,13 +77,6 @@ public class PlayerMovement : MonoBehaviour
 
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 	}
-
-	private void Update()
-	{
-		// 更新 Spine 動畫
-		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
-	}
-
 	private void FixedUpdate()
 	{
 		Move();
@@ -131,14 +127,19 @@ public class PlayerMovement : MonoBehaviour
 	#region ===== 角色移動/旋轉 =====
 	private void HandleMovementInput(float moveX, float moveY)
 	{
-		moveInput = new Vector2(moveX, moveY).normalized;
+		moveInput = new Vector2(moveX, moveY);
+		if (moveInput.sqrMagnitude > 1f) moveInput.Normalize();
 
 		if (isDashing) moveVelocity = moveInput * dashSpeed;
 		else moveVelocity = moveInput * moveSpeed;
 
-		// X 朝向翻轉（你的美術若相反可調整）
-		if (!isSlide && moveX != 0)
+		// X 朝向翻轉（若之後改用 Animator 做翻面，可移除此段）
+		if (!isSlide && Mathf.Abs(moveX) > 0.0001f)
 			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+
+		// 記錄最後非零方向（供 Idle 時維持方向）
+		if (moveInput.sqrMagnitude > 0.0001f)
+			lastNonZeroDir = moveInput;
 	}
 
 	private void Move()
@@ -152,6 +153,7 @@ public class PlayerMovement : MonoBehaviour
 		rb.velocity = moveVelocity;
 	}
 	#endregion
+	
 
 	#region ===== 攻擊（由 AttackController 呼回） =====
 	/// <summary>
@@ -283,7 +285,10 @@ public class PlayerMovement : MonoBehaviour
 			// 沿著路徑移動
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
 			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
-			transform.rotation = (nextPos.x >  transform.position.x) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+
+			// 仍保留左右翻轉（若之後改用 Animator Flip，可移此行）
+			transform.rotation = (nextPos.x > transform.position.x) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+
 			rb.MovePosition(nextPos);
 
 			// 非循環：到端點自動停止
@@ -338,9 +343,6 @@ public class PlayerMovement : MonoBehaviour
 			if (handItemUI) handItemUI.ChangeHandItemUI();
 		}
 	}
-	
-	
-	
 
 	public float GetMoveSpeed() => moveSpeed;
 	public void ResetMoveSpeed() => moveSpeed = defaultMoveSpeed;
