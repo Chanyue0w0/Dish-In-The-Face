@@ -6,25 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/DrumStickAttack_1.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/DrumStickAttack_1.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove1.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove1.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove2.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove2.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove3.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove3.anim" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/CoinFountain.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/CoinFountain/CoinCollisionHandler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/CoinFountain/CoinCollisionHandler.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/Dash Shadow.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/Dash Shadow/DashShadow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/Dash Shadow/DashShadow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/Dash Shadow/ShadowPool.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/Dash Shadow/ShadowPool.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/RumbleManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/RumbleManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/VFXPool.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Effect/VFXPool.cs.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,7 +34,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -160,7 +148,7 @@
       <workItem from="1756791010600" duration="6844000" />
       <workItem from="1756883783362" duration="8943000" />
       <workItem from="1756969797292" duration="5730000" />
-      <workItem from="1757143639410" duration="8262000" />
+      <workItem from="1757143639410" duration="21373000" />
     </task>
     <servers />
   </component>

@@ -6,18 +6,17 @@ public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
 {
-	private static readonly int WeaponType    = Animator.StringToHash("WeaponType");
-	private static readonly int AttackComboID = Animator.StringToHash("AttackCombo"); // 新增的 Animator int 參數
-
+	
+	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
+	[SerializeField] private float comboLimitTime = 1f;
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
-
-	[Tooltip("食物攻擊時，玩家向前位移的距離（一般攻擊）。")]
-	[SerializeField] private float attackMoveDistance = 5f;
-
-	[Tooltip("食物攻擊時，玩家向前位移花費的時間（一般攻擊）。")]
-	[SerializeField] private float attackMoveDuration = 0.5f;
+	// [Tooltip("食物攻擊時，玩家向前位移的距離（一般攻擊）。")]
+	// [SerializeField] private float attackMoveDistance = 5f;
+	// [Tooltip("食物攻擊時，玩家向前位移花費的時間（一般攻擊）。")]
+	// [SerializeField] private float attackMoveDuration = 0.5f;
+	
 	#endregion
 
 	#region ===== Inspector：蓄力/重攻擊設定與 UI =====
@@ -70,19 +69,20 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 私有狀態 =====
+	private PlayerSpineAnimationManager animationManager;
+	
 	// Food 連段：依手上食物的 FoodStatus.attackList 數量循環
-	private int foodComboIndex = 0;
-	// Basic 連段：三段（Glove1/2/3）
-	private int gloveComboIndex = 0;
+	private int foodComboIndex;
 
 	private bool isSwitchWeaponFinish = true;  // 切武器動畫是否完成
 
 	// 蓄力狀態
-	private bool isCharging = false;
-	private float currentChargeTime = 0f;
+	private bool isCharging;
+	private float currentChargeTime;
 
 	// 連段重置計時：每次「攻擊動畫播完」才算一次成功出招
 	private float lastAttackTime = -999f;
+	private bool comboTimeoutTriggered = true;
 
 	#endregion
 
@@ -90,7 +90,15 @@ public class PlayerAttackController : MonoBehaviour
 	private void Start()
 	{
 		isSwitchWeaponFinish = true;
+		animationManager = GetComponent<PlayerSpineAnimationManager>();
 		
+		foodComboIndex = 0;
+		isSwitchWeaponFinish = true;  // 切武器動畫是否完成
+		isCharging = false;
+		currentChargeTime = 0f;
+		lastAttackTime = -999f;
+		comboTimeoutTriggered = true;
+	
 		// 保險關閉 hitbox
 		SafeSetActive(foodAttackHitBox, false);
 		SafeSetActive(basicAttackHitBox, false);
@@ -111,6 +119,13 @@ public class PlayerAttackController : MonoBehaviour
 			currentChargeTime += Time.deltaTime;
 			if (currentChargeTime > maxChargeTime) currentChargeTime = maxChargeTime;
 			UpdatePowerBarFill(currentChargeTime / maxChargeTime);
+		}
+		
+		// 連段逾時檢查（僅觸發一次）
+		if (!comboTimeoutTriggered && comboLimitTime > 0f && (Time.time - lastAttackTime) >= comboLimitTime)
+		{
+			animationManager.ResetAttackCombo(); // 你要的呼叫點
+			comboTimeoutTriggered = true;         // 本次逾時已處理，直到下一次成功出招才會再開啟
 		}
 	}
 	#endregion
@@ -213,12 +228,15 @@ public class PlayerAttackController : MonoBehaviour
 	// ====== PlayGloveAttack() 內新增／修改 ======
 	private bool PlayGloveAttack()
 	{
+		Debug.Log("press attack button " + animationManager.IsCanAttack());
+		if (!animationManager.IsCanAttack()) return false;
+		
 		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
 		
 		// ===== 其餘原本邏輯 =====
-		gloveComboIndex = (gloveComboIndex + 1) % 3;
 		lastAttackTime = Time.time;
-
+		comboTimeoutTriggered = false;
+		animationManager.BeginAttack();
 		return true;
 	}
 
@@ -263,19 +281,9 @@ public class PlayerAttackController : MonoBehaviour
 			// playerMovement.SetEnableMoveControl(true);
 			return false;
 		}
-
-		// // === 切換到 Attack 層 ===
-		// // 設定 AttackCombo（1..count）供 Animator 使用
-		// animator.SetInteger(AttackComboID, idx + 1);
-		//
-		// // 讓 trigger 名稱與 attackList 裡的 animationName 對上
-		// animator.SetTrigger(triggerOrStateName);
-		//
-		// // 下一段（依 attackList 數量循環）
-		// foodComboIndex = (foodComboIndex + 1) % count;
-
 		// 記錄成功出招時間點
 		lastAttackTime = Time.time;
+		comboTimeoutTriggered = false;
 
 		return true;
 	}
@@ -300,9 +308,6 @@ public class PlayerAttackController : MonoBehaviour
 	public void SetIsSwitchWeaponFinish(bool isFinish) => isSwitchWeaponFinish = isFinish;
 	#endregion
 
-	#region ===== 動畫撥放 =====
-
-	#endregion
 	#region ===== 私有工具 =====
 	private void ResetCombosIfTimedOut()
 	{
@@ -310,7 +315,6 @@ public class PlayerAttackController : MonoBehaviour
 		if (Time.time - lastAttackTime > comboResetSeconds)
 		{
 			foodComboIndex  = 0;
-			gloveComboIndex = 0;
 		}
 	}
 
