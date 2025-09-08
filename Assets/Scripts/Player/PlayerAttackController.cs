@@ -55,7 +55,7 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== Inspector：連段重置 =====
 	[Header("--------- Combo Settings ---------")]
 	[Tooltip("距離上次『成功出招』超過此秒數，所有攻擊連段會重置回第一段（Food/Basic 通用）。")]
-	[SerializeField, Min(0f)] private float comboResetSeconds = 1.2f;
+	// [SerializeField, Min(0f)] private float comboResetSeconds = 1.2f;
 	#endregion
 
 	#region ===== Inspector：參考物件 =====
@@ -66,13 +66,14 @@ public class PlayerAttackController : MonoBehaviour
 	[SerializeField] private GameObject basicAttackHitBox; // 基礎攻擊 HitBox
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private Animator weaponUIAnimator;
+	[SerializeField] private AnimationClip[] gloveAnimations;
 	#endregion
 
 	#region ===== 私有狀態 =====
 	private PlayerSpineAnimationManager animationManager;
 	
 	// Food 連段：依手上食物的 FoodStatus.attackList 數量循環
-	private int foodComboIndex;
+	private int comboIndex;
 
 	private bool isSwitchWeaponFinish = true;  // 切武器動畫是否完成
 
@@ -92,7 +93,7 @@ public class PlayerAttackController : MonoBehaviour
 		isSwitchWeaponFinish = true;
 		animationManager = GetComponent<PlayerSpineAnimationManager>();
 		
-		foodComboIndex = 0;
+		comboIndex = 0;
 		isSwitchWeaponFinish = true;  // 切武器動畫是否完成
 		isCharging = false;
 		currentChargeTime = 0f;
@@ -122,11 +123,11 @@ public class PlayerAttackController : MonoBehaviour
 		}
 		
 		// 連段逾時檢查（僅觸發一次）
-		if (!comboTimeoutTriggered && comboLimitTime > 0f && (Time.time - lastAttackTime) >= comboLimitTime)
-		{
-			animationManager.ResetAttackCombo(); // 你要的呼叫點
-			comboTimeoutTriggered = true;         // 本次逾時已處理，直到下一次成功出招才會再開啟
-		}
+		// if (!comboTimeoutTriggered && comboLimitTime > 0f && (Time.time - lastAttackTime) >= comboLimitTime)
+		// {
+		// 	animationManager.ResetAttackCombo(); // 你要的呼叫點
+		// 	comboTimeoutTriggered = true;         // 本次逾時已處理，直到下一次成功出招才會再開啟
+		// }
 	}
 	#endregion
 
@@ -187,7 +188,7 @@ public class PlayerAttackController : MonoBehaviour
 	public bool IsAttackSuccess(bool isPowerAttack)
 	{
 		// 攻擊開始前先檢查是否需要重置連段
-		ResetCombosIfTimedOut();
+		// ResetCombosIfTimedOut();
 
 		if (attackMode == AttackMode.Basic)
 		{
@@ -228,15 +229,33 @@ public class PlayerAttackController : MonoBehaviour
 	// ====== PlayGloveAttack() 內新增／修改 ======
 	private bool PlayGloveAttack()
 	{
-		Debug.Log("press attack button " + animationManager.IsCanAttack());
-		if (!animationManager.IsCanAttack()) return false;
+		if (!animationManager.IsCanNextAttack())
+		{
+			// Debug.Log("Attack animation not finish");
+			return false;
+		}
 		
-		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+		int comboCount = gloveAnimations.Length;
 		
-		// ===== 其餘原本邏輯 =====
+		// 從第一段攻擊開始
+		if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
+		
+		AnimationClip attackAnimation = gloveAnimations[comboIndex];
+		if (attackAnimation == null)
+		{
+			Debug.LogWarning($"Food attack animation at index {comboIndex} is null/empty. Abort.");
+			return false;
+		}
+
+		// 記錄成功出招時間點
 		lastAttackTime = Time.time;
 		comboTimeoutTriggered = false;
-		animationManager.BeginAttack();
+		
+		animationManager.PlayAttackAnimationClip(attackAnimation);
+		// AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+		
+		
+		comboIndex++;
 		return true;
 	}
 
@@ -252,39 +271,50 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
+		if (!animationManager.IsCanNextAttack())
+		{
+			// Debug.Log("Attack animation not finish");
+			return false;
+		}
+
 		// 讀取這個食物的攻擊清單
-		var list = status.attackList;
-		int count = list?.Count ?? 0;
-		if (count <= 0)
+		var attackList = status.attackList;
+		int comboCount = attackList?.Count ?? 0;
+		if (comboCount <= 0)
 		{
 			Debug.Log("This food has no attackList, cannot perform food attack.");
 			return false;
 		}
-
-		// 第二段之後可依需求消耗/處理物品（保留原行為）
-		if (foodComboIndex > 0)
-			playerMovement.DestroyFirstItem();
-
-		// 暫時隱藏手上物件、鎖定移動
-		if (handItem) handItem.gameObject.SetActive(false);
-		// playerMovement.SetEnableMoveControl(false);
-
-		AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-
+		
+		// 從第一段攻擊開始
+		if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
 		// 依當前段數索引（循環）取出要播的動畫名稱
-		int idx = Mathf.Abs(foodComboIndex) % count;
-		string triggerOrStateName = list[idx]?.animationName;
-		if (string.IsNullOrEmpty(triggerOrStateName))
+		if (attackList == null)
 		{
-			Debug.LogWarning($"Food attack animation at index {idx} is null/empty. Abort.");
-			if (handItem) handItem.gameObject.SetActive(true);
-			// playerMovement.SetEnableMoveControl(true);
+			Debug.Log("not attack combo info");
 			return false;
 		}
+		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
+		if (attackAnimation == null)
+		{
+			Debug.LogWarning($"Food attack animation at index {comboIndex} is null/empty. Abort.");
+			return false;
+		}
+
+		// Debug.Log($"attack success : comboCount {comboCount} foodComboIndex {foodComboIndex}");
+		
 		// 記錄成功出招時間點
 		lastAttackTime = Time.time;
 		comboTimeoutTriggered = false;
-
+		
+		animationManager.PlayAttackAnimationClip(attackAnimation);
+		// AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+		
+		// 連段段之後可依需求消耗/處理物品（保留原行為）
+		if (comboIndex >= comboCount-1)
+			playerMovement.DestroyFirstItem();
+		
+		comboIndex++;
 		return true;
 	}
 	#endregion
@@ -309,14 +339,14 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 私有工具 =====
-	private void ResetCombosIfTimedOut()
-	{
-		if (comboResetSeconds <= 0f) return; // 0 表示永不重置
-		if (Time.time - lastAttackTime > comboResetSeconds)
-		{
-			foodComboIndex  = 0;
-		}
-	}
+	// private void ResetCombosIfTimedOut()
+	// {
+	// 	if (comboResetSeconds <= 0f) return; // 0 表示永不重置
+	// 	if (Time.time - lastAttackTime > comboResetSeconds)
+	// 	{
+	// 		foodComboIndex  = 0;
+	// 	}
+	// }
 
 	private bool HasFoodInHand() => handItem != null && handItem.childCount > 0;
 

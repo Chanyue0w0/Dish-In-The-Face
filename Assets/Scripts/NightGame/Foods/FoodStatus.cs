@@ -18,8 +18,7 @@ public class FoodStatus : MonoBehaviour
     [System.Serializable]
     public class AttackCombo
     {
-        [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)]
-        public string animationName;
+        [SerializeField] public AnimationClip animationClip;
 
         public int attackDamage;
     }

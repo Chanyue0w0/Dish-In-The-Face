@@ -54,7 +54,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	#region ===== 狀態與快取 =====
 	private string currentAnimName;
-	private bool canAttack;     // 是否處於攻擊動畫期（由 Begin/EndAttack 控制）
+	private bool onAttack;     // 是否處於攻擊動畫期（由 Begin/EndAttack 控制）
+	private bool canNextAttack;
 	private bool isHurt;          // 是否處於受傷/硬直（由 SetHurt 控制）
 	private bool isSide;
 	private bool isBack;
@@ -67,8 +68,6 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	// 記錄目前啟用中的 Layer（用來偵測是否切換）
 	private int activeLayerIndex = -1;
 
-	private int comboIndex;
-	
 	#endregion
 
 	#region ===== Unity 生命週期 =====
@@ -80,8 +79,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 		isSide = false;
 		isBack = false;
-		comboIndex = 0;
-		canAttack = true;
+		onAttack = false;
+		canNextAttack = true;
 		
 		// 取得各 Layer Index（若名稱不正確，Index 會是 -1）
 		baseLayerIndex        = SafeGetLayerIndex(animator, baseLayerName);
@@ -122,10 +121,10 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		animator.SetBool(AnimIsMove, isMoving);
 		animator.SetBool(AnimIsSlide,  playerMovement.IsPlayerSlide());
 		animator.SetBool(AnimIsDash, playerMovement.IsPlayerDash());
-		animator.SetInteger(AnimAttackCombo, comboIndex);
+		// animator.SetInteger(AnimAttackCombo, comboIndex);
 		
 		// 更新 Layer
-		if (animator.GetInteger(AnimAttackCombo) > 0)
+		if (onAttack)
 		{
 			ChangeLayerWeights(attackLayerIndex);
 			return;
@@ -142,6 +141,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	private void ChangeLayerWeights(int targetLayer)
 	{
+		if (activeLayerIndex == targetLayer) return;
+		
 		// 先全部歸 0，再依狀態開啟需要的 Layer
 		SetLayerWeightSafe(baseLayerIndex,        0f);
 		SetLayerWeightSafe(specialMoveLayerIndex, 0f);
@@ -195,27 +196,29 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	/// 播放一段 Spine 動畫（不循環），並監聽事件：
 	/// 完成或中斷時自動收尾。
 	/// </summary>
-	public void PlayAttackAnimation(string animName)
+	public void PlaySpineAnimationOnce(string animName)
 	{
 		if (!skeletonAnim || string.IsNullOrEmpty(animName)) return;
 
+		// SetAnimIfChanged(animName, false, true);
+		
 		var entry = SetAnimIfChanged(animName, false, true);
 		if (entry == null) return;
 		entry.MixDuration = 0f;
 
-		bool closed = false;
-		void Close()
-		{
-			if (closed) return;
-			closed = true;
-
-			// 不論播放完成 / 中斷 / 結束，皆重置攻擊狀態
-			canAttack = true;
-		}
-
-		entry.Complete  += _ => Close();
-		entry.End       += _ => Close();
-		entry.Interrupt += _ => Close();
+		// bool closed = false;
+		// void Close()
+		// {
+		// 	if (closed) return;
+		// 	closed = true;
+		//
+		// 	if (animator.GetInteger(AnimAttackCombo) == comboIndex)
+		// 		ResetAttackCombo();
+		// }
+		//
+		// entry.Complete  += _ => Close();
+		// entry.End       += _ => Close();
+		// entry.Interrupt += _ => Close();
 		
 		entry.Event += (_, e) =>
 		{
@@ -234,16 +237,16 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	{
 		SetAnimIfChanged(animName, true, true);
 	}
+
+	public void PlayAttackAnimationClip(AnimationClip animationClip)
+	{
+		onAttack = true;
+		canNextAttack = false;
+		animator.Play(animationClip.name);
+	}
 	#endregion
 
 	#region ===== 攻擊 / 受傷：由外部系統呼叫 =====
-	/// <summary>開始攻擊：切 Attack Layer，並可選擇播放對應 Spine 攻擊動畫</summary>
-	public void BeginAttack(bool playSpine = true)
-	{
-		comboIndex = comboIndex % gloveAttack.Length + 1;
-		Debug.Log(comboIndex);
-		canAttack = false;
-	}
 
 	/// <summary>設定受傷/硬直狀態；true=進入 React Layer，false=離開</summary>
 	public void SetHurt(bool value)
@@ -251,19 +254,15 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		isHurt = value;
 		if (animator) animator.SetBool(AnimIsHurt, isHurt);
 	}
-	
-	public void AttackAnimationFinish()
-	{
-		canAttack = true;
-	}
 
-	public bool IsCanAttack() => canAttack;
-
+	public bool IsAnimationOnAttack() => onAttack;
+	public bool IsCanNextAttack() => canNextAttack;
+	public void CanNextAttack() => canNextAttack = true;
 	public void ResetAttackCombo()
 	{
-		Debug.Log("reset combo");
-		comboIndex = 0;
-		canAttack = true;
+		// Debug.Log("reset combo");
+		onAttack = false;
+		canNextAttack = true;
 	}
 	
 	#endregion

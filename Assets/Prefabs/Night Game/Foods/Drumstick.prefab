@@ -148,9 +148,9 @@ MonoBehaviour:
   price: 20
   skeletonAnim: {fileID: 7612120009292307888, guid: 1a0c204cf2d2c434e854161ac4979447, type: 3}
   attackList:
-  - animationName: battle/drumstick_1
+  - animationClip: {fileID: 7400000, guid: d9949b75f7aa0b4408567969e6336649, type: 2}
     attackDamage: 1
-  - animationName: battle/drumstick_2
+  - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
     attackDamage: 2
 --- !u!1 &3857453713245092508
 GameObject:
