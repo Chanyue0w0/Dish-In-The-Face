@@ -17,7 +17,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	private static readonly int AnimIsMove       = Animator.StringToHash("isMove");
 	private static readonly int AnimIsSlide      = Animator.StringToHash("isSlide");
 	private static readonly int AnimIsDash       = Animator.StringToHash("isDash");
-	private static readonly int AnimAttackCombo  = Animator.StringToHash("AttackCombo");
+	private static readonly int AnimOnAttack  = Animator.StringToHash("OnAttack");
 	private static readonly int AnimIsHurt       = Animator.StringToHash("isHurt");
 	private const int BaseTrack = 0;               // 主要動作 Track（一般用 0）
 	#endregion
@@ -242,6 +242,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	{
 		onAttack = true;
 		canNextAttack = false;
+		animator.SetTrigger(AnimOnAttack);
 		animator.Play(animationClip.name);
 	}
 	#endregion
