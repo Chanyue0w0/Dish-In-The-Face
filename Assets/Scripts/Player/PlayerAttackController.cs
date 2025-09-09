@@ -59,7 +59,7 @@ public class PlayerAttackController : MonoBehaviour
 
 	#region ===== Inspector：參考物件 =====
 	[Header("--------- Reference -----------")]
-	[SerializeField] private Transform handItem;           // 手上物件群組
+	[SerializeField] private Transform handItemGroup;           // 手上物件群組
 	[SerializeField] private Collider2D grabOverHeadItem;  // 抓到頭上的「抓取區域」碰撞器（建議Trigger）
 	[SerializeField] private GameObject foodAttackHitBox;  // 食物攻擊 HitBox
 	[SerializeField] private GameObject basicAttackHitBox; // 基礎攻擊 HitBox
@@ -319,7 +319,10 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		if (!isSwitchWeaponFinish) return;
 		attackMode = mode;
-
+		
+		if (mode == AttackMode.Basic) handItemGroup.gameObject.SetActive(false);
+		else handItemGroup.gameObject.SetActive(true);
+		
 		if (weaponUIAnimator == null) return;
 		switch (attackMode)
 		{
@@ -343,7 +346,7 @@ public class PlayerAttackController : MonoBehaviour
 	// 	}
 	// }
 
-	private bool HasFoodInHand() => handItem != null && handItem.childCount > 0;
+	private bool HasFoodInHand() => handItemGroup != null && handItemGroup.childCount > 0;
 
 	private bool ShouldShowChargeBar()
 	{
@@ -373,7 +376,7 @@ public class PlayerAttackController : MonoBehaviour
 	private FoodStatus GetFoodStatusInHand()
 	{
 		if (!HasFoodInHand()) return null;
-		Transform first = handItem.GetChild(0);
+		Transform first = handItemGroup.GetChild(0);
 		if (first == null) return null;
 		return first.GetComponentInChildren<FoodStatus>();
 	}
