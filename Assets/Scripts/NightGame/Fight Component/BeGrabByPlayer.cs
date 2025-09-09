@@ -4,17 +4,17 @@ using UnityEngine.Events;
 
 public class BeGrabByPlayer : MonoBehaviour
 {
-    [SerializeField] private bool isCanBeGrabByPlayer = false;
-    [SerializeField] private bool isOnBeGrabing = false;
+    [SerializeField] private bool isCanBeGrabByPlayer;
+    [SerializeField] private bool isOnBeGrabbing;
 
     // 讓你可在 Inspector 綁事件（可選）
     [Header("Events (optional)")]
-    [SerializeField] private UnityEvent onGrabbed;   // SetIsOnBeGrabing(true)
-    [SerializeField] private UnityEvent onReleased;  // SetIsOnBeGrabing(false)
+    [SerializeField] private UnityEvent onGrabbed;   // SetIsOnBeGrabbing(true)
+    [SerializeField] private UnityEvent onReleased;  // SetIsOnBeGrabbing(false)
 
     // 讓你在程式碼動態註冊要做的事（Action）
-    private event Action grabbedActions;   // true 時呼叫
-    private event Action releasedActions;  // false 時呼叫
+    private event Action GrabbedActions;   // true 時呼叫
+    private event Action ReleasedActions;  // false 時呼叫
 
     // ---- Get/Set ----
     public bool GetIsCanBeGrabByPlayer() => isCanBeGrabByPlayer;
@@ -29,56 +29,56 @@ public class BeGrabByPlayer : MonoBehaviour
     /// <summary>
     /// 設定「目前是否被玩家抓著」。會依 value 觸發對應的事件/Action。
     /// </summary>
-    public void SetIsOnBeGrabing(bool value)
+    public void SetIsOnBeGrabbing(bool value)
     {
-        if (isOnBeGrabing == value) return;
-        isOnBeGrabing = value;
+        if (isOnBeGrabbing == value) return;
+        isOnBeGrabbing = value;
 
         if (value)
         {
             // true：被抓起
             onGrabbed?.Invoke();
-            grabbedActions?.Invoke();
+            GrabbedActions?.Invoke();
         }
         else
         {
             // false：被放下/丟出
             onReleased?.Invoke();
-            releasedActions?.Invoke();
+            ReleasedActions?.Invoke();
         }
     }
 
     /// <summary> 取得目前是否處於「被抓著」狀態。 </summary>
-    public bool GetIsOnBeGrabing() => isOnBeGrabing;
+    public bool GetIsOnBeGrabbing() => isOnBeGrabbing;
 
     // 為了相容舊名稱，保留同名方法，但正確回傳「是否被抓著」
-    public bool GetIsCanBeGrabing() => isOnBeGrabing;
+    public bool GetIsCanBeGrabbing() => isOnBeGrabbing;
 
     // ---- 新增：註冊/移除 Action（依 true/false 分流）----
 
     /// <summary>
-    /// 註冊在 SetIsOnBeGrabing 被呼叫時要執行的 Action。
+    /// 註冊在 SetIsOnBeGrabbing 被呼叫時要執行的 Action。
     /// whenValueIsTrue = true → 註冊到「被抓起」；false → 註冊到「被放下/丟出」。
     /// </summary>
     public void RegisterOnBeGrabbingAction(bool whenValueIsTrue, Action action)
     {
         if (action == null) return;
-        if (whenValueIsTrue) grabbedActions += action;
-        else                 releasedActions += action;
+        if (whenValueIsTrue) GrabbedActions += action;
+        else                 ReleasedActions += action;
     }
 
     /// <summary> 取消先前註冊的 Action。 </summary>
     public void UnregisterOnBeGrabbingAction(bool whenValueIsTrue, Action action)
     {
         if (action == null) return;
-        if (whenValueIsTrue) grabbedActions -= action;
-        else                 releasedActions -= action;
+        if (whenValueIsTrue) GrabbedActions -= action;
+        else                 ReleasedActions -= action;
     }
 
     /// <summary> 清空已註冊的 Action。 </summary>
     public void ClearOnBeGrabbingActions(bool forTrueGroup)
     {
-        if (forTrueGroup) grabbedActions = null;
-        else              releasedActions = null;
+        if (forTrueGroup) GrabbedActions = null;
+        else              ReleasedActions = null;
     }
 }

@@ -10,7 +10,6 @@ public class PlayerAttackController : MonoBehaviour
 	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
-	[SerializeField] private float comboLimitTime = 1f;
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
 	// [Tooltip("食物攻擊時，玩家向前位移的距離（一般攻擊）。")]
 	// [SerializeField] private float attackMoveDistance = 5f;
@@ -83,7 +82,6 @@ public class PlayerAttackController : MonoBehaviour
 
 	// 連段重置計時：每次「攻擊動畫播完」才算一次成功出招
 	private float lastAttackTime = -999f;
-	private bool comboTimeoutTriggered = true;
 
 	#endregion
 
@@ -98,7 +96,6 @@ public class PlayerAttackController : MonoBehaviour
 		isCharging = false;
 		currentChargeTime = 0f;
 		lastAttackTime = -999f;
-		comboTimeoutTriggered = true;
 	
 		// 保險關閉 hitbox
 		SafeSetActive(foodAttackHitBox, false);
@@ -249,7 +246,6 @@ public class PlayerAttackController : MonoBehaviour
 
 		// 記錄成功出招時間點
 		lastAttackTime = Time.time;
-		comboTimeoutTriggered = false;
 		
 		animationManager.PlayAttackAnimationClip(attackAnimation);
 		// AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
@@ -305,7 +301,6 @@ public class PlayerAttackController : MonoBehaviour
 		
 		// 記錄成功出招時間點
 		lastAttackTime = Time.time;
-		comboTimeoutTriggered = false;
 		
 		animationManager.PlayAttackAnimationClip(attackAnimation);
 		// AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
@@ -441,7 +436,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		if (best == null) return false;
 
-		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabing(true);
+		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabbing(true);
 		Transform t = best.transform;
 		Vector3 worldScale = t.lossyScale;
 		t.SetParent(grabOverHeadItem.transform, true);
@@ -476,7 +471,7 @@ public class PlayerAttackController : MonoBehaviour
 
 		if (t.TryGetComponent<BeGrabByPlayer>(out var grab))
 		{
-			grab.SetIsOnBeGrabing(false);
+			grab.SetIsOnBeGrabbing(false);
 		}
 
 		Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
