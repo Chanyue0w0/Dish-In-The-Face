@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.Pool;
 
 /// <summary>
-/// Guest object pool (similar to VFXPool)
-/// 1) Set up key and corresponding Guest Prefab in Inspector Prefabs list
-/// 2) Get objects via SpawnGuest(key, pos, rot), return via ReleaseGuest(key, obj)
+/// 客人 (Guest) 物件池（類似 VFXPool）
+/// 1) 在 Inspector 的 Prefabs 列表中設定 key 與對應的 Guest Prefab
+/// 2) 透過 SpawnGuest(key, pos, rot) 取得物件，使用完畢後透過 ReleaseGuest(key, obj) 釋放
 /// </summary>
 public class GuestPool : MonoBehaviour
 {
@@ -19,7 +19,7 @@ public class GuestPool : MonoBehaviour
 	{
 		public string key;
 
-		[Tooltip("Corresponding Guest Prefab (should contain GuestPoolHandler component)")]
+		[Tooltip("對應的 Guest Prefab（必須包含 GuestPoolHandler 元件）")]
 		public GameObject prefab;
 
 		[Min(0)] public int defaultCapacity = 20;
@@ -40,7 +40,7 @@ public class GuestPool : MonoBehaviour
 		}
 		Instance = this;
 
-		// Create pools for each key
+		// 為每個 key 建立對應的物件池
 		foreach (var data in guestPrefabs)
 		{
 			if (data.prefab == null || string.IsNullOrWhiteSpace(data.key))
@@ -68,21 +68,21 @@ public class GuestPool : MonoBehaviour
 	}
 
 	/// <summary>
-	/// �ͦ����w key �� Guest�]�۰� SetActive(true)�^
-	/// �ͦ���O�ѤF�� GuestPoolHandler.Init(key)
+	/// 生成指定 key 的 Guest（會自動 SetActive(true)）
+	/// 生成後會呼叫 GuestPoolHandler.Init(key)
 	/// </summary>
 	public GameObject SpawnGuest(string key, Vector3 position, Quaternion rotation)
 	{
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			Debug.LogWarning("[GuestPool] SpawnGuest: key �O�Ū�");
+			Debug.LogWarning("[GuestPool] SpawnGuest: key 為空字串");
 			return null;
 		}
 
 		key = key.Trim();
 		if (!pools.TryGetValue(key, out var pool))
 		{
-			Debug.LogWarning($"[GuestPool] ����� key = {key} �������");
+			Debug.LogWarning($"[GuestPool] 找不到 key = {key} 的物件池");
 			return null;
 		}
 
@@ -92,7 +92,7 @@ public class GuestPool : MonoBehaviour
 	}
 
 	/// <summary>
-	/// �^�����w key �� Guest
+	/// 回收指定 key 的 Guest
 	/// </summary>
 	public void ReleaseGuest(string key, GameObject obj)
 	{
@@ -100,7 +100,7 @@ public class GuestPool : MonoBehaviour
 
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			Debug.LogWarning("[GuestPool] ReleaseGuest: key �O�Ū��A�אּ���� Destroy");
+			Debug.LogWarning("[GuestPool] ReleaseGuest: key 為空字串，自動 Destroy");
 			Destroy(obj);
 			return;
 		}
@@ -112,7 +112,7 @@ public class GuestPool : MonoBehaviour
 		}
 		else
 		{
-			Debug.LogWarning($"[GuestPool] ����� key = {key} ��������A�אּ���� Destroy");
+			Debug.LogWarning($"[GuestPool] 找不到 key = {key} 的物件池，自動 Destroy");
 			Destroy(obj);
 		}
 	}
