@@ -61,8 +61,7 @@ public class PlayerAttackController : MonoBehaviour
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItemGroup;           // 手上物件群組
 	[SerializeField] private Collider2D grabOverHeadItem;  // 抓到頭上的「抓取區域」碰撞器（建議Trigger）
-	[SerializeField] private GameObject foodAttackHitBox;  // 食物攻擊 HitBox
-	[SerializeField] private GameObject basicAttackHitBox; // 基礎攻擊 HitBox
+	[SerializeField] private GameObject attackHitBox;  // 食物攻擊 HitBox
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private Animator weaponUIAnimator;
 	[SerializeField] private AnimationClip[] gloveAnimations;
@@ -98,8 +97,7 @@ public class PlayerAttackController : MonoBehaviour
 		lastAttackTime = -999f;
 	
 		// 保險關閉 hitbox
-		SafeSetActive(foodAttackHitBox, false);
-		SafeSetActive(basicAttackHitBox, false);
+		SafeSetActive(attackHitBox, false);
 
 		// 一開始就關 UI
 		SetPowerBarVisible(false);

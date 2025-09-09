@@ -124,7 +124,7 @@ public class GuestGroupManager : MonoBehaviour
 		if (handler != null) handler.Init(troubleGuestKey);
 
 		// If TroubleGusetController has SetSprite(Sprite) method, can add sprite copying here
-		var ctrl = guest.GetComponent<TroubleGusetController>();
+		var ctrl = guest.GetComponent<TroubleGuestController>();
 		if (ctrl != null && copySprite != null)
 		{
 			ctrl.SetSprite(copySprite);

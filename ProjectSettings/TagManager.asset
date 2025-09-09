@@ -8,15 +8,14 @@ TagManager:
   - Table
   - Foods
   - Enemy
-  - AttackObject
   - NormalGuest
   - Chair
   - Coin
   - WanderGuest
   - Obstacle
   - Dessert
-  - BasicAttack
   - ExitDoor
+  - AttackStun
   layers:
   - Default
   - TransparentFX
