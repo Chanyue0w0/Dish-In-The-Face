@@ -8,7 +8,8 @@ public class FoodStatus : MonoBehaviour
     [Header("Basic Info")]
     public FoodType foodType;
     public int price;
-
+    public float comboAttackTime;
+    
     [Header("Spine Reference")]
     [SerializeField] private SkeletonAnimation skeletonAnim; // 給 Inspector 指定角色的 SkeletonAnimation
 

@@ -6,22 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Night Game/UI/Weapon UI/Wepon Icon.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Night Game/UI/Weapon UI/Wepon Icon.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove1.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove1.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove2.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove2.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove3.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/Basic/Glove3.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_1.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_1.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_2.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_2.anim" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Normal guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Normal guest.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Wander guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Wander guest.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGusetController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGusetController.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/WanderGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/WanderGuestController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/EnemyHPController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/EnemyHPController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -162,7 +152,7 @@
       <workItem from="1757312983291" duration="11641000" />
       <workItem from="1757391772494" duration="5128000" />
       <workItem from="1757406438545" duration="1208000" />
-      <workItem from="1757407683620" duration="9032000" />
+      <workItem from="1757407683620" duration="10570000" />
     </task>
     <servers />
   </component>

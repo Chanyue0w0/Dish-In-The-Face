@@ -33,8 +33,8 @@ public class TroubleGuestController : MonoBehaviour
 
     [Header("----- Reference (Select) -----")]
     [SerializeField] private StunController stun;
-    [SerializeField] private EnemyHpController hpCtrl;
-
+    [SerializeField] private EnemyHpController hpController;
+    
     private Transform player;
     private float lastAttackTime;
     private bool isCharging;
@@ -56,8 +56,6 @@ public class TroubleGuestController : MonoBehaviour
 
         if (attackOrigin == null && attackRangeBox != null)
             attackOrigin = attackRangeBox.transform;
-
-        if (hpCtrl == null) hpCtrl = GetComponent<EnemyHpController>();
     }
 
     private void Start()
@@ -70,12 +68,6 @@ public class TroubleGuestController : MonoBehaviour
         SetSprite();
 
         if (RoundManager.Instance) player = RoundManager.Instance.player;
-
-        // 初始化 HP（沿用你原本 1~3 的隨機血量）
-        if (hpCtrl != null)
-        {
-            hpCtrl.InitRandomHp(1, 4, hideBar: true);
-        }
 
         if (attackHitBox != null) attackHitBox.SetActive(false);
         if (attackRangeBox != null) attackRangeBox.SetActive(false);
@@ -283,9 +275,8 @@ public class TroubleGuestController : MonoBehaviour
             TryEnsureOnNavMesh();
             agent.isStopped = false;
         }
-
-        // 扣血（顯示血條、受擊動畫、歸零觸發交由 EnemyHPController）
-        if (hpCtrl != null) hpCtrl.TakeDamage(1);
+        
+        if (hpController) hpController.TakeDamage(1);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -6,6 +7,8 @@ public class EnemyHpController : MonoBehaviour
 {
     private static readonly int BeAttack = Animator.StringToHash("BeAttack");
 
+    [SerializeField] private bool openTriggerDetect;
+    [SerializeField] private string attackTriggerTag = "AttackStun";
     [Header("----- HP -----")]
     [SerializeField] private int maxHp = 3;
     [SerializeField] private int currentHp;
@@ -23,8 +26,13 @@ public class EnemyHpController : MonoBehaviour
     [Tooltip("當 HP 歸零時呼叫（可在 Inspector 綁定 TroubleGustController 的函式）")]
     public UnityEvent onHpZero;
 
+
+    private void OnEnable()
+    {
+        InitRandomHp(1, 4, hideBar: true);
+    }
     /// <summary>初始化 HP，並可選擇是否隱藏血條。</summary>
-    private void InitHp(int max, bool hideBar = true)
+    public void InitHp(int max, bool hideBar = true)
     {
         maxHp = Mathf.Max(1, max);
         currentHp = maxHp;
@@ -33,7 +41,7 @@ public class EnemyHpController : MonoBehaviour
     }
 
     /// <summary>以亂數設定 HP（區間 [minInclusive, maxExclusive)）。</summary>
-    public void InitRandomHp(int minInclusive, int maxExclusive, bool hideBar = true)
+    private void InitRandomHp(int minInclusive, int maxExclusive, bool hideBar = true)
     {
         int max = Mathf.Clamp(Random.Range(minInclusive, maxExclusive), 1, 9999);
         InitHp(max, hideBar);
@@ -90,6 +98,17 @@ public class EnemyHpController : MonoBehaviour
         barFill.localScale = new Vector3(Mathf.Clamp01(ratio), 1f, 1f);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!openTriggerDetect) return;
+        
+        // 原本的擊退（沿用）
+        if (other.CompareTag(attackTriggerTag))
+        {
+            TakeDamage(1);
+        }
+
+    }
     // 方便從外部測試（例如 AnimationEvent 或 Debug）
     public void Debug_Deal1Damage() => TakeDamage(1);
 }
