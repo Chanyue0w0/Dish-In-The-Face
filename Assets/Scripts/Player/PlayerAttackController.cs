@@ -2,6 +2,7 @@ using UnityEngine;
 using PrimeTween;
 using System.Collections.Generic;
 
+[System.Serializable]
 public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
@@ -103,7 +104,7 @@ public class PlayerAttackController : MonoBehaviour
 		SetPowerBarVisible(false);
 		UpdatePowerBarFill(0f);
 
-		SetAttackModeUI(attackMode);
+		// SetAttackModeUI(attackMode);
 		lastAttackTime = -999f;
 	}
 
@@ -127,8 +128,9 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== 對外：蓄力控制 =====
-	public void BeginCharge()
+	public void BeginCharge(AttackMode mode)
 	{
+		attackMode = mode;
 		if (playerMovement == null) return;
 		if (playerMovement.IsPlayerDash() || playerMovement.IsPlayerSlide()) return;
 

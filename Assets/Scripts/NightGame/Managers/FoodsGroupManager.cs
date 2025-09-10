@@ -51,7 +51,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void Start()
 	{
-		currentFoodTarget = GetComponent<Transform>();
+		currentFoodTarget = null;
 		isPlayerInsideTrigger = false;
 
 		if (yellowFrame != null) yellowFrame.SetActive(false);
