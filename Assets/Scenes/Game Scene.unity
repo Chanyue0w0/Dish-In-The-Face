@@ -14516,7 +14516,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 832301757}
   m_HandleRect: {fileID: 832301756}
   m_Direction: 2
-  m_Value: 0.63877624
+  m_Value: 1.0000006
   m_Size: 0.42704242
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -60135,7 +60135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7612120009292307888, guid: 1a0c204cf2d2c434e854161ac4979447, type: 3}
       propertyPath: _animationName
-      value: dash/dash_angry  eye2
+      value: run/run
       objectReference: {fileID: 0}
     - target: {fileID: 8417861950410904374, guid: 1a0c204cf2d2c434e854161ac4979447, type: 3}
       propertyPath: m_Mesh

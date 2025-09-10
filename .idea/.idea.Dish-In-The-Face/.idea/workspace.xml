@@ -5,15 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/dash_dash_angry  eye1.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/dash_dash_angry  eye1.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/dash_dash_angry  eye2.asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/dash_dash_angry  eye2.asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Setting/SettingMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Setting/SettingMenu.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +150,7 @@
       <workItem from="1757406438545" duration="1208000" />
       <workItem from="1757407683620" duration="10981000" />
       <workItem from="1757482274312" duration="4113000" />
-      <workItem from="1757486986920" duration="785000" />
+      <workItem from="1757486986920" duration="2489000" />
     </task>
     <servers />
   </component>
