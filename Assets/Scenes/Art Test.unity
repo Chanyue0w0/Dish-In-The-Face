@@ -1052,7 +1052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 587003745}
   m_Layer: 0
-  m_Name: SlimeGuest_crystal
+  m_Name: SlimeGuest_BlueSlime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1084,7 +1084,7 @@ GameObject:
   m_Component:
   - component: {fileID: 633531499}
   m_Layer: 0
-  m_Name: SlimeGuest_round
+  m_Name: SlimeGuest_GreenSlime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1401,7 +1401,7 @@ Animator:
   m_GameObject: {fileID: 725183796}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 97ec4314a02cf409d9c1940a94668752, type: 2}
+  m_Controller: {fileID: 9100000, guid: 90fa47216237548f0b89e8ad2dfadfc0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2566,7 +2566,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1457719720}
   m_Layer: 0
-  m_Name: SlimeGuest_heartcarrot
+  m_Name: SlimeGuest_YellowSlime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2749,7 +2749,7 @@ Animator:
   m_GameObject: {fileID: 1507891652}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 97ec4314a02cf409d9c1940a94668752, type: 2}
+  m_Controller: {fileID: 9100000, guid: d6eb34aa22a3e416dbc1e68700a1cd57, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -3264,7 +3264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1822963435}
   m_Layer: 0
-  m_Name: SlimeGuest_octopus
+  m_Name: SlimeGuest_PinkSlime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3884,7 +3884,7 @@ Animator:
   m_GameObject: {fileID: 2110232456}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 97ec4314a02cf409d9c1940a94668752, type: 2}
+  m_Controller: {fileID: 9100000, guid: 97c0dfed55ad54d2bb4093e63c90a736, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
