@@ -281,9 +281,12 @@ public class TroubleGuestController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 原本的擊退（沿用）
+        // 被攻擊
         if (other.CompareTag(attackTriggerTag))
         {
+            VFXPool.Instance.SpawnVFX("BasicAttack", transform.position, Quaternion.identity, 1f);
+            AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
+            // 擊退
             Vector2 knockDir = (transform.position - other.transform.position).normalized;
             StartCoroutine(ApplyKnockback(knockDir));
         }
