@@ -6,12 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.inputactions" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.inputactions" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/VFX Effect/RumbleManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/VFX Effect/RumbleManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +150,7 @@
       <workItem from="1757391772494" duration="5128000" />
       <workItem from="1757406438545" duration="1208000" />
       <workItem from="1757407683620" duration="10981000" />
-      <workItem from="1757482274312" duration="1930000" />
+      <workItem from="1757482274312" duration="4113000" />
     </task>
     <servers />
   </component>

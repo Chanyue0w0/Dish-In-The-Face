@@ -240,13 +240,14 @@ public class FoodsGroupManager : MonoBehaviour
 			var col = foodPos.GetComponent<Collider2D>();
 			if (col == null || !col.isTrigger || !col.IsTouching(playerCollider)) continue;
 			if (foodPos.childCount > 0)
-				return foodPos.transform.GetChild(0);
+				return foodPos.GetComponentInChildren<FoodStatus>().transform;
 		}
 		return null;
 	}
 
 	private void UpdateYellowFrame(Transform target)
 	{
+		Debug.Log("UpdateYellowFrame: " + target.name);
 		currentFoodTarget = target;
 		if (yellowFrame && !yellowFrame.activeSelf) yellowFrame.SetActive(true);
 		if (yellowFrame) yellowFrame.transform.position = currentFoodTarget.position;
