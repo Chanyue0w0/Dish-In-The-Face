@@ -8,10 +8,10 @@ public class RumbleManager : MonoBehaviour
 
 	private Coroutine rumbleCoroutine;
 	private bool wasTimeScaleZero = false;
-	private bool isRumble = true;
 
+	[SerializeField] private bool isRumble = true;
 	[Range(0f, 1f)]
-	[SerializeField] private float rumbleScale = 1f; // ¾_°Ê±j«×¤ñ¨Ò¡]0~1¡^
+	[SerializeField] private float rumbleScale = 1f; // ï¿½_ï¿½Ê±jï¿½×¤ï¿½Ò¡]0~1ï¿½^
 
 	private void Awake()
 	{
@@ -25,7 +25,7 @@ public class RumbleManager : MonoBehaviour
 
 	private void Update()
 	{
-		// ÀË¬d timeScale ¬O§_ÅÜ¬° 0
+		// ï¿½Ë¬d timeScale ï¿½Oï¿½_ï¿½Ü¬ï¿½ 0
 		if (Time.timeScale == 0f && !wasTimeScaleZero)
 		{
 			StopRumble();
@@ -37,13 +37,13 @@ public class RumbleManager : MonoBehaviour
 		}
 	}
 
-	/// ±Ò°Ê¾_°Ê¡]«ü©w¾_«×»P«ùÄò®É¶¡¡^
+	/// ï¿½Ò°Ê¾_ï¿½Ê¡]ï¿½ï¿½ï¿½wï¿½_ï¿½×»Pï¿½ï¿½ï¿½ï¿½É¶ï¿½ï¿½^
 	public void Rumble(float lowFrequency, float highFrequency, float duration)
 	{
 		if (!isRumble) return;
 		if (Gamepad.current == null) return;
 
-		// ®Ú¾Ú rumbleScale ½Õ¾ã¾_°Ê±j«×
+		// ï¿½Ú¾ï¿½ rumbleScale ï¿½Õ¾ï¿½_ï¿½Ê±jï¿½ï¿½
 		lowFrequency *= rumbleScale;
 		highFrequency *= rumbleScale;
 
@@ -61,7 +61,7 @@ public class RumbleManager : MonoBehaviour
 		rumbleCoroutine = null;
 	}
 
-	/// ±Ò°Ê«ùÄò¾_°Ê¡]µL­­®Éªø¡A»Ý¤â°Ê°±¤î¡^
+	/// ï¿½Ò°Ê«ï¿½ï¿½ï¿½_ï¿½Ê¡]ï¿½Lï¿½ï¿½ï¿½Éªï¿½ï¿½Aï¿½Ý¤ï¿½Ê°ï¿½ï¿½ï¿½^
 	public void RumbleContinuous(float lowFrequency, float highFrequency)
 	{
 		if (!isRumble) return;
@@ -70,7 +70,7 @@ public class RumbleManager : MonoBehaviour
 		if (rumbleCoroutine != null)
 			StopCoroutine(rumbleCoroutine);
 
-		// ®Ú¾Ú rumbleScale ½Õ¾ã¾_°Ê±j«×
+		// ï¿½Ú¾ï¿½ rumbleScale ï¿½Õ¾ï¿½_ï¿½Ê±jï¿½ï¿½
 		lowFrequency *= rumbleScale;
 		highFrequency *= rumbleScale;
 
@@ -78,7 +78,7 @@ public class RumbleManager : MonoBehaviour
 		rumbleCoroutine = null;
 	}
 
-	/// °±¤î¾_°Ê
+	/// ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½
 	public void StopRumble()
 	{
 		if (Gamepad.current == null) return;
@@ -105,7 +105,7 @@ public class RumbleManager : MonoBehaviour
 		isRumble = rumble;
 	}
 
-	/// ³]©w¾_°Ê¤ñ¨Ò¡]0~1¡^
+	/// ï¿½]ï¿½wï¿½_ï¿½Ê¤ï¿½Ò¡]0~1ï¿½^
 	public void SetRumbleScale(float scale)
 	{
 		rumbleScale = Mathf.Clamp01(scale);

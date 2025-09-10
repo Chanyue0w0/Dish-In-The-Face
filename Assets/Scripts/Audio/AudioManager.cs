@@ -14,7 +14,7 @@ public class AudioManager : MonoBehaviour
 	//[Range(0, 1)]
 	//public float ambienceVolume = 1;
 	[Range(0, 1)]
-	public float SFXVolume = 1;
+	public float sfxVolume = 1;
 
 	private Bus masterBus;
 	private Bus musicBus;
@@ -57,7 +57,7 @@ public class AudioManager : MonoBehaviour
 		masterBus.setVolume(masterVolume);
 		musicBus.setVolume(musicVolume);
 		//ambienceBus.setVolume(ambienceVolume);
-		sfxBus.setVolume(SFXVolume);
+		sfxBus.setVolume(sfxVolume);
 	}
 
 	//private void InitializeAmbience(EventReference ambienceEventReference)

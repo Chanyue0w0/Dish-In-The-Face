@@ -4,13 +4,9 @@ using PrimeTween;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TroubleGusetController : MonoBehaviour
+public class TroubleGuestController : MonoBehaviour
 {
-    private static readonly int BeAttack = Animator.StringToHash("BeAttack");
-
     [Header("----- Status -----")]
-    [SerializeField] private int currentHp;
-    [SerializeField] private int maxHp = 3;
     [SerializeField] private int atk = 1;
     [SerializeField] private float moveSpeed = 2f;
 
@@ -19,10 +15,7 @@ public class TroubleGusetController : MonoBehaviour
     [SerializeField] private float chargeTime = 1f;     // 蓄力時間(秒)
     [SerializeField] private LayerMask playerLayer;     // 玩家圖層
     [SerializeField] private Transform attackOrigin;    // 供 attackRangeBox 參考的原點
-
-    [Header("----- Knockback Setting -----")]
-    [SerializeField] private float knockbackForce = 5f;
-    [SerializeField] private float knockbackDuration = 0.2f;
+    [SerializeField] private string attackTriggerTag = "AttackStun";
 
     [Header("-------- Appearance --------")]
     [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
@@ -34,15 +27,14 @@ public class TroubleGusetController : MonoBehaviour
     [SerializeField] private GameObject attackHitBox;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private GameObject attackRangeBox;
-    [SerializeField] private GameObject hpBar;
-    [SerializeField] private Transform barFill;
     [SerializeField] private GameObject dieVFX;
     [SerializeField] private GameObject attackVFX;
     [SerializeField] private BeGrabByPlayer beGrabByPlayer;
 
-    [Header("----- Stun Controller (外掛) -----")]
-    [SerializeField] private StunController stun; // 交由外部暈眩元件控制
-
+    [Header("----- Reference (Select) -----")]
+    [SerializeField] private StunController stun;
+    [SerializeField] private EnemyHpController hpController;
+    
     private Transform player;
     private float lastAttackTime;
     private bool isCharging;
@@ -77,22 +69,11 @@ public class TroubleGusetController : MonoBehaviour
 
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
-        maxHp = Random.Range(1, 4);
-        currentHp = maxHp;
-
-        if (hpBar != null) hpBar.SetActive(false);
         if (attackHitBox != null) attackHitBox.SetActive(false);
         if (attackRangeBox != null) attackRangeBox.SetActive(false);
 
         lastAttackTime = -Mathf.Infinity;
         isCharging = false;
-
-        // 事件註冊：被抓/放下（停/啟 NavMeshAgent）
-        // if (beGrabByPlayer != null)
-        // {
-        //     beGrabByPlayer.RegisterOnBeGrabbingAction(true, OnGrabbedByPlayer);
-        //     beGrabByPlayer.RegisterOnBeGrabbingAction(false, OnReleasedByPlayer);
-        // }
 
         TryEnsureOnNavMesh();
     }
@@ -101,27 +82,20 @@ public class TroubleGusetController : MonoBehaviour
     {
         CancelInvoke(nameof(EndAttack));
         isCharging = false;
-
-        // if (beGrabByPlayer != null)
-        // {
-        //     beGrabByPlayer.UnregisterOnBeGrabbingAction(true, OnGrabbedByPlayer);
-        //     beGrabByPlayer.UnregisterOnBeGrabbingAction(false, OnReleasedByPlayer);
-        // }
     }
 
     private void Update()
     {
         if (player == null) return;
 
-        // ✅ 不再因為 agent.isStopped 就直接 return，
-        //    只在「真的暈眩時」跳出攻擊/移動流程（但仍讓其他計時正常更新）
+        // 暈眩中：停下
         if (stun != null && stun.IsStunned())
         {
             if (agent != null && agent.enabled) agent.isStopped = true;
             return;
         }
 
-        // ===== 左右翻面 =====
+        // 左右翻面（依 NavMesh 速度）
         if (agent != null && agent.enabled)
         {
             if (agent.velocity.x < -0.01f)
@@ -130,7 +104,7 @@ public class TroubleGusetController : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
-        // ===== 蓄力期間不移動，但會持續計時，時間到就 PerformAttack() =====
+        // 蓄力
         if (isCharging)
         {
             if (Time.time - chargeStartTime >= chargeTime)
@@ -141,28 +115,24 @@ public class TroubleGusetController : MonoBehaviour
             else
             {
                 if (agent != null && agent.enabled) agent.isStopped = true;
-                // 這裡不 return，讓其他邏輯仍能照原本節奏運作（如動畫或特效計時）
                 return;
             }
         }
 
-        // ===== 追玩家 =====
+        // 追玩家
         if (agent != null && agent.enabled)
         {
             agent.isStopped = false;
             agent.SetDestination(player.position);
         }
 
-        // ===== 進入攻擊範圍就開始蓄力 =====
+        // 進入攻擊範圍開始蓄力
         if (Time.time - lastAttackTime >= attackCooldown && IsPlayerInRange())
         {
             StartCharge();
         }
     }
 
-    /// <summary>從 attackRangeBox 取得攻擊半徑</summary>
-    /// <summary>從 attackRangeBox 取得攻擊半徑</summary>
-    /// <summary>從 attackRangeBox 取得攻擊半徑</summary>
     private float GetAttackRadius()
     {
         if (attackRangeBox != null)
@@ -185,7 +155,6 @@ public class TroubleGusetController : MonoBehaviour
         }
         return 2f;
     }
-
 
     private bool IsPlayerInRange()
     {
@@ -245,7 +214,6 @@ public class TroubleGusetController : MonoBehaviour
         agent.isStopped = false;
     }
 
-    /// <summary>嘗試把 Agent 放回 NavMesh 合法位置。</summary>
     private bool TryEnsureOnNavMesh(float searchRadius = 2f)
     {
         if (agent == null || !agent.isActiveAndEnabled || !agent.enabled) return false;
@@ -277,46 +245,21 @@ public class TroubleGusetController : MonoBehaviour
         Debug.LogWarning("Not Get Enemy Guest Sprite!!!!");
     }
 
-    public void TakeDamage(int damage)
-    {
-        if (hpBar != null) hpBar.SetActive(true);
-        currentHp -= damage;
-
-        float ratio = (float)currentHp / maxHp;
-        if (barFill != null) barFill.localScale = new Vector3(ratio, 1f, 1f);
-
-        if (currentHp <= 0)
-        {
-            Dead(true);
-        }
-    }
-
-    private void Dead(bool isDefeated)
-    {
-        if (isDefeated)
-        {
-            VFXPool.Instance.SpawnVFX("CoinFountain", (attackOrigin != null ? attackOrigin.position : transform.position), Quaternion.identity, 2f);
-            RoundManager.Instance.DefeatEnemySuccess();
-        }
-
-        if (poolHandler != null) poolHandler.Release();
-        else gameObject.SetActive(false);
-    }
-
-    private IEnumerator ApplyKnockback(Vector2 direction)
+    private IEnumerator ApplyKnockback(Vector2 direction, float knockbackForce = 5f, float knockbackDuration = 0.2f)
     {
         if (agent == null) yield break;
 
-        // 被擊退時先暫停 NavMesh 控制，直接位移 Transform
+        // 暫停 NavMesh 控制，直接位移 Transform
         bool reEnableAfter = false;
         if (agent.enabled)
         {
             agent.isStopped = true;
-            agent.enabled = false; // 短暫關閉避免被 NavMesh 拉回
+            agent.enabled = false;
             reEnableAfter = true;
         }
 
-        if (animator != null) animator.SetTrigger(BeAttack);
+        // 受擊動畫觸發已移到 EnemyHPController.TakeDamage()
+
         float elapsed = 0f;
         while (elapsed < knockbackDuration)
         {
@@ -332,14 +275,14 @@ public class TroubleGusetController : MonoBehaviour
             TryEnsureOnNavMesh();
             agent.isStopped = false;
         }
-
-        TakeDamage(1);
+        
+        if (hpController) hpController.TakeDamage(1);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 原本的擊退
-        if (other.CompareTag("AttackObject"))
+        // 原本的擊退（沿用）
+        if (other.CompareTag(attackTriggerTag))
         {
             Vector2 knockDir = (transform.position - other.transform.position).normalized;
             StartCoroutine(ApplyKnockback(knockDir));
@@ -363,14 +306,12 @@ public class TroubleGusetController : MonoBehaviour
         }
         if (moveDir == Vector2.zero)
         {
-            moveDir = Vector2.right; // 預設一個方向，避免沒有速度時完全不動
+            moveDir = Vector2.right; // 預設一個方向
         }
 
-        // 計算目標位置（往前一段距離）
-        float forwardDistance = 2f;   // 可調
+        float forwardDistance = 10f;
         Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
 
-        // 播放 Tween（0.5 秒推進），結束後呼叫 Dead(false)
         Tween.Position(transform, targetPos, 0.5f)
             .OnComplete(() => Dead(false));
     }
@@ -403,17 +344,14 @@ public class TroubleGusetController : MonoBehaviour
 
     public void OnStunRecovered()
     {
-        // 1) 不再允許被抓
         if (beGrabByPlayer != null)
         {
-            // 若仍在被抓狀態，強制鬆手（會連帶觸發已註冊的 OnReleasedByPlayer）
-            if (beGrabByPlayer.GetIsOnBeGrabbing())
+            if (beGrabByPlayer.GetIsCanBeGrabbing())
                 beGrabByPlayer.SetIsOnBeGrabbing(false);
 
             beGrabByPlayer.SetIsCanBeGrabByPlayer(false);
         }
 
-        // 2) 確保 Agent 恢復可用與行走
         if (agent != null)
         {
             if (!agent.enabled)
@@ -423,13 +361,12 @@ public class TroubleGusetController : MonoBehaviour
             }
             agent.isStopped = false;
         }
-        
+
         transform.SetParent(RoundManager.Instance.guestGroupManager.transform);
     }
 
-
     // =========================
-    // ===== 被抓/放下 事件（獨立於暈眩，用於切換 NavMeshAgent）=====
+    // ===== 被抓/放下 事件 =====
     // =========================
     public void OnGrabbedByPlayer()
     {
@@ -446,7 +383,25 @@ public class TroubleGusetController : MonoBehaviour
         {
             agent.enabled = true;
             TryEnsureOnNavMesh();
-            // 是否立刻恢復移動交由暈眩與攻擊狀態決定
         }
+    }
+
+    // =========================
+    // ===== HP 歸零處理 =====
+    // =========================
+
+    /// <summary>提供給 EnemyHPController 的 onHpZero 綁定。</summary>
+
+    public void Dead(bool defeated)
+    {
+        if (defeated)
+        {
+            var pos = (attackOrigin != null ? attackOrigin.position : transform.position);
+            VFXPool.Instance.SpawnVFX("CoinFountain", pos, Quaternion.identity, 2f);
+            RoundManager.Instance.DefeatEnemySuccess();
+        }
+
+        if (poolHandler != null) poolHandler.Release();
+        else gameObject.SetActive(false);
     }
 }

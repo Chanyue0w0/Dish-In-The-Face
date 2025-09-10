@@ -6,12 +6,13 @@ public class StunController : MonoBehaviour
     [Header("----- Stun Setting -----")]
     [SerializeField] private int maxStunPerStage = 6;        // 每階段需要的暈眩值
     [SerializeField] private float noDamageResetTime = 10f;  // 幾秒沒受攻擊就清空暈眩值 & 星星（僅在非暈眩時檢查）
+    [SerializeField] private string stunTriggerTag = "AttackStun";
 
     [Header("Star Stun Time")]
     [SerializeField] private float stunTime1Star = 3f;
     [SerializeField] private float stunTime2Star = 7f;
     [SerializeField] private float stunTime3Star = 12f;
-
+    
     [Header("UI Setting")]
     [SerializeField] private bool showBarUI = true;   // 是否開啟暈眩條 UI（顯示累積值）
     [SerializeField] private bool showStarsUI = true; // 是否開啟星星數量顯示
@@ -20,7 +21,7 @@ public class StunController : MonoBehaviour
     [SerializeField] private GameObject[] stars;      // 星星圖示陣列，依序 1,2,3 星
     [SerializeField] private GameObject stunBar;      // 暈眩條物件
     [SerializeField] private Transform stunBarFill;   // 暈眩條填充（localScale.x 0~1）
-
+    
     [Header("----- Events -----")]
     public UnityEvent onStunFull;       // 進入/更新暈眩（升星）時呼叫
     public UnityEvent onStunRecovered;  // 暈眩倒數結束時呼叫
@@ -81,7 +82,7 @@ public class StunController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("BasicAttack"))
+        if (other.CompareTag(stunTriggerTag))
         {
             AddStun(1);
         }

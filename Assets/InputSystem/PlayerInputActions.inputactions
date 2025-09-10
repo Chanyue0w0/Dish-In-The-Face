@@ -24,9 +24,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Fire1",
+                    "name": "BasicAttack",
                     "type": "Button",
                     "id": "f320fb05-c128-4cfc-959f-c8be7507b661",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpecialAttack",
+                    "type": "Button",
+                    "id": "c9ce9ac6-1ff3-4ffe-9709-4fbdbfd3e2a5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -84,7 +93,7 @@
                 {
                     "name": "",
                     "id": "efa8e1dc-f9aa-412f-a81c-97d75a5132f2",
-                    "path": "<Keyboard>/i",
+                    "path": "<Keyboard>/k",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
@@ -110,7 +119,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
-                    "action": "Fire1",
+                    "action": "BasicAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -121,7 +130,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Fire1",
+                    "action": "BasicAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -132,7 +141,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
-                    "action": "Fire1",
+                    "action": "BasicAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -293,7 +302,7 @@
                 {
                     "name": "",
                     "id": "1fc5f647-a80e-4d15-95db-47ac02ed24de",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -304,11 +313,33 @@
                 {
                     "name": "",
                     "id": "897810fa-341d-4cf0-b4eb-87be3ca86087",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
                     "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ceb0c974-b248-49a2-aee2-09a7b17ea277",
+                    "path": "<Keyboard>/u",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard Mouse",
+                    "action": "SpecialAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a2d11d3b-face-40cd-926d-9a194f815b6c",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SpecialAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

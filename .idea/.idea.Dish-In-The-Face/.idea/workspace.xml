@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
-    </list>
+    <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +24,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -151,6 +144,9 @@
       <workItem from="1757312983291" duration="11641000" />
       <workItem from="1757391772494" duration="5128000" />
       <workItem from="1757406438545" duration="1208000" />
+      <workItem from="1757407683620" duration="10981000" />
+      <workItem from="1757482274312" duration="4113000" />
+      <workItem from="1757486986920" duration="3118000" />
     </task>
     <servers />
   </component>

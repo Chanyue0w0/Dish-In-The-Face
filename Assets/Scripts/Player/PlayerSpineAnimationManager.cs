@@ -37,13 +37,13 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	#region ===== Inspector：動畫名稱（Spine） =====
 	[Header("Spine Animation Names")]
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runFront;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runBack;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runSide;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runFront;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runBack;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runSide;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
 	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
 	#endregion
 

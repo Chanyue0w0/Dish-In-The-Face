@@ -47,8 +47,6 @@ public class PlayerInteraction : MonoBehaviour
 	/// Try to pick up food from current serving area
 	private bool TryGetFood()
 	{
-		if (handItemUI) handItemUI.ChangeHandItemUI();
-
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
 		if (currentFood == null) return false;
 

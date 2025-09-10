@@ -91,11 +91,23 @@ public class PlayerMovement : MonoBehaviour
 	}
 
 	/// <summary> 攻擊鍵：按下→BeginCharge；放開→ReleaseChargeAndAttack（邏輯已搬到 AttackController） </summary>
-	public void InputAttack(InputAction.CallbackContext context)
+	public void InputBasicAttack(InputAction.CallbackContext context)
 	{
 		if (context.started)
 		{
-			attackController.BeginCharge();
+			attackController.BeginCharge(AttackMode.Basic);
+		}
+		else if (context.canceled)
+		{
+			attackController.ReleaseChargeAndAttack();
+		}
+	}
+
+	public void InputSpecialAttack(InputAction.CallbackContext context)
+	{
+		if (context.started)
+		{
+			attackController.BeginCharge(AttackMode.Food);
 		}
 		else if (context.canceled)
 		{
@@ -118,10 +130,10 @@ public class PlayerMovement : MonoBehaviour
 		if (context.performed) UseItem();
 	}
 
-	public void InputSwitchWeapon(InputAction.CallbackContext context)
-	{
-		if (context.performed) SwitchWeapon();
-	}
+	// public void InputSwitchWeapon(InputAction.CallbackContext context)
+	// {
+	// 	if (context.performed) SwitchWeapon();
+	// }
 	#endregion
 
 	#region ===== 角色移動/旋轉 =====
