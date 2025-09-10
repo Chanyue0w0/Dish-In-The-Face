@@ -300,7 +300,7 @@ public class SettingMenu : MonoBehaviour
 	{
 		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
 		PlayerPrefsManager.SetSFXVolume(sfxSlider.value);
-		AudioManager.Instance.SFXVolume = sfxSlider.value;
+		AudioManager.Instance.sfxVolume = sfxSlider.value;
 	}
 	public void OnClickSFXVolume(bool increase)
 	{
