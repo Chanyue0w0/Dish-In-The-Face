@@ -100397,13 +100397,6 @@ MonoBehaviour:
   specialMoveLayerName: Spical Move Layer
   attackLayerName: Attack Layer
   reactLayerName: React Layer
-  idleFront: idle/idle
-  idleBack: idle/idle_back
-  runFront: run/run
-  runBack: run/run_back
-  runSide: run/run_side
-  dashNormal: dash/dash_angry  eye1
-  dashSlide: dash/tabledash
   gloveAttack:
   - Glove/GloveAttack_1
   - Glove/GloveAttack_2

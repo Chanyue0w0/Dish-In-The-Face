@@ -247,7 +247,6 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void UpdateYellowFrame(Transform target)
 	{
-		Debug.Log("UpdateYellowFrame: " + target.name);
 		currentFoodTarget = target;
 		if (yellowFrame && !yellowFrame.activeSelf) yellowFrame.SetActive(true);
 		if (yellowFrame) yellowFrame.transform.position = currentFoodTarget.position;

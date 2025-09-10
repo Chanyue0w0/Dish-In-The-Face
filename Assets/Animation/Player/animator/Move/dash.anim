@@ -53,7 +53,7 @@ AnimationClip:
   m_Events:
   - time: 0
     functionName: PlayAnimation
-    data: dash/dash_angry  eye1
+    data: dash/dash_angry_eye1
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
