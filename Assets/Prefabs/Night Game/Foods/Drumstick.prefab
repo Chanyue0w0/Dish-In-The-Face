@@ -159,22 +159,24 @@ MonoBehaviour:
     stunDamage: 1
     sfx:
       Guid:
-        Data1: 0
-        Data2: 0
-        Data3: 0
-        Data4: 0
-      Path: 
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
     knockbackForce: 5
+    vfxGameObject: {fileID: 0}
   - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
     stunDamage: 2
     sfx:
       Guid:
-        Data1: 0
-        Data2: 0
-        Data3: 0
-        Data4: 0
-      Path: 
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
     knockbackForce: 10
+    vfxGameObject: {fileID: 0}
 --- !u!1 &3857453713245092508
 GameObject:
   m_ObjectHideFlags: 0

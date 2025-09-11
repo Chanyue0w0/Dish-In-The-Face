@@ -195,8 +195,8 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (attackController.GetAttackMode() == AttackMode.Food)
 		{
-			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
-			DestroyFirstItem();
+			if (DestroyFirstItem())
+				AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
 		}
 	}
 	#endregion
@@ -347,13 +347,16 @@ public class PlayerMovement : MonoBehaviour
 	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
 	public void SetEnableMoveControl(bool isEnable) { isEnableMoveControl = isEnable; }
 
-	public void DestroyFirstItem()
+	public bool DestroyFirstItem()
 	{
 		if (handItemNow != null && handItemNow.transform.childCount > 0)
 		{
 			Destroy(handItemNow.transform.GetChild(0).gameObject);
 			if (handItemUI) handItemUI.ChangeHandItemUI();
+			return true;
 		}
+
+		return false;
 	}
 
 	public float GetMoveSpeed() => moveSpeed;

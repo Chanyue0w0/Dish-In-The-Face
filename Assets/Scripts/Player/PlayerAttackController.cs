@@ -1,6 +1,7 @@
 using UnityEngine;
 using PrimeTween;
 using System.Collections.Generic;
+using FMODUnity;
 
 [System.Serializable]
 public enum AttackMode { Food, Basic }
@@ -226,7 +227,7 @@ public class PlayerAttackController : MonoBehaviour
 			Debug.LogWarning("No glove animations configured.");
 			return false;
 		}
-		float comboLimitTime = Mathf.Max(0f, 1f);
+		float comboLimitTime = Mathf.Max(0f, defaultComboLimitTime);
 		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
 		{
 			// 超過容許時間，從第一段重來
@@ -260,18 +261,18 @@ public class PlayerAttackController : MonoBehaviour
 		if (!animationManager.IsCanNextAttack())
 			return false;
 
-		// ★ 這裡加入「依據 FoodStatus.comboAttackTime 重置 comboIndex」的判定
-		float comboLimitTime = Mathf.Max(0f, defaultComboLimitTime);
+		// 這裡加入「依據 FoodStatus.comboAttackTime 重置 comboIndex」的判定
+		float comboLimitTime = (status.comboAttackTime <= 0f) ? defaultComboLimitTime : status.comboAttackTime;
 
 		var attackList = status.attackList;
-		int comboCount = attackList?.Count ?? 0;
-		if (comboCount <= 0)
+		int attacklistCount = attackList?.Count ?? 0;
+		if (attacklistCount <= 0)
 		{
 			Debug.Log("This food has no attackList, cannot perform food attack.");
 			return false;
 		}
 
-		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
+		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= attacklistCount)
 		{
 			// 超過容許時間，從第一段重來
 			comboIndex = 0;
@@ -293,12 +294,15 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
+		// attack success
+		EventReference sfx = !attackList[comboIndex].sfx.IsNull ? attackList[comboIndex].sfx : status.defaultSfx;
+		AudioManager.Instance.PlayOneShot(sfx, transform.position);
 		lastAttackTime = Time.time;
 		animationManager.PlayAttackAnimationClip(attackAnimation);
 		comboIndex++;
 
 		// 最後一段後消耗食物（維持原本行為）
-		if (comboIndex >= comboCount - 1)
+		if (comboIndex > attacklistCount - 1)
 			playerMovement.DestroyFirstItem();
 
 		return true;

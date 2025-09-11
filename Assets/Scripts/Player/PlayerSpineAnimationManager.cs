@@ -50,6 +50,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	#region ===== 參考 =====
 	[Header("Reference")]
 	[SerializeField] private PlayerMovement playerMovement;
+
+	[SerializeField] private GameObject handItemsGroup;
 	#endregion
 
 	#region ===== 狀態與快取 =====
@@ -240,10 +242,27 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	public void PlayAttackAnimationClip(AnimationClip animationClip)
 	{
+		handItemsGroup.SetActive(false);
 		onAttack = true;
 		canNextAttack = false;
 		animator.SetTrigger(AnimOnAttack);
 		animator.Play(animationClip.name);
+
+		// ★ 播放完畢後把 handItemsGroup 關掉
+		StartCoroutine(_WaitAndHideHandItems(animationClip));
+	}
+
+	// 新增：等待動畫播放完畢再關閉 handItemsGroup
+	private System.Collections.IEnumerator _WaitAndHideHandItems(AnimationClip clip)
+	{
+		if (clip == null)
+			yield break;
+
+		// 以 Animator 的播放倍率估算實際時長（簡化處理）
+		float speed = (animator != null && animator.speed > 0f) ? animator.speed : 1f;
+		yield return new WaitForSeconds(clip.length / speed);
+
+		handItemsGroup.SetActive(true);
 	}
 	#endregion
 

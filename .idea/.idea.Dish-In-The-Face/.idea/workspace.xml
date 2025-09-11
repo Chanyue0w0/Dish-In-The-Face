@@ -6,14 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/VFX Effect/VFXPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/VFX Effect/VFXPool.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,7 +31,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="Toolset" />
+    <option name="selectedTabId" value="SWEA" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -160,7 +156,7 @@
       <workItem from="1757486986920" duration="4297000" />
       <workItem from="1757493375132" duration="3223000" />
       <workItem from="1757510082369" duration="335000" />
-      <workItem from="1757570446343" duration="1233000" />
+      <workItem from="1757570446343" duration="2547000" />
     </task>
     <servers />
   </component>
