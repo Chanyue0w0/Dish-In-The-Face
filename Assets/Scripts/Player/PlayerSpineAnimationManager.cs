@@ -242,6 +242,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	public void PlayAttackAnimationClip(AnimationClip animationClip)
 	{
+		StopInputMove();
 		handItemsGroup.SetActive(false);
 		onAttack = true;
 		canNextAttack = false;
@@ -277,13 +278,22 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 	public bool IsAnimationOnAttack() => onAttack;
 	public bool IsCanNextAttack() => canNextAttack;
-	public void CanNextAttack() => canNextAttack = true;
+
+	public void CanNextAttack()
+	{
+		canNextAttack = true;
+		OpenInputMove();
+	}
 	public void ResetAttackCombo()
 	{
 		// Debug.Log("reset combo");
 		onAttack = false;
 		canNextAttack = true;
+		OpenInputMove();
 	}
-	
+
+	private void StopInputMove() => playerMovement.SetEnableMoveControl(false);
+	private void OpenInputMove() => playerMovement.SetEnableMoveControl(true);
+
 	#endregion
 }

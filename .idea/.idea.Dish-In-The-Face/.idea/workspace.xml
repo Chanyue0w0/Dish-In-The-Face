@@ -6,10 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabend.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabend.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabing.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabing.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabing_wiggle.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabing_wiggle.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabstart.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/ReferenceAssets/Glove_Glove_grabstart.asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,11 +32,12 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerInteraction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Spine/Runtime/spine-unity/Asset Types/AnimationReferenceAsset.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/SpineAnimationEventTool.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -156,7 +162,9 @@
       <workItem from="1757486986920" duration="4297000" />
       <workItem from="1757493375132" duration="3223000" />
       <workItem from="1757510082369" duration="335000" />
-      <workItem from="1757570446343" duration="2547000" />
+      <workItem from="1757570446343" duration="4275000" />
+      <workItem from="1757582216321" duration="622000" />
+      <workItem from="1757595647844" duration="16000" />
     </task>
     <servers />
   </component>
@@ -166,7 +174,6 @@
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityProjectDiscoverer">
-    <option name="hasUnityReference" value="true" />
     <option name="unityProject" value="true" />
     <option name="unityProjectFolder" value="true" />
   </component>

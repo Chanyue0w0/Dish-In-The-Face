@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e3e95a05e4c9774397eeeb7bdee8ccb, type: 3}
   m_Name: Glove_Glove_grabstart
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: c1c7431dae05218418056ae940999614, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 4c794da9508022944a2f10bad862aec1, type: 2}
   animationName: Glove/Glove_grabstart
