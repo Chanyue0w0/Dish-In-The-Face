@@ -4761,7 +4761,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 207207721
-  m_SortingLayer: 9
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_RenderMode: 1
   m_MeshDistribution: 0
@@ -4809,7 +4809,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clearBehavior: 1
   cameraShake:
-    enabled: 0
+    enabled: 1
     useMainCamera: 1
     cameras: []
     delay: 0
