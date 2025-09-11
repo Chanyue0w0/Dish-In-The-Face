@@ -28,15 +28,15 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	
 	[Header("Animator / Layers")]
 	[SerializeField] private Animator animator;               // 角色 Animator（含多個 Layer）
-	[SerializeField] private string baseLayerName      = "Base Move Layer";     // ex: idle / run
+	[SerializeField] private string baseLayerName        = "Base Move Layer";     // ex: idle / run
 	[SerializeField] private string specialMoveLayerName = "Spical Move Layer"; // ex: slide / dash
-	[SerializeField] private string attackLayerName    = "Attack Layer";        // 攻擊
-	[SerializeField] private string reactLayerName     = "React Layer";         // 受傷/硬直
+	[SerializeField] private string attackLayerName      = "Attack Layer";        // 攻擊
+	[SerializeField] private string reactLayerName       = "React Layer";         // 受傷/硬直
 	#endregion
 
 
-	#region ===== Inspector：動畫名稱（Spine） =====
-	[Header("Spine Animation Names")]
+	// #region ===== Inspector：動畫名稱（Spine） =====
+	// [Header("Spine Animation Names")]
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleFront;
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string idleBack;
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runFront;
@@ -44,8 +44,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string runSide;
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashNormal;
 	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string dashSlide;
-	[SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
-	#endregion
+	// [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string[] gloveAttack;
+	// #endregion
 
 	#region ===== 參考 =====
 	[Header("Reference")]

@@ -84,7 +84,7 @@ public class VFXPool : MonoBehaviour
     /// <summary>
     /// 歸還 VFX
     /// </summary>
-    public void ReleaseVFX(string key, GameObject obj)
+    private void ReleaseVFX(string key, GameObject obj)
     {
         if (pools.ContainsKey(key))
             pools[key].Release(obj);

@@ -146,12 +146,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodType: 2
   price: 20
-  skeletonAnim: {fileID: 7612120009292307888, guid: 1a0c204cf2d2c434e854161ac4979447, type: 3}
+  comboAttackTime: 1
+  defaultSfx:
+    Guid:
+      Data1: 1641033783
+      Data2: 1225441542
+      Data3: 192947610
+      Data4: 472483547
+    Path: event:/SFX/swing1
   attackList:
   - animationClip: {fileID: 7400000, guid: d9949b75f7aa0b4408567969e6336649, type: 2}
-    attackDamage: 1
+    stunDamage: 1
+    sfx:
+      Guid:
+        Data1: 0
+        Data2: 0
+        Data3: 0
+        Data4: 0
+      Path: 
+    knockbackForce: 5
   - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
-    attackDamage: 2
+    stunDamage: 2
+    sfx:
+      Guid:
+        Data1: 0
+        Data2: 0
+        Data3: 0
+        Data4: 0
+      Path: 
+    knockbackForce: 10
 --- !u!1 &3857453713245092508
 GameObject:
   m_ObjectHideFlags: 0

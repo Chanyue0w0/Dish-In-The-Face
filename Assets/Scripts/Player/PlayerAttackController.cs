@@ -12,25 +12,22 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
+
+	[SerializeField] private float defaultComboLimitTime = 1f;
 	#endregion
 
 	#region ===== Inspector：蓄力/重攻擊設定與 UI =====
 	[Header("--------- Power Attack ---------")]
 	[SerializeField, Min(0f)] private float heavyAttackThreshold = 0.35f;
-
 	[SerializeField, Min(0.01f)] private float maxChargeTime = 2f;
-
 	[Header("--------- Power Attack UI ---------")]
 	[SerializeField] private GameObject powerAttackBar;
 	[SerializeField] private Transform powerAttackBarFill;
 	[SerializeField] private bool grabPickClosest = true;
-
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
 	[SerializeField, Min(0f)] private float grabHoldThreshold = 0.2f;
 	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
 	[SerializeField] private Vector2 grabBoxSize = new Vector2(1.2f, 1.0f);
-
-	[Header("----- Throw Settings -----")]
 	[SerializeField, Min(0f)] private float throwDistance = 3f;
 	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
 	#endregion
@@ -224,14 +221,16 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 
 		int comboCount = gloveAnimations.Length;
-
-		// 從第一段攻擊開始
-		if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
-
 		if (comboCount <= 0)
 		{
 			Debug.LogWarning("No glove animations configured.");
 			return false;
+		}
+		float comboLimitTime = Mathf.Max(0f, 1f);
+		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
+		{
+			// 超過容許時間，從第一段重來
+			comboIndex = 0;
 		}
 
 		AnimationClip attackAnimation = gloveAnimations[comboIndex];
@@ -240,7 +239,7 @@ public class PlayerAttackController : MonoBehaviour
 			Debug.LogWarning($"Glove animation at index {comboIndex} is null. Abort.");
 			return false;
 		}
-
+		
 		lastAttackTime = Time.time;
 		animationManager.PlayAttackAnimationClip(attackAnimation);
 		comboIndex++;
@@ -261,6 +260,9 @@ public class PlayerAttackController : MonoBehaviour
 		if (!animationManager.IsCanNextAttack())
 			return false;
 
+		// ★ 這裡加入「依據 FoodStatus.comboAttackTime 重置 comboIndex」的判定
+		float comboLimitTime = Mathf.Max(0f, defaultComboLimitTime);
+
 		var attackList = status.attackList;
 		int comboCount = attackList?.Count ?? 0;
 		if (comboCount <= 0)
@@ -269,14 +271,20 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
-		// 從第一段攻擊開始
-		if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
-
+		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
+		{
+			// 超過容許時間，從第一段重來
+			comboIndex = 0;
+		}
+		
 		if (attackList == null)
 		{
 			Debug.Log("no attack combo info");
 			return false;
 		}
+		// 若當前不是攻擊動畫或已超出段數，一律從第一段開始
+		// if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
+
 
 		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
 		if (attackAnimation == null)
@@ -287,12 +295,12 @@ public class PlayerAttackController : MonoBehaviour
 
 		lastAttackTime = Time.time;
 		animationManager.PlayAttackAnimationClip(attackAnimation);
+		comboIndex++;
 
-		// 最後一段後消耗食物（維持你原本的行為）
+		// 最後一段後消耗食物（維持原本行為）
 		if (comboIndex >= comboCount - 1)
 			playerMovement.DestroyFirstItem();
 
-		comboIndex++;
 		return true;
 	}
 	#endregion

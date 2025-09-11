@@ -245,7 +245,7 @@ public class TroubleGuestController : MonoBehaviour
         Debug.LogWarning("Not Get Enemy Guest Sprite!!!!");
     }
 
-    private IEnumerator ApplyKnockback(Vector2 direction, float knockbackForce = 5f, float knockbackDuration = 0.2f)
+    private IEnumerator ApplyKnockback(Vector2 direction, float knockbackForce = 10f, float knockbackDuration = 0.3f)
     {
         if (agent == null) yield break;
 
