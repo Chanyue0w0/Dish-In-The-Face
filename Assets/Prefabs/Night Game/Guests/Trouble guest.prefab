@@ -852,6 +852,22 @@ PrefabInstance:
       value: -0.18129802
       objectReference: {fileID: 0}
     - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunTime1Star
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunTime2Star
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunTime3Star
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: maxStunPerStage
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
       propertyPath: onStunFull.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 6917935344721835403}

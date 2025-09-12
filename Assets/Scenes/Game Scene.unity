@@ -100944,7 +100944,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackMode: 0
-  defaultComboLimitTime: 2
+  defaultComboLimitTime: 0.5
   heavyAttackThreshold: 0.35
   maxChargeTime: 1.2
   powerAttackBar: {fileID: 4262177429882194869}

@@ -156,7 +156,7 @@ MonoBehaviour:
     Path: event:/SFX/swing1
   attackList:
   - animationClip: {fileID: 7400000, guid: d9949b75f7aa0b4408567969e6336649, type: 2}
-    stunDamage: 1
+    stunDamage: 10
     sfx:
       Guid:
         Data1: 1641033783
@@ -167,7 +167,7 @@ MonoBehaviour:
     knockbackForce: 5
     vfxGameObject: {fileID: 0}
   - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
-    stunDamage: 2
+    stunDamage: 10
     sfx:
       Guid:
         Data1: 1641033783
