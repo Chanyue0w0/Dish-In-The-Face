@@ -290,7 +290,7 @@ public class PlayerAttackController : MonoBehaviour
 		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
 		if (attackAnimation == null)
 		{
-			Debug.LogWarning($"Food attack animation at index {comboIndex} is null/empty. Abort.");
+			Debug.Log($"Food attack animation at index {comboIndex} is null/empty. Abort.");
 			return false;
 		}
 

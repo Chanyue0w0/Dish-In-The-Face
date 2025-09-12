@@ -292,6 +292,16 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		OpenInputMove();
 	}
 
+	public void AttackMove(float speed)
+	{
+		playerMovement.StartForcedInputMove(speed);
+	}
+
+	public void AttackMoveStop()
+	{
+		playerMovement.StopForcedInputMove();
+	}
+	
 	private void StopInputMove() => playerMovement.SetEnableMoveControl(false);
 	private void OpenInputMove() => playerMovement.SetEnableMoveControl(true);
 

@@ -59,6 +59,13 @@ public class PlayerMovement : MonoBehaviour
 
 	// 動畫方向緩存（Idle 時維持最後方向）
 	private Vector2 lastNonZeroDir = Vector2.right;
+	
+	// ===== 強制直行（鎖定第一下輸入方向） =====
+	private bool forcedMoveActive = false;            // 是否正在強制直行
+	private bool forcedMoveAwaitFirstInput = false;   // 是否還在等待「第一下輸入」
+	private Vector2 forcedMoveDir;                    // 鎖定後的移動方向（單位向量）
+	private float forcedMoveSpeed = 0f;               // 強制直行用速度
+	private float forcedMoveEndTime = Mathf.Infinity; // 結束時間（Infinity 表示手動停止）
 	#endregion
 
 	#region ===== Unity 生命週期 =====
@@ -87,6 +94,20 @@ public class PlayerMovement : MonoBehaviour
 	public void InputMovement(InputAction.CallbackContext context)
 	{
 		Vector2 move = context.ReadValue<Vector2>();
+		
+		// 若正在等待「第一下輸入」來鎖定方向，偵測到非零就記錄並不再等待
+		if (forcedMoveActive && forcedMoveAwaitFirstInput)
+		{
+			if (move.sqrMagnitude > 0.0001f)
+			{
+				forcedMoveDir = move.normalized;
+				forcedMoveAwaitFirstInput = false;
+
+				// 同步面向（延續你原本用旋轉翻面的做法）
+				transform.rotation = (forcedMoveDir.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+			}
+		}
+		
 		HandleMovementInput(move.x, move.y);
 	}
 
@@ -156,6 +177,22 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Move()
 	{
+		// ===== 強制直行優先（僅當 isEnableMoveControl 為 false 才生效） =====
+		if (forcedMoveActive && !isEnableMoveControl)
+		{
+			// 時間到 → 自動停止
+			if (Time.time >= forcedMoveEndTime)
+			{
+				StopForcedInputMove();
+				return;
+			}
+
+			// 鎖定方向與速度直行（中間切鍵不算）
+			rb.velocity = forcedMoveDir * forcedMoveSpeed;
+			return;
+		}
+
+		// ===== 原本流程 =====
 		if (isSlide) return; // 滑行時由 Slide() 控制位置
 		if (!isEnableMoveControl)
 		{
@@ -374,6 +411,52 @@ public class PlayerMovement : MonoBehaviour
 		return 0;
 	}
 
+	public void StartForcedInputMove(float speed, float duration = -1f)
+	{
+		if (isEnableMoveControl) return;
+
+		forcedMoveActive = true;
+		forcedMoveSpeed = Mathf.Max(0f, speed);
+
+		if (duration > 0f) forcedMoveEndTime = Time.time + duration;
+		else forcedMoveEndTime = Mathf.Infinity;
+
+		// 停掉其他會干擾的狀態
+		isDashing = false;
+		isSlide = false;
+
+		// 鎖定方向：優先用「當下已按住的輸入」，否則用 rotation 的 X 面向
+		if (moveInput.sqrMagnitude > 0.0001f)
+		{
+			forcedMoveDir = moveInput.normalized;
+		}
+		else
+		{
+			float y = transform.rotation.eulerAngles.y;
+			int sign = y is > 90f and < 270f ? +1 : -1; // +1 右 / -1 左
+			forcedMoveDir = new Vector2(sign, 0f);
+		}
+
+		// 同步翻面（沿你的規則）
+		transform.rotation = (forcedMoveDir.x < 0)
+			? Quaternion.Euler(0, 0, 0)
+			: Quaternion.Euler(0, 180, 0);
+	}
+
+	/// <summary>
+	/// 手動停止強制直行（對應第一個函式未給 duration 的情況）
+	/// </summary>
+	public void StopForcedInputMove()
+	{
+		forcedMoveActive = false;
+		forcedMoveSpeed = 0f;
+		forcedMoveEndTime = Mathf.Infinity;
+		rb.velocity = Vector2.zero;
+	}
+
+	/// <summary>（可選）供外部查詢目前是否在強制直行</summary>
+	public bool IsForcedInputMoveActive() => forcedMoveActive;
+	
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 
