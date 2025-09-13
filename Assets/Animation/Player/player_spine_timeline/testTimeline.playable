@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-9171916000268551717
+--- !u!114 &-5297385680949405439
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: e3b8c875ca816dd4ca5dc981e8a6b16f, type: 2}
+    animationReference: {fileID: 11400000, guid: c7e720d0a773ab04ca620c3939fd4da2, type: 2}
     loop: 0
     customDuration: 1
     useBlendDuration: 1
@@ -27,7 +27,7 @@ MonoBehaviour:
     eventThreshold: 0.5
     drawOrderThreshold: 0.5
     alpha: 1
---- !u!114 &-3601900942674896200
+--- !u!114 &-2191007961069614707
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,7 +40,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 158bb724f2962374f96bed7c30c359b8, type: 2}
+    animationReference: {fileID: 11400000, guid: f2a9ba179ac0d1945bb1effb8e8c2b47, type: 2}
     loop: 0
     customDuration: 1
     useBlendDuration: 1
@@ -69,7 +69,7 @@ MonoBehaviour:
   m_Version: 3
   m_AnimClip: {fileID: 0}
   m_Locked: 0
-  m_Muted: 1
+  m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
   m_Parent: {fileID: 11400000}
@@ -78,7 +78,7 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 0
     m_ClipIn: 0
-    m_Asset: {fileID: -9171916000268551717}
+    m_Asset: {fileID: -2191007961069614707}
     m_Duration: 0.5
     m_TimeScale: 1
     m_ParentTrack: {fileID: -1000312791198016584}
@@ -172,7 +172,7 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 0
     m_ClipIn: 0
-    m_Asset: {fileID: -3601900942674896200}
+    m_Asset: {fileID: 4490936586670312542}
     m_Duration: 0.766700029373169
     m_TimeScale: 1
     m_ParentTrack: {fileID: -334011557392133167}
@@ -265,7 +265,7 @@ MonoBehaviour:
     m_ScenePreview: 1
   m_DurationMode: 0
   m_MarkerTrack: {fileID: 0}
---- !u!114 &3987998839220512459
+--- !u!114 &4490936586670312542
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Name: SpineAnimationStateClip
   m_EditorClassIdentifier: 
   template:
-    animationReference: {fileID: 11400000, guid: 76e84a56b3b5cdc4baa2b957e7723138, type: 2}
+    animationReference: {fileID: 11400000, guid: 5f4a990fe8706584aa40b326d3e712a8, type: 2}
     loop: 0
     customDuration: 1
     useBlendDuration: 1
@@ -316,7 +316,7 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 0
     m_ClipIn: 0
-    m_Asset: {fileID: 3987998839220512459}
+    m_Asset: {fileID: -5297385680949405439}
     m_Duration: 0.5
     m_TimeScale: 1
     m_ParentTrack: {fileID: 6195441022137922515}
