@@ -13,7 +13,6 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
-
 	[SerializeField] private float defaultComboLimitTime = 1f;
 	#endregion
 
@@ -21,14 +20,16 @@ public class PlayerAttackController : MonoBehaviour
 	[Header("--------- Power Attack ---------")]
 	[SerializeField, Min(0f)] private float heavyAttackThreshold = 0.35f;
 	[SerializeField, Min(0.01f)] private float maxChargeTime = 2f;
+	
 	[Header("--------- Power Attack UI ---------")]
 	[SerializeField] private GameObject powerAttackBar;
 	[SerializeField] private Transform powerAttackBarFill;
 	[SerializeField] private bool grabPickClosest = true;
+	
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
+	
 	[SerializeField, Min(0f)] private float grabHoldThreshold = 0.2f;
 	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
-	[SerializeField] private Vector2 grabBoxSize = new Vector2(1.2f, 1.0f);
 	[SerializeField, Min(0f)] private float throwDistance = 3f;
 	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
 	#endregion
@@ -37,10 +38,12 @@ public class PlayerAttackController : MonoBehaviour
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItemGroup;           // 手上物件群組
 	[SerializeField] private Collider2D grabOverHeadItem;       // 頭上「抓取區域」碰撞器（建議 Trigger）
-	[SerializeField] private GameObject attackHitBox;           // 食物攻擊 HitBox
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private Animator weaponUIAnimator;
 	[SerializeField] private AnimationClip[] gloveAnimations;
+
+	// ★ 新增：手套控制器（會驅動 SpineAnimationController）
+	[SerializeField] private GloveController gloveController;
 	#endregion
 
 	#region ===== 私有狀態 =====
@@ -71,7 +74,6 @@ public class PlayerAttackController : MonoBehaviour
 		currentChargeTime  = 0f;
 		lastAttackTime     = -999f;
 
-		SafeSetActive(attackHitBox, false);
 		SetPowerBarVisible(false);
 		UpdatePowerBarFill(0f);
 	}
@@ -154,6 +156,11 @@ public class PlayerAttackController : MonoBehaviour
 
 		if (attackMode == AttackMode.Basic)
 		{
+			if (gloveController != null)
+			{
+				gloveController.gameObject.SetActive(false);
+			}
+			
 			// 放開：有抓到就丟出；沒抓到就手套攻擊
 			if (IsCarryingSomething())
 			{
@@ -283,9 +290,6 @@ public class PlayerAttackController : MonoBehaviour
 			Debug.Log("no attack combo info");
 			return false;
 		}
-		// 若當前不是攻擊動畫或已超出段數，一律從第一段開始
-		// if (!animationManager.IsAnimationOnAttack() || comboIndex >= comboCount) comboIndex = 0;
-
 
 		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
 		if (attackAnimation == null)
@@ -398,6 +402,15 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
+		if (gloveController == null)
+		{
+			Debug.LogWarning("Grab failed: gloveController is null.");
+			return false;
+		}
+
+		// 顯示手套、播一次 grabStrat
+		gloveController.ShowGloveAndPlayStart();
+		
 		var results = new List<Collider2D>(16);
 		ContactFilter2D filter = new ContactFilter2D
 		{
@@ -430,7 +443,7 @@ public class PlayerAttackController : MonoBehaviour
 		if (best == null) return false;
 
 		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabbing(true);
-
+		
 		Transform t = best.transform;
 		Vector3 worldScale = t.lossyScale;
 		t.SetParent(grabOverHeadItem.transform, true);
@@ -452,13 +465,17 @@ public class PlayerAttackController : MonoBehaviour
 			rb.gravityScale = 0f;
 		}
 
+		// ★ 成功抓到 → 播 grabEnd（一次）接 grabbing（loop）
+		if (gloveController != null)
+			gloveController.PlayGrabEndThenGrabbing();
+
 		return true;
 	}
 
 	private bool ThrowCarriedObject(Transform t)
 	{
 		if (t == null) return false;
-
+		
 		Vector3 worldScale = t.lossyScale;
 		t.SetParent(null, true);
 		t.localScale = worldScale;
@@ -493,21 +510,20 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== Gizmos（除錯視覺化） =====
-#if UNITY_EDITOR
-	private void OnDrawGizmosSelected()
+	#region ===== 給被抓物件／其他系統呼叫的事件 =====
+	/// <summary>被抓物件真的掙脫了 → 關閉手套顯示。</summary>
+	public void OnGrabbedObjectEscaped()
 	{
-		Vector2 aim = Application.isPlaying ? GetAimDir() : Vector2.right;
-		Vector2 center = (Vector2)transform.position + aim * grabForwardOffset;
-		float angleDeg = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
-
-		UnityEditor.Handles.color = new Color(1f, 0.8f, 0.2f, 0.8f);
-		Matrix4x4 m = Matrix4x4.TRS(center, Quaternion.Euler(0, 0, angleDeg), Vector3.one);
-		using (new UnityEditor.Handles.DrawingScope(m))
-		{
-			UnityEditor.Handles.DrawWireCube(Vector3.zero, new Vector3(grabBoxSize.x, grabBoxSize.y, 0.1f));
-		}
+		if (gloveController != null)
+			gloveController.OnObjectEscaped();
 	}
-#endif
+
+	/// <summary>被抓物件「嘗試掙脫」的反應（目前由 GloveController 內部保留、已註解）。</summary>
+	public void OnGrabbedObjectTryEscape()
+	{
+		if (gloveController != null)
+			gloveController.OnGrabbedObjectTryEscape();
+	}
 	#endregion
+
 }
