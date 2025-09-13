@@ -1,153 +1,187 @@
 using UnityEngine;
-using FoodsGroup;
 using PrimeTween;
 using System.Collections.Generic;
+using FMODUnity;
 
+[System.Serializable]
 public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
 {
+	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
+
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
-
-	[Tooltip("食物攻擊時，玩家向前位移的距離（一般攻擊）。")]
-	[SerializeField] private float attackMoveDistance = 5f;
-
-	[Tooltip("食物攻擊時，玩家向前位移花費的時間（一般攻擊）。")]
-	[SerializeField] private float attackMoveDuration = 0.5f;
-
+	[SerializeField] private float defaultComboLimitTime = 1f;
 	#endregion
 
 	#region ===== Inspector：蓄力/重攻擊設定與 UI =====
 	[Header("--------- Power Attack ---------")]
-	[Tooltip("觸發重攻擊的最短蓄力秒數（達到此值以上就算重攻擊）。")]
 	[SerializeField, Min(0f)] private float heavyAttackThreshold = 0.35f;
-
-	[Tooltip("可蓄力的最大秒數（UI 進度條會以此作為 100%）。")]
 	[SerializeField, Min(0.01f)] private float maxChargeTime = 2f;
-
+	
 	[Header("--------- Power Attack UI ---------")]
-	[Tooltip("蓄力條外框。開始蓄力時顯示；未蓄力/沒有餐點(食物模式)/結束時關閉。")]
 	[SerializeField] private GameObject powerAttackBar;
-
-	[Tooltip("蓄力條填滿物件：依 currentChargeTime / maxChargeTime 縮放 X（0→1）。")]
 	[SerializeField] private Transform powerAttackBarFill;
-
-	[Tooltip("多個可抓目標時，挑最近者。")]
 	[SerializeField] private bool grabPickClosest = true;
-
+	
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
 	
-	[Tooltip("Gizmos 顯示：抓取檢測盒中心沿著面向方向的位移量（視覺化用）。")]
-	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
-
-	[Tooltip("Gizmos 顯示：抓取檢測盒的寬x高（視覺化用）。")]
-	[SerializeField] private Vector2 grabBoxSize = new Vector2(1.2f, 1.0f);
-	[Header("----- Throw Settings -----")]
-	[Tooltip("把頭上的子物件往面向方向丟出的距離")]
+	[SerializeField, Min(0f)] private float grabHoldThreshold = 0.2f;
+	// [SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
 	[SerializeField, Min(0f)] private float throwDistance = 3f;
-
-	[Tooltip("丟出移動所花時間")]
 	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
-	
 	#endregion
 
 	#region ===== Inspector：參考物件 =====
 	[Header("--------- Reference -----------")]
-	[SerializeField] private Transform handItem;           // 手上物件群組
-	[SerializeField] private Collider2D grabOverHeadItem;  // 抓到頭上的「抓取區域」碰撞器（建議Trigger）
-	[SerializeField] private GameObject foodAttackHitBox;  // 食物攻擊 HitBox
-	[SerializeField] private GameObject basicAttackHitBox; // 基礎攻擊 HitBox
+	[SerializeField] private Transform handItemGroup;           // 手上物件群組
+	[SerializeField] private Collider2D grabOverHeadItem;       // 頭上「抓取區域」碰撞器（建議 Trigger）
 	[SerializeField] private PlayerMovement playerMovement;
-	[SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private Animator weaponUIAnimator;
+	[SerializeField] private AnimationClip[] gloveAnimations;
+
+	// ★ 新增：手套控制器（會驅動 SpineAnimationController）
+	[SerializeField] private GloveController gloveController;
 	#endregion
 
 	#region ===== 私有狀態 =====
-	private int cakeComboIndex = 0;          // DrumStick1/2 切換
-	private bool isSwichWeaponFinish = true; // 切武器動畫是否完成
+	private PlayerSpineAnimationManager animationManager;
 
-	// 蓄力狀態
-	private bool isCharging = false;
-	private float currentChargeTime = 0f;
+	// 連段（Food/Basic 各自依序播放）
+	private int comboIndex;
+
+	private bool isSwitchWeaponFinish = true;
+
+	// 蓄力/按住狀態（在 Basic 模式下當作「正在嘗試抓取」）
+	private bool isCharging;
+	private float currentChargeTime;
+
+	// 抓取狀態
+	private float grabHoldTimer = 0f;
+	// 上次成功出招時間（如需做連段重置可用）
+	private float lastAttackTime = -999f;
 	#endregion
 
 	#region ===== Unity =====
 	private void Start()
 	{
-		isSwichWeaponFinish = true;
+		animationManager   = GetComponent<PlayerSpineAnimationManager>();
+		comboIndex         = 0;
+		isSwitchWeaponFinish = true;
+		isCharging         = false;
+		currentChargeTime  = 0f;
+		lastAttackTime     = -999f;
 
-		// 保險關閉 hitbox
-		SafeSetActive(foodAttackHitBox, false);
-		SafeSetActive(basicAttackHitBox, false);
-
-		// 一開始就關 UI
 		SetPowerBarVisible(false);
 		UpdatePowerBarFill(0f);
-
-		SetAttackModeUI(attackMode);
 	}
 
 	private void Update()
 	{
-		// 累積蓄力並更新 UI（如果 UI 正在顯示）
-		if (isCharging)
+		// Food 模式：正常蓄力並顯示 UI
+		if (isCharging && attackMode == AttackMode.Food)
 		{
 			currentChargeTime += Time.deltaTime;
 			if (currentChargeTime > maxChargeTime) currentChargeTime = maxChargeTime;
 			UpdatePowerBarFill(currentChargeTime / maxChargeTime);
 		}
+
+		// Basic 模式：按住期間，經過 grabHoldThreshold 後才嘗試抓取
+		if (isCharging && attackMode == AttackMode.Basic && !IsCarryingSomething())
+		{
+			grabHoldTimer += Time.deltaTime;
+			if (grabHoldTimer >= grabHoldThreshold)
+			{
+				TryGrabEnemyOverHead();
+			}
+		}
 	}
 	#endregion
 
-	#region ===== 對外：蓄力控制 =====
-	/// <summary> 開始蓄力（按下攻擊鍵）。Food 模式沒餐點就不顯示 UI。 </summary>
-	public void BeginCharge()
+	#region ===== 對外：蓄力 / 按住控制 =====
+	/// <summary>
+	/// 按下攻擊鍵。
+	/// - Basic：視為「開始抓取」，不顯示蓄力條，按住期間會持續嘗試抓。
+	/// - Food：開始蓄力，顯示蓄力條（有餐點時）。
+	/// </summary>
+	public void BeginCharge(AttackMode mode)
 	{
+		attackMode = mode;
 		if (playerMovement == null) return;
 		if (playerMovement.IsPlayerDash() || playerMovement.IsPlayerSlide()) return;
 
 		isCharging = true;
 		currentChargeTime = 0f;
 
-		// 只有 Basic，或 Food 且有餐點 才顯示條
-		if (ShouldShowChargeBar())
+		if (attackMode == AttackMode.Basic)
 		{
-			SetPowerBarVisible(true);
-			UpdatePowerBarFill(0f);
+			grabHoldTimer = 0f;  // 重置抓取計時器
+			SetPowerBarVisible(false);
 		}
 		else
 		{
-			SetPowerBarVisible(false);
+			if (ShouldShowChargeBar())
+			{
+				SetPowerBarVisible(true);
+				UpdatePowerBarFill(0f);
+			}
+			else
+			{
+				SetPowerBarVisible(false);
+			}
 		}
 	}
 
 	/// <summary>
-	/// 放開攻擊鍵：依蓄力結算 普攻/重攻擊。滿條一定是重攻；或超過 heavyAttackThreshold 也算重攻。
+	/// 放開攻擊鍵。
+	/// - Basic：如果頭上有抓到目標→丟出；否則播放手套攻擊段數。
+	/// - Food：依蓄力時間決定是否為重攻。
 	/// </summary>
 	public void ReleaseChargeAndAttack()
 	{
 		if (playerMovement == null) return;
 
-		// 未蓄力：視為點按普攻
 		if (!isCharging)
 		{
+			// 安全處理：若未在按住狀態，就當作一般攻擊請求
 			playerMovement.PerformAttack(false);
 			return;
 		}
 
-		bool isPower =
-			(currentChargeTime >= maxChargeTime) ||           // 滿條＝重攻
-			(currentChargeTime >= heavyAttackThreshold);       // 達門檻＝重攻
-
+		// 結束按住
 		isCharging = false;
 		SetPowerBarVisible(false);
 
+		if (attackMode == AttackMode.Basic)
+		{
+			if (gloveController != null)
+			{
+				gloveController.gameObject.SetActive(false);
+			}
+			
+			// 放開：有抓到就丟出；沒抓到就手套攻擊
+			if (IsCarryingSomething())
+			{
+				var carried = grabOverHeadItem.transform.GetChild(0);
+				if (carried) ThrowCarriedObject(carried);
+				return;
+			}
+			// 沒抓到 → 直接走基本攻擊邏輯
+			playerMovement.PerformAttack(false);
+			return;
+		}
+
+		// Food 模式：依蓄力時間決定是否為重攻
+		bool isPower =
+			(currentChargeTime >= maxChargeTime) ||
+			(currentChargeTime >= heavyAttackThreshold);
+
+		currentChargeTime = 0f;
 		playerMovement.PerformAttack(isPower);
 	}
 
-	/// <summary> 取消蓄力（如 Dash/Slide），不觸發攻擊並關 UI。 </summary>
 	public void CancelChargeIfAny()
 	{
 		if (!isCharging) return;
@@ -158,21 +192,17 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== 對外攻擊入口 =====
-	/// <summary> PlayerMovement.PerformAttack() 會回呼到這裡。 </summary>
+	#region ===== 對外攻擊入口（PlayerMovement 會回呼） =====
 	public bool IsAttackSuccess(bool isPowerAttack)
 	{
-		EnsureAnimationManager();
-
 		if (attackMode == AttackMode.Basic)
 		{
-			return BasicAttack(isPowerAttack);
+			return BasicAttack(); // 不再用 isPower 觸發抓取，抓取改在按住期間處理
 		}
 
 		if (attackMode == AttackMode.Food)
 		{
-			// Food 模式沒餐點就不能打
-			if (!HasFoodInHand()) return false;
+			if (!HasFoodInHand()) return false; // 沒餐點就不能食物攻擊
 			return FoodAttacks(isPowerAttack);
 		}
 
@@ -180,45 +210,190 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== Basic 模式：普/重/抓取/丟出 =====
-	private bool BasicAttack(bool isPowerAttack)
+	#region ===== Basic 模式：手套三段（放開鍵時若沒抓到才會走這裡） =====
+	private bool BasicAttack()
 	{
-		// 若頭上已有被抓的物件：優先丟出，然後就結束這次 Basic 攻擊
-		if (grabOverHeadItem != null && grabOverHeadItem.transform.childCount > 0)
+		// 若頭上已有被抓的物件：優先丟出（理論上放開時已處理，這裡再保險一次）
+		if (IsCarryingSomething())
 		{
 			Transform carried = grabOverHeadItem.transform.GetChild(0);
 			return ThrowCarriedObject(carried);
 		}
 
-		// 重攻：先嘗試抓取，抓不到就當強化普攻
-		if (isPowerAttack)
-		{
-			bool grabbed = TryGrabEnemyOverHead();
-			if (grabbed) return true;
-			return DoBasicHitboxSlash("BasicAttack", 0.5f, true);
-		}
-		// 普攻
-		return DoBasicHitboxSlash("BasicAttack", 0.5f, true);
+		return PlayGloveAttack();
 	}
 
-	private bool DoBasicHitboxSlash(string vfxKey, float autoOffDelay, bool sfxPie)
+	private bool PlayGloveAttack()
 	{
-		SafeSetActive(basicAttackHitBox, true);
+		if (!animationManager.IsCanNextAttack())
+			return false;
 
-		VFXPool.Instance?.SpawnVFX(vfxKey, basicAttackHitBox.transform.position, transform.rotation, 1f);
+		int comboCount = gloveAnimations.Length;
+		if (comboCount <= 0)
+		{
+			Debug.LogWarning("No glove animations configured.");
+			return false;
+		}
+		float comboLimitTime = Mathf.Max(0f, defaultComboLimitTime);
+		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
+		{
+			// 超過容許時間，從第一段重來
+			comboIndex = 0;
+		}
 
-		if (sfxPie)
-			AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-
-		Tween.Delay(autoOffDelay, () => SafeSetActive(basicAttackHitBox, false));
+		AnimationClip attackAnimation = gloveAnimations[comboIndex];
+		if (attackAnimation == null)
+		{
+			Debug.LogWarning($"Glove animation at index {comboIndex} is null. Abort.");
+			return false;
+		}
+		
+		lastAttackTime = Time.time;
+		animationManager.PlayAttackAnimationClip(attackAnimation);
+		comboIndex++;
 		return true;
+	}
+	#endregion
+
+	#region ===== Food 模式：由 FoodStatus 決定動畫與段數 =====
+	private bool FoodAttacks(bool isPowerAttack)
+	{
+		var status = GetFoodStatusInHand();
+		if (status == null)
+		{
+			Debug.LogWarning("FoodStatus not found on handItem children.");
+			return false;
+		}
+
+		if (!animationManager.IsCanNextAttack())
+			return false;
+
+		// 這裡加入「依據 FoodStatus.comboAttackTime 重置 comboIndex」的判定
+		float comboLimitTime = (status.comboAttackTime <= 0f) ? defaultComboLimitTime : status.comboAttackTime;
+
+		var attackList = status.attackList;
+		int attacklistCount = attackList?.Count ?? 0;
+		if (attacklistCount <= 0)
+		{
+			Debug.Log("This food has no attackList, cannot perform food attack.");
+			return false;
+		}
+
+		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= attacklistCount)
+		{
+			// 超過容許時間，從第一段重來
+			comboIndex = 0;
+		}
+		
+		if (attackList == null)
+		{
+			Debug.Log("no attack combo info");
+			return false;
+		}
+
+		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
+		if (attackAnimation == null)
+		{
+			Debug.Log($"Food attack animation at index {comboIndex} is null/empty. Abort.");
+			return false;
+		}
+
+		// attack success
+		EventReference sfx = !attackList[comboIndex].sfx.IsNull ? attackList[comboIndex].sfx : status.defaultSfx;
+		AudioManager.Instance.PlayOneShot(sfx, transform.position);
+		lastAttackTime = Time.time;
+		animationManager.PlayAttackAnimationClip(attackAnimation);
+		comboIndex++;
+
+		// 最後一段後消耗食物（維持原本行為）
+		// if (comboIndex > attacklistCount - 1)
+		playerMovement.DestroyFirstItem(); // 消耗食物
+
+		return true;
+	}
+	#endregion
+
+	#region ===== UI / 武器切換 =====
+	public void SetAttackModeUI(AttackMode mode)
+	{
+		if (!isSwitchWeaponFinish) return;
+		attackMode = mode;
+
+		if (mode == AttackMode.Basic) handItemGroup.gameObject.SetActive(false);
+		else handItemGroup.gameObject.SetActive(true);
+
+		if (weaponUIAnimator == null) return;
+		switch (attackMode)
+		{
+			case AttackMode.Basic: weaponUIAnimator.SetInteger(WeaponType, 1); break;
+			case AttackMode.Food:  weaponUIAnimator.SetInteger(WeaponType, 2); break;
+			default:               weaponUIAnimator.SetInteger(WeaponType, 1); break;
+		}
+	}
+
+	public AttackMode GetAttackMode() => attackMode;
+	public void SetIsSwitchWeaponFinish(bool isFinish) => isSwitchWeaponFinish = isFinish;
+	#endregion
+
+	#region ===== 私有工具 =====
+	private bool HasFoodInHand() => handItemGroup != null && handItemGroup.childCount > 0;
+
+	/// <summary> 只有 Food 模式且手上有餐點才顯示蓄力條。 </summary>
+	private bool ShouldShowChargeBar()
+	{
+		return attackMode == AttackMode.Food && HasFoodInHand();
+	}
+
+	private bool IsCarryingSomething()
+	{
+		return grabOverHeadItem != null && grabOverHeadItem.transform.childCount > 0;
+	}
+
+	private void SafeSetActive(GameObject go, bool active)
+	{
+		if (go != null && go.activeSelf != active) go.SetActive(active);
+	}
+
+	private void SetPowerBarVisible(bool visible)
+	{
+		if (powerAttackBar) powerAttackBar.SetActive(visible);
+	}
+
+	private void UpdatePowerBarFill(float ratio01)
+	{
+		if (!powerAttackBarFill) return;
+		ratio01 = Mathf.Clamp01(ratio01);
+		Vector3 s = powerAttackBarFill.localScale;
+		powerAttackBarFill.localScale = new Vector3(ratio01, s.y, s.z);
+	}
+
+	/// <summary> 取得手上第一個食物的 FoodStatus（往下找 Children）。 </summary>
+	private FoodStatus GetFoodStatusInHand()
+	{
+		if (!HasFoodInHand()) return null;
+		Transform first = handItemGroup.GetChild(0);
+		if (first == null) return null;
+		return first.GetComponentInChildren<FoodStatus>();
 	}
 
 	/// <summary>
-	/// 使用 grabOverHeadItem 區域來搜尋可抓取的敵人：
-	/// 條件：tag=="Enemy" 或 "enemy"；且具 BeGrabByPlayer 並允許被抓。
-	/// 成功後將物件變成 grabOverHeadItem.transform 子物件，local 位置/旋轉歸零。
+	/// 取得丟擲朝向：優先使用玩家移動輸入；若為零向量，以角色左右翻面判定。
 	/// </summary>
+	private Vector2 GetAimDir()
+	{
+		if (playerMovement != null)
+		{
+			Vector2 inDir = playerMovement.GetMoveInput();
+			if (inDir.sqrMagnitude > 0.0001f)
+				return inDir.normalized;
+		}
+		float y = transform.eulerAngles.y;
+		bool facingRight = Mathf.Abs(Mathf.DeltaAngle(y, 180f)) < 1f;
+		return facingRight ? Vector2.right : Vector2.left;
+	}
+	#endregion
+
+	#region ===== 抓取 / 丟擲 =====
 	private bool TryGrabEnemyOverHead()
 	{
 		if (grabOverHeadItem == null)
@@ -227,22 +402,24 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
-		// 收集與抓取區域重疊的碰撞器
+		if (gloveController == null)
+		{
+			Debug.LogWarning("Grab failed: gloveController is null.");
+			return false;
+		}
+
+		// 顯示手套、播一次 grabStrat
+		gloveController.ShowGloveAndPlayStart();
+		
 		var results = new List<Collider2D>(16);
 		ContactFilter2D filter = new ContactFilter2D
 		{
 			useTriggers = true,
-			useLayerMask = false // 不使用 Layer，改由 Tag 篩選
+			useLayerMask = false
 		};
 		int count = grabOverHeadItem.OverlapCollider(filter, results);
+		if (count <= 0) return false;
 
-		if (count <= 0)
-		{
-			Debug.Log("Grab null");
-			return false;
-		}
-
-		// 從重疊清單中挑選符合條件者
 		Collider2D best = null;
 		float bestDist = float.PositiveInfinity;
 		Vector2 center = grabOverHeadItem.bounds.center;
@@ -263,24 +440,16 @@ public class PlayerAttackController : MonoBehaviour
 			}
 		}
 
-		if (best == null)
-		{
-			// Debug.Log("Grab null");
-			return false;
-		}
+		if (best == null) return false;
 
-		// 真的抓起來：改父物件→放頭上→維持世界尺度
-		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabing(true);
+		best.GetComponent<BeGrabByPlayer>().SetIsOnBeGrabbing(true);
+		
 		Transform t = best.transform;
-		Vector3 worldScale = t.lossyScale;// 記住目前的世界尺度
-		// 設為子物件但保留世界座標/旋轉/尺度
+		Vector3 worldScale = t.lossyScale;
 		t.SetParent(grabOverHeadItem.transform, true);
-
-		// 移到頭上（不影響尺度）
 		t.localPosition = Vector3.zero;
 		t.localRotation = Quaternion.identity;
 
-		// （可選保險）重新套回世界尺度，以避免浮點誤差
 		Vector3 pScale = grabOverHeadItem.transform.lossyScale;
 		t.localScale = new Vector3(
 			worldScale.x / (pScale.x == 0 ? 1 : pScale.x),
@@ -288,8 +457,7 @@ public class PlayerAttackController : MonoBehaviour
 			worldScale.z / (pScale.z == 0 ? 1 : pScale.z)
 		);
 
-		// 可選：若有剛體，讓它在頭上穩定
-		if (best.attachedRigidbody is Rigidbody2D rb)
+		if (best.attachedRigidbody is { } rb)
 		{
 			rb.velocity = Vector2.zero;
 			rb.angularVelocity = 0f;
@@ -297,51 +465,44 @@ public class PlayerAttackController : MonoBehaviour
 			rb.gravityScale = 0f;
 		}
 
-		// Debug.Log("Grab success");
+		// ★ 成功抓到 → 播 grabEnd（一次）接 grabbing（loop）
+		if (gloveController != null)
+			gloveController.PlayGrabEndThenGrabbing();
+
 		return true;
 	}
-	
-	/// <summary>
-	/// 將頭上的子物件往目前面向方向丟出一段距離；維持世界尺度不變。
-	/// </summary>
+
 	private bool ThrowCarriedObject(Transform t)
 	{
 		if (t == null) return false;
-
-		// 從頭上取下：保留世界座標/旋轉/尺度
+		
 		Vector3 worldScale = t.lossyScale;
 		t.SetParent(null, true);
 		t.localScale = worldScale;
 
-		// 若有可抓取腳本，解除「被抓」狀態
 		if (t.TryGetComponent<BeGrabByPlayer>(out var grab))
 		{
-			grab.SetIsOnBeGrabing(false);
+			grab.SetIsOnBeGrabbing(false);
 		}
 
-		// 若有剛體：先暫時設為運動學避免與 tween 打架
 		Rigidbody2D rb = t.GetComponent<Rigidbody2D>();
 		if (rb != null)
 		{
 			rb.velocity = Vector2.zero;
 			rb.angularVelocity = 0f;
 			rb.isKinematic = true;
-			// 丟完再恢復重力（避免丟的過程受重力影響偏移）
 		}
 
-		// 計算丟擲方向與目標位置
 		Vector2 dir = GetAimDir().sqrMagnitude > 0f ? GetAimDir().normalized : Vector2.right;
 		Vector3 start = t.position;
 		Vector3 end = start + (Vector3)(dir * throwDistance);
 
-		// 以 PrimeTween 做世界座標位移（線性）
 		Tween.Position(t, end, throwDuration).OnComplete(() =>
 		{
-			// 丟完恢復物理
 			if (t && rb != null)
 			{
 				rb.isKinematic = false;
-				rb.gravityScale = 1f; // 如需自訂原始值，可在抓取時記錄後還原
+				rb.gravityScale = 1f;
 			}
 		});
 
@@ -349,155 +510,20 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== Food 模式：普/重 =====
-	private bool FoodAttacks(bool isPowerAttack)
+	#region ===== 給被抓物件／其他系統呼叫的事件 =====
+	/// <summary>被抓物件真的掙脫了 → 關閉手套顯示。</summary>
+	public void OnGrabbedObjectEscaped()
 	{
-		var status = handItem ? handItem.GetComponentInChildren<FoodStatus>() : null;
-		if (status == null)
-		{
-			Debug.LogWarning("FoodStatus not found on handItem children.");
-			return false;
-		}
-
-		switch (status.foodType)
-		{
-			case FoodType.Beer:
-			case FoodType.Drumstick:
-			{
-				if (animationManager != null && animationManager.IsBusy())
-					return false;
-
-				// combo>0 先消耗第一個物品（沿用你的習慣）
-				if (cakeComboIndex > 0) playerMovement.DestoryFirstItem();
-
-				// 暫時隱藏手上物件、鎖定移動
-				if (handItem) handItem.gameObject.SetActive(false);
-				playerMovement.SetEnableMoveControll(false);
-
-				float moveDistance = isPowerAttack ? attackMoveDistance * 1.2f : attackMoveDistance;
-				float moveDuration = isPowerAttack ? Mathf.Max(0.3f, attackMoveDuration * 0.9f) : attackMoveDuration;
-
-				AudioManager.Instance?.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
-				playerMovement.MoveDistance(moveDistance, moveDuration, playerMovement.GetMoveInput());
-
-				string anim = ResolveFoodAnim(isPowerAttack);
-				string vfxName = ResolveFoodVFX(isPowerAttack);
-
-				// 由 Spine 事件開關 HitBox/VFX
-				animationManager.PlayAnimationOnce(anim, foodAttackHitBox, vfxName, () =>
-				{
-					cakeComboIndex = 1 - cakeComboIndex;
-					if (handItem) handItem.gameObject.SetActive(true);
-					playerMovement.SetEnableMoveControll(true);
-				});
-				return true;
-			}
-			default:
-				Debug.Log("This food has not attack");
-				return false;
-		}
+		if (gloveController != null)
+			gloveController.OnObjectEscaped();
 	}
 
-	private string ResolveFoodAnim(bool isPower)
+	/// <summary>被抓物件「嘗試掙脫」的反應（目前由 GloveController 內部保留、已註解）。</summary>
+	public void OnGrabbedObjectTryEscape()
 	{
-		return (cakeComboIndex % 2 == 0) ? animationManager.drumStick1 : animationManager.drumStick2;
-	}
-
-	private string ResolveFoodVFX(bool isPower)
-	{
-		if (isPower)
-			return (cakeComboIndex % 2 == 0) ? "DrumStick_PowerAttack_1" : "DrumStick_PowerAttack_2";
-		else
-			return (cakeComboIndex % 2 == 0) ? "DrumStick_NormalAttack_1" : "DrumStick_NormalAttack_2";
+		if (gloveController != null)
+			gloveController.OnGrabbedObjectTryEscape();
 	}
 	#endregion
 
-	#region ===== UI / 武器切換 =====
-	public void SetAttackModeUI(AttackMode mode)
-	{
-		if (!isSwichWeaponFinish) return;
-		attackMode = mode;
-
-		if (weaponUIAnimator == null) return;
-		switch (attackMode)
-		{
-			case AttackMode.Basic: weaponUIAnimator.SetInteger("WeaponType", 1); break;
-			case AttackMode.Food:  weaponUIAnimator.SetInteger("WeaponType", 2); break;
-			default:               weaponUIAnimator.SetInteger("WeaponType", 1); break;
-		}
-	}
-
-	public AttackMode GetAttackMode() => attackMode;
-	public void SetIsSwichWeaponFinish(bool isFinish) => isSwichWeaponFinish = isFinish;
-	#endregion
-
-	#region ===== 私有工具 =====
-	private bool HasFoodInHand() => handItem != null && handItem.childCount > 0;
-
-	private bool ShouldShowChargeBar()
-	{
-		// Basic：一定顯示；Food：只有有餐點才顯示
-		return attackMode == AttackMode.Basic || (attackMode == AttackMode.Food && HasFoodInHand());
-	}
-
-	private void SafeSetActive(GameObject go, bool active)
-	{
-		if (go != null && go.activeSelf != active) go.SetActive(active);
-	}
-
-	private void EnsureAnimationManager()
-	{
-		if (animationManager == null)
-			animationManager = GetComponent<PlayerSpineAnimationManager>();
-	}
-
-	private void SetPowerBarVisible(bool visible)
-	{
-		if (powerAttackBar) powerAttackBar.SetActive(visible);
-	}
-
-	private void UpdatePowerBarFill(float ratio01)
-	{
-		if (!powerAttackBarFill) return;
-		ratio01 = Mathf.Clamp01(ratio01);
-		Vector3 s = powerAttackBarFill.localScale;
-		powerAttackBarFill.localScale = new Vector3(ratio01, s.y, s.z);
-	}
-
-	/// <summary>
-	/// 取得「抓取」時的朝向：優先使用玩家當下移動輸入；若為零向量，以角色左右翻面判定。
-	/// </summary>
-	private Vector2 GetAimDir()
-	{
-		if (playerMovement != null)
-		{
-			Vector2 inDir = playerMovement.GetMoveInput();
-			if (inDir.sqrMagnitude > 0.0001f)
-				return inDir.normalized;
-		}
-		// y 角接近 180 視為向右，否則向左（你的翻面邏輯）
-		float y = transform.eulerAngles.y;
-		bool facingRight = Mathf.Abs(Mathf.DeltaAngle(y, 180f)) < 1f;
-		return facingRight ? Vector2.right : Vector2.left;
-	}
-	#endregion
-
-	#region ===== Gizmos（除錯視覺化） =====
-#if UNITY_EDITOR
-	private void OnDrawGizmosSelected()
-	{
-		// 抓取檢測盒視覺化（僅供參考）
-		Vector2 aim = Application.isPlaying ? GetAimDir() : Vector2.right;
-		Vector2 center = (Vector2)transform.position + aim * grabForwardOffset;
-		float angleDeg = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
-
-		UnityEditor.Handles.color = new Color(1f, 0.8f, 0.2f, 0.8f);
-		Matrix4x4 m = Matrix4x4.TRS(center, Quaternion.Euler(0, 0, angleDeg), Vector3.one);
-		using (new UnityEditor.Handles.DrawingScope(m))
-		{
-			UnityEditor.Handles.DrawWireCube(Vector3.zero, new Vector3(grabBoxSize.x, grabBoxSize.y, 0.1f));
-		}
-	}
-#endif
-	#endregion
 }

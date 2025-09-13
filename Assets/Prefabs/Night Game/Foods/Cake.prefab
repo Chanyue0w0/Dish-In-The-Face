@@ -144,8 +144,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bce71a3f57015094f8fe467cdf1eb9af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: 2
+  foodType: 1
   price: 0
+  skeletonAnim: {fileID: 0}
+  attackList:
+  - animationClip: {fileID: 0}
+    attackDamage: 0
 --- !u!1 &8343058390338176394
 GameObject:
   m_ObjectHideFlags: 0

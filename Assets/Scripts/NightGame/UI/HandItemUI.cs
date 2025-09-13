@@ -35,13 +35,13 @@ public class HandItemUI : MonoBehaviour
         dishImage.sprite = sprite;
     }
 
-	public void SwichWeaponFinish()
+	public void SwitchWeaponFinish()
 	{
-		attackController.SetIsSwichWeaponFinish(true);
+		attackController.SetIsSwitchWeaponFinish(true);
 	}
 
 	public void StartSwitchWeapon()
 	{
-		attackController.SetIsSwichWeaponFinish(false);
+		attackController.SetIsSwitchWeaponFinish(false);
 	}
 }

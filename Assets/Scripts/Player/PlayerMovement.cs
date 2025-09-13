@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] private float dashSpeed = 10f;
 	[SerializeField] private float dashDistance = 2f;
 	[SerializeField] private float dashCooldown = 0.1f;
-	[SerializeField] private float dashVirbation = 0.7f;
+	[SerializeField] private float dashVibration = 0.7f;
 	[SerializeField] private List<string> passThroughTags;
 
 	[Header("Slide Interrupt")]
@@ -27,12 +27,12 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- State ---------")]
 	[SerializeField] private bool isDashing = false;
 	[SerializeField] private bool isSlide = false;
-	[SerializeField] private bool isEnableMoveControll = true;
+	[SerializeField] private bool isEnableMoveControl = true;
 
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private PlayerAttackController attackController;
-	[SerializeField] private PlayerSpineAnimationManager animationManager;
+	// [SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private HandItemUI handItemUI;
 
 	[Header("Object")]
@@ -56,6 +56,16 @@ public class PlayerMovement : MonoBehaviour
 	private int slideDir;
 	private bool slideCancelRequested = false;
 	private float slideStartTime;
+
+	// 動畫方向緩存（Idle 時維持最後方向）
+	private Vector2 lastNonZeroDir = Vector2.right;
+	
+	// ===== 強制直行（鎖定第一下輸入方向） =====
+	private bool forcedMoveActive = false;            // 是否正在強制直行
+	private bool forcedMoveAwaitFirstInput = false;   // 是否還在等待「第一下輸入」
+	private Vector2 forcedMoveDir;                    // 鎖定後的移動方向（單位向量）
+	private float forcedMoveSpeed = 0f;               // 強制直行用速度
+	private float forcedMoveEndTime = Mathf.Infinity; // 結束時間（Infinity 表示手動停止）
 	#endregion
 
 	#region ===== Unity 生命週期 =====
@@ -74,13 +84,6 @@ public class PlayerMovement : MonoBehaviour
 
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 	}
-
-	private void Update()
-	{
-		// 更新 Spine 動畫
-		animationManager.UpdateFromMovement(moveInput, isDashing, isSlide);
-	}
-
 	private void FixedUpdate()
 	{
 		Move();
@@ -91,15 +94,41 @@ public class PlayerMovement : MonoBehaviour
 	public void InputMovement(InputAction.CallbackContext context)
 	{
 		Vector2 move = context.ReadValue<Vector2>();
+		
+		// 若正在等待「第一下輸入」來鎖定方向，偵測到非零就記錄並不再等待
+		if (forcedMoveActive && forcedMoveAwaitFirstInput)
+		{
+			if (move.sqrMagnitude > 0.0001f)
+			{
+				forcedMoveDir = move.normalized;
+				forcedMoveAwaitFirstInput = false;
+
+				// 同步面向（延續你原本用旋轉翻面的做法）
+				transform.rotation = (forcedMoveDir.x < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+			}
+		}
+		
 		HandleMovementInput(move.x, move.y);
 	}
 
 	/// <summary> 攻擊鍵：按下→BeginCharge；放開→ReleaseChargeAndAttack（邏輯已搬到 AttackController） </summary>
-	public void InputAttack(InputAction.CallbackContext context)
+	public void InputBasicAttack(InputAction.CallbackContext context)
 	{
 		if (context.started)
 		{
-			attackController.BeginCharge();
+			attackController.BeginCharge(AttackMode.Basic);
+		}
+		else if (context.canceled)
+		{
+			attackController.ReleaseChargeAndAttack();
+		}
+	}
+
+	public void InputSpecialAttack(InputAction.CallbackContext context)
+	{
+		if (context.started)
+		{
+			attackController.BeginCharge(AttackMode.Food);
 		}
 		else if (context.canceled)
 		{
@@ -122,36 +151,59 @@ public class PlayerMovement : MonoBehaviour
 		if (context.performed) UseItem();
 	}
 
-	public void InputSwitchWeapon(InputAction.CallbackContext context)
-	{
-		if (context.performed) SwitchWeapon();
-	}
+	// public void InputSwitchWeapon(InputAction.CallbackContext context)
+	// {
+	// 	if (context.performed) SwitchWeapon();
+	// }
 	#endregion
 
 	#region ===== 角色移動/旋轉 =====
 	private void HandleMovementInput(float moveX, float moveY)
-	{
-		moveInput = new Vector2(moveX, moveY).normalized;
+	{	
+		moveInput = new Vector2(moveX, moveY);
+		if (moveInput.sqrMagnitude > 1f) moveInput.Normalize();
 
 		if (isDashing) moveVelocity = moveInput * dashSpeed;
 		else moveVelocity = moveInput * moveSpeed;
 
-		// X 朝向翻轉（你的美術若相反可調整）
-		if (!isSlide && moveX != 0)
+		// X 朝向翻轉（若之後改用 Animator 做翻面，可移除此段）
+		if (!isSlide && Mathf.Abs(moveX) > 0.0001f)
 			transform.rotation = (moveX < 0) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+
+		// 記錄最後非零方向（供 Idle 時維持方向）
+		if (moveInput.sqrMagnitude > 0.0001f)
+			lastNonZeroDir = moveInput;
 	}
 
 	private void Move()
 	{
 		if (isSlide) return; // 滑行時由 Slide() 控制位置
-		if (!isEnableMoveControll)
+		
+		// ===== 強制直行優先（僅當 isEnableMoveControl 為 false 才生效） =====
+		if (!isEnableMoveControl)
 		{
+			if (forcedMoveActive)
+			{
+				// 時間到 → 自動停止
+				if (Time.time >= forcedMoveEndTime)
+				{
+					StopForcedInputMove();
+					return;
+				}
+
+				// 鎖定方向與速度直行（中間切鍵不算）
+				rb.velocity = forcedMoveDir * forcedMoveSpeed;
+				return;
+			}
 			rb.velocity = Vector2.zero;
 			return;
 		}
+
+		// ===== 原本流程 =====
 		rb.velocity = moveVelocity;
 	}
 	#endregion
+	
 
 	#region ===== 攻擊（由 AttackController 呼回） =====
 	/// <summary>
@@ -181,8 +233,8 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (attackController.GetAttackMode() == AttackMode.Food)
 		{
-			AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
-			DestoryFirstItem();
+			if (DestroyFirstItem())
+				AudioManager.Instance.PlayOneShot(FMODEvents.Instance.playerEatFood, transform.position);
 		}
 	}
 	#endregion
@@ -209,7 +261,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		isDashing = true;
 		lastDashTime = Time.time;
-		RumbleManager.Instance.RumbleContinuous(dashVirbation, dashVirbation);
+		RumbleManager.Instance.RumbleContinuous(dashVibration, dashVibration);
 
 		float elapsed = 0f;
 		while (elapsed < dashDuration)
@@ -283,7 +335,10 @@ public class PlayerMovement : MonoBehaviour
 			// 沿著路徑移動
 			slideS = belt.StepAlong(slideS, slideDir, Time.fixedDeltaTime);
 			Vector3 nextPos = belt.EvaluatePositionByDistance(slideS);
-			transform.rotation = (nextPos.x >  transform.position.x) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+
+			// 仍保留左右翻轉（若之後改用 Animator Flip，可移此行）
+			transform.rotation = (nextPos.x > transform.position.x) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+
 			rb.MovePosition(nextPos);
 
 			// 非循環：到端點自動停止
@@ -304,41 +359,6 @@ public class PlayerMovement : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== 位移工具 =====
-	private IEnumerator MoveDistanceCoroutine(float distance, float duration, Vector2 direction)
-	{
-		SetEnableMoveControll(false);
-
-		// 決定方向（若未給方向，依當前朝向）
-		if (direction == Vector2.zero)
-		{
-			direction = transform.rotation.y >= 0 ? new Vector2(-1, 0) : new Vector2(1, 0);
-		}
-
-		direction = direction.normalized;
-		float elapsed = 0f;
-
-		Vector2 start = rb.position;
-		Vector2 target = start + direction * distance;
-
-		while (elapsed < duration)
-		{
-			if (isEnableMoveControll) break;
-
-			float t = elapsed / duration;
-			Vector2 nextPos = Vector2.Lerp(start, target, t);
-			rb.MovePosition(nextPos);
-
-			elapsed += Time.fixedDeltaTime;
-			yield return new WaitForFixedUpdate();
-		}
-
-		if (!isEnableMoveControll)
-			rb.MovePosition(target);
-
-		SetEnableMoveControll(true);
-	}
-	#endregion
 
 	#region ===== 碰撞檢測（桌面） =====
 	private void OnCollisionStay2D(Collision2D collision)
@@ -363,24 +383,27 @@ public class PlayerMovement : MonoBehaviour
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
 	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
-	public void SetEnableMoveControll(bool isEnable) { isEnableMoveControll = isEnable; }
 
-	public void DestoryFirstItem()
+	public void SetEnableMoveControl(bool isEnable)
+	{
+		isEnableMoveControl = isEnable;
+		// Debug.Log(isEnable);
+	}
+
+	public bool DestroyFirstItem()
 	{
 		if (handItemNow != null && handItemNow.transform.childCount > 0)
 		{
 			Destroy(handItemNow.transform.GetChild(0).gameObject);
 			if (handItemUI) handItemUI.ChangeHandItemUI();
+			return true;
 		}
-	}
 
-	/// <summary> 依當前輸入方向移動一段距離/秒數 </summary>
-	public void MoveDistance(float distance, float duration, Vector2 direction)
-	{
-		StartCoroutine(MoveDistanceCoroutine(distance, duration, direction));
+		return false;
 	}
 
 	public float GetMoveSpeed() => moveSpeed;
+	public void ResetMoveSpeed() => moveSpeed = defaultMoveSpeed;
 	public Vector2 GetMoveInput() => moveInput;
 
 	/// <summary> 取得滑行切線方向（y 軸） </summary>
@@ -394,9 +417,60 @@ public class PlayerMovement : MonoBehaviour
 		return 0;
 	}
 
+	public void StartForcedInputMove(float speed, float duration = -1f)
+	{
+		if (isEnableMoveControl) return;
+
+		forcedMoveActive = true;
+		forcedMoveSpeed = Mathf.Max(0f, speed);
+
+		if (duration > 0f) forcedMoveEndTime = Time.time + duration;
+		else forcedMoveEndTime = Mathf.Infinity;
+
+		// 停掉其他會干擾的狀態
+		isDashing = false;
+		isSlide = false;
+
+		// 鎖定方向：優先用「當下已按住的輸入」，否則用 rotation 的 X 面向
+		if (moveInput.sqrMagnitude > 0.0001f)
+		{
+			forcedMoveDir = moveInput.normalized;
+		}
+		else
+		{
+			float y = transform.rotation.eulerAngles.y;
+			int sign = y is > 90f and < 270f ? +1 : -1; // +1 右 / -1 左
+			forcedMoveDir = new Vector2(sign, 0f);
+		}
+
+		// 同步翻面（沿你的規則）
+		transform.rotation = (forcedMoveDir.x < 0)
+			? Quaternion.Euler(0, 0, 0)
+			: Quaternion.Euler(0, 180, 0);
+	}
+
+	/// <summary>
+	/// 手動停止強制直行（對應第一個函式未給 duration 的情況）
+	/// </summary>
+	public void StopForcedInputMove()
+	{
+		forcedMoveActive = false;
+		forcedMoveSpeed = 0f;
+		forcedMoveEndTime = Mathf.Infinity;
+		rb.velocity = Vector2.zero;
+	}
+
+	/// <summary>（可選）供外部查詢目前是否在強制直行</summary>
+	public bool IsForcedInputMoveActive() => forcedMoveActive;
+	
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 
+	public bool IsMoving()
+	{
+		if (!isEnableMoveControl) return false;
+		return moveInput != Vector2.zero;
+	}
 	/// <summary> 當下是否可以中斷滑行 </summary>
 	public bool IsSlideInterruptibleNow()
 	{

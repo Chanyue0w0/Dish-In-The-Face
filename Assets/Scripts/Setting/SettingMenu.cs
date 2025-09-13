@@ -31,28 +31,28 @@ public class SettingMenu : MonoBehaviour
 
 	[Title("音量控制")]
 	[FoldoutGroup("音量設定", expanded: true)]
-	[HorizontalGroup("音量設定/主音量")]
-	[LabelText("滑桿")]
+	[HorizontalGroup("音量設定/")]
+	[LabelText("主音量滑桿")]
 	[SerializeField] private Slider masterSlider;
 	
 	[HorizontalGroup("音量設定/主音量")]
-	[LabelText("數值顯示")]
+	[LabelText("主音量數值顯示")]
 	[SerializeField] private TextMeshProUGUI masterVolumeText;
 
 	[HorizontalGroup("音量設定/音樂")]
-	[LabelText("滑桿")]
+	[LabelText("音樂滑桿")]
 	[SerializeField] private Slider musicSlider;
 	
 	[HorizontalGroup("音量設定/音樂")]
-	[LabelText("數值顯示")]
+	[LabelText("音樂數值顯示")]
 	[SerializeField] private TextMeshProUGUI musicVolumeText;
 
 	[HorizontalGroup("音量設定/音效")]
-	[LabelText("滑桿")]
+	[LabelText("音效滑桿")]
 	[SerializeField] private Slider sfxSlider;
 	
 	[HorizontalGroup("音量設定/音效")]
-	[LabelText("數值顯示")]
+	[LabelText("音效數值顯示")]
 	[SerializeField] private TextMeshProUGUI sfxVolumeText;
 
 	[Title("顯示設定")]
@@ -300,7 +300,7 @@ public class SettingMenu : MonoBehaviour
 	{
 		sfxVolumeText.text = ((int)(sfxSlider.value * 100f)).ToString();
 		PlayerPrefsManager.SetSFXVolume(sfxSlider.value);
-		AudioManager.Instance.SFXVolume = sfxSlider.value;
+		AudioManager.Instance.sfxVolume = sfxSlider.value;
 	}
 	public void OnClickSFXVolume(bool increase)
 	{
