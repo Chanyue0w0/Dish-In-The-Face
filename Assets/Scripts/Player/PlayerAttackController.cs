@@ -306,8 +306,8 @@ public class PlayerAttackController : MonoBehaviour
 		comboIndex++;
 
 		// 最後一段後消耗食物（維持原本行為）
-		if (comboIndex > attacklistCount - 1)
-			playerMovement.DestroyFirstItem();
+		// if (comboIndex > attacklistCount - 1)
+		playerMovement.DestroyFirstItem(); // 消耗食物
 
 		return true;
 	}

@@ -7,6 +7,7 @@ public class StunController : MonoBehaviour
     [SerializeField] private int maxStunPerStage = 6;        // 每階段需要的暈眩值
     [SerializeField] private float noDamageResetTime = 10f;  // 幾秒沒受攻擊就清空暈眩值 & 星星（僅在非暈眩時檢查）
     [SerializeField] private string stunTriggerTag = "AttackStun";
+    [SerializeField] private bool isInvincible = false; // 無敵時不會累積暈眩
 
     [Header("Star Stun Time")]
     [SerializeField] private float stunTime1Star = 3f;
@@ -82,6 +83,7 @@ public class StunController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isInvincible) return; // 無敵時直接忽略
         if (other.CompareTag(stunTriggerTag))
         {
             AddStun(1);
@@ -91,6 +93,7 @@ public class StunController : MonoBehaviour
     /// <summary> 增加暈眩值（顯示為「距離下一次升星」的累積進度；第三顆星例外） </summary>
     public void AddStun(int amount)
     {
+        if (isInvincible) return; // 無敵時不累積
         if (amount <= 0) return;
 
         lastIncreaseTime = Time.time;
@@ -247,6 +250,12 @@ public class StunController : MonoBehaviour
     }
 
     // 可供外部暫停/繼續暈眩倒數（例如被抓起來時暫停）
-    private void StunTimePause() { countdownPaused = true; }
-    private void StunTimeContinue() { if (isStunned) countdownPaused = false; }
+    public void StunTimePause() { countdownPaused = true; }
+    public void StunTimeContinue() { if (isStunned) countdownPaused = false; }
+    /// <summary>設定是否無敵（無敵時不會受到暈眩攻擊）。</summary>
+    public void SetInvincible(bool value) => isInvincible = value;
+
+    /// <summary>目前是否為無敵狀態。</summary>
+    public bool IsInvincible() => isInvincible;
+
 }

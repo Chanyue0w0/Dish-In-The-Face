@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
 	[Header("-------- Reference ---------")]
 	[Header("Script")]
 	[SerializeField] private PlayerAttackController attackController;
-	[SerializeField] private PlayerSpineAnimationManager animationManager;
+	// [SerializeField] private PlayerSpineAnimationManager animationManager;
 	[SerializeField] private HandItemUI handItemUI;
 
 	[Header("Object")]
@@ -177,28 +177,29 @@ public class PlayerMovement : MonoBehaviour
 
 	private void Move()
 	{
+		if (isSlide) return; // 滑行時由 Slide() 控制位置
+		
 		// ===== 強制直行優先（僅當 isEnableMoveControl 為 false 才生效） =====
-		if (forcedMoveActive && !isEnableMoveControl)
+		if (!isEnableMoveControl)
 		{
-			// 時間到 → 自動停止
-			if (Time.time >= forcedMoveEndTime)
+			if (forcedMoveActive)
 			{
-				StopForcedInputMove();
+				// 時間到 → 自動停止
+				if (Time.time >= forcedMoveEndTime)
+				{
+					StopForcedInputMove();
+					return;
+				}
+
+				// 鎖定方向與速度直行（中間切鍵不算）
+				rb.velocity = forcedMoveDir * forcedMoveSpeed;
 				return;
 			}
-
-			// 鎖定方向與速度直行（中間切鍵不算）
-			rb.velocity = forcedMoveDir * forcedMoveSpeed;
+			rb.velocity = Vector2.zero;
 			return;
 		}
 
 		// ===== 原本流程 =====
-		if (isSlide) return; // 滑行時由 Slide() 控制位置
-		if (!isEnableMoveControl)
-		{
-			rb.velocity = Vector2.zero;
-			return;
-		}
 		rb.velocity = moveVelocity;
 	}
 	#endregion
@@ -382,7 +383,12 @@ public class PlayerMovement : MonoBehaviour
 	public void SetDashDistance(float newDistance) { dashDistance = newDistance; dashDuration = dashDistance / dashSpeed; }
 	public void SetDashCooldown(float newCooldown) { dashCooldown = newCooldown; }
 	public void SetMoveSpeed(float newMoveSpeed) { moveSpeed = newMoveSpeed; }
-	public void SetEnableMoveControl(bool isEnable) { isEnableMoveControl = isEnable; }
+
+	public void SetEnableMoveControl(bool isEnable)
+	{
+		isEnableMoveControl = isEnable;
+		// Debug.Log(isEnable);
+	}
 
 	public bool DestroyFirstItem()
 	{
