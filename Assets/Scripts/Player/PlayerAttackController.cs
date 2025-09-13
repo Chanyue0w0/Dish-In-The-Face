@@ -29,7 +29,7 @@ public class PlayerAttackController : MonoBehaviour
 	[Header("----- Grab Search (Position-based Gizmo) -----")]
 	
 	[SerializeField, Min(0f)] private float grabHoldThreshold = 0.2f;
-	[SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
+	// [SerializeField, Min(0f)] private float grabForwardOffset = 0.9f;
 	[SerializeField, Min(0f)] private float throwDistance = 3f;
 	[SerializeField, Min(0.01f)] private float throwDuration = 0.25f;
 	#endregion

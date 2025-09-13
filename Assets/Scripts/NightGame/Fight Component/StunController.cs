@@ -245,7 +245,7 @@ public class StunController : MonoBehaviour
         for (int i = 0; i < stars.Length; i++)
         {
             if (stars[i] != null)
-                stars[i].SetActive(i < starCount);
+                stars[i].SetActive(i+1 == starCount);
         }
     }
 
