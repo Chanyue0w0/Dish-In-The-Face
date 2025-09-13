@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 699073217482796172}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.837, y: 1.896, z: 0}
-  m_LocalScale: {x: 0.7154797, y: 0.8252191, z: 0.43478346}
+  m_LocalPosition: {x: 0.3061, y: 0.4747, z: 0}
+  m_LocalScale: {x: 1.120942, y: 1.2928708, z: 0.68117523}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7814547627470768378}
@@ -144,8 +144,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bce71a3f57015094f8fe467cdf1eb9af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodType: 3
+  foodType: 2
   price: 20
+  comboAttackTime: 1
+  defaultSfx:
+    Guid:
+      Data1: 1641033783
+      Data2: 1225441542
+      Data3: 192947610
+      Data4: 472483547
+    Path: event:/SFX/swing1
+  attackList:
+  - animationClip: {fileID: 7400000, guid: d9949b75f7aa0b4408567969e6336649, type: 2}
+    stunDamage: 10
+    sfx:
+      Guid:
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
+    knockbackForce: 5
+    vfxGameObject: {fileID: 0}
+  - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
+    stunDamage: 10
+    sfx:
+      Guid:
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
+    knockbackForce: 10
+    vfxGameObject: {fileID: 0}
 --- !u!1 &3857453713245092508
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,7 +203,7 @@ Transform:
   m_GameObject: {fileID: 3857453713245092508}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.19833574, y: -0.48619723, z: 0}
+  m_LocalPosition: {x: 0.19833574, y: -0.73, z: 0}
   m_LocalScale: {x: 0.7247912, y: 0.5455834, z: 0.57706314}
   m_ConstrainProportionsScale: 0
   m_Children: []

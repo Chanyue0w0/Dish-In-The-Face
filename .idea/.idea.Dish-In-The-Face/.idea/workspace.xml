@@ -6,15 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Beer.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Beer.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Cake.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Cake.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Drumstick.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Pizza.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Foods/Pizza.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Art Test.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Art Test.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,11 +17,17 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Animation/SpineAnimationController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Item/BeGrabByPlayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/GloveController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerAttackController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerInteraction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Spine/Runtime/spine-unity/Asset Types/AnimationReferenceAsset.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/SpineAnimationEventTool.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
@@ -144,7 +142,27 @@
       <workItem from="1756530728989" duration="12614000" />
       <workItem from="1756629277824" duration="15651000" />
       <workItem from="1756706907655" duration="5696000" />
-      <workItem from="1756791010600" duration="6213000" />
+      <workItem from="1756791010600" duration="6844000" />
+      <workItem from="1756883783362" duration="8943000" />
+      <workItem from="1756969797292" duration="5730000" />
+      <workItem from="1757143639410" duration="21452000" />
+      <workItem from="1757256405822" duration="179000" />
+      <workItem from="1757312743816" duration="198000" />
+      <workItem from="1757312983291" duration="11641000" />
+      <workItem from="1757391772494" duration="5128000" />
+      <workItem from="1757406438545" duration="1208000" />
+      <workItem from="1757407683620" duration="10981000" />
+      <workItem from="1757482274312" duration="4113000" />
+      <workItem from="1757486986920" duration="4297000" />
+      <workItem from="1757493375132" duration="3223000" />
+      <workItem from="1757510082369" duration="335000" />
+      <workItem from="1757570446343" duration="4275000" />
+      <workItem from="1757582216321" duration="622000" />
+      <workItem from="1757595647844" duration="16000" />
+      <workItem from="1757598612098" duration="1526000" />
+      <workItem from="1757735554837" duration="4642000" />
+      <workItem from="1757745109517" duration="1607000" />
+      <workItem from="1757767083525" duration="5359000" />
     </task>
     <servers />
   </component>

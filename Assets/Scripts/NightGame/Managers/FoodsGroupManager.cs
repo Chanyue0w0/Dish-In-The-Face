@@ -51,7 +51,7 @@ public class FoodsGroupManager : MonoBehaviour
 
 	private void Start()
 	{
-		currentFoodTarget = GetComponent<Transform>();
+		currentFoodTarget = null;
 		isPlayerInsideTrigger = false;
 
 		if (yellowFrame != null) yellowFrame.SetActive(false);
@@ -240,7 +240,7 @@ public class FoodsGroupManager : MonoBehaviour
 			var col = foodPos.GetComponent<Collider2D>();
 			if (col == null || !col.isTrigger || !col.IsTouching(playerCollider)) continue;
 			if (foodPos.childCount > 0)
-				return foodPos.transform.GetChild(0);
+				return foodPos.GetComponentInChildren<FoodStatus>().transform;
 		}
 		return null;
 	}

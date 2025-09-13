@@ -12,7 +12,6 @@ public class PlayerInteraction : MonoBehaviour
 	[SerializeField] private int getFoodCount = 1;
 	// [SerializeField] private bool isGetOneFood = true;
 
-
 	[Header("-------- Reference ---------")]
 	[SerializeField] private PlayerMovement movement; // Reference to Movement component
 	[SerializeField] private HandItemUI handItemUI;   // Updates hand item UI
@@ -22,12 +21,15 @@ public class PlayerInteraction : MonoBehaviour
 
 	private bool isEnableUseDessert ;
 
-
 	private void Start()
 	{
 		isEnableUseDessert = true;
 		currentChairTriggers = new List<Collider2D>();
+
+		// 開始時依照「由上到下」把手上物品排好
+		ArrangeHandItemsTopToBottom();
 	}
+
 	/// External: Called on InputInteract
 	public bool Interact()
 	{
@@ -49,8 +51,6 @@ public class PlayerInteraction : MonoBehaviour
 	/// Try to pick up food from current serving area
 	private bool TryGetFood()
 	{
-		if (handItemUI) handItemUI.ChangeHandItemUI();
-
 		GameObject currentFood = RoundManager.Instance.foodsGroupManager.GetCurrentDishObject();
 		if (currentFood == null) return false;
 
@@ -63,13 +63,16 @@ public class PlayerInteraction : MonoBehaviour
 			Sprite handItemSprite = handItemRoot.GetComponentInChildren<SpriteRenderer>().sprite;
 			if (currentFood.GetComponent<SpriteRenderer>().sprite != handItemSprite)
 			{
-				// Hand item differs from new food type
+				// 手上物件和要拿的食物類型不同 → 清空手上物件
 				foreach (Transform child in handItemRoot)
 					Destroy(child.gameObject);
 			}
-			else pos = handItemRoot.GetChild(0).transform.position;
+			else
+			{
+				// 類型相同 → 以目前第一個物件的位置當成基準
+				pos = handItemRoot.GetChild(0).transform.position;
+			}
 		}
-
 
 		for (var i = 0; i < getFoodCount; i++)
 		{
@@ -81,6 +84,9 @@ public class PlayerInteraction : MonoBehaviour
 			newItem.transform.SetAsFirstSibling();
 			newItem.transform.position = pos + new Vector3(0, 1, 0);
 		}
+
+		// 重新依「由上到下」排一次
+		ArrangeHandItemsTopToBottom();
 
 		if (handItemUI) handItemUI.ChangeHandItemUI();
 		return true;
@@ -102,13 +108,12 @@ public class PlayerInteraction : MonoBehaviour
 	public bool TryPullDownDish()
 	{
 		//Debug.Log("TryPullDownDish");
-		if (currentChairTriggers.Count > 0 && handItemRoot.childCount > 0)
-		{
-			GameObject item = handItemRoot.GetChild(0).gameObject;
-			foreach (var chair in currentChairTriggers)
-				if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
-					return true;
-		}
+		if (currentChairTriggers.Count <= 0 || handItemRoot.childCount <= 0) return false;
+		
+		GameObject item = handItemRoot.GetChild(0).gameObject;
+		foreach (var chair in currentChairTriggers)
+			if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
+				return true;
 
 		return false;
 	}
@@ -120,7 +125,7 @@ public class PlayerInteraction : MonoBehaviour
 	}
 
 	// ===== Chair trigger handling =====
-	void OnTriggerEnter2D(Collider2D other)
+	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.CompareTag("Chair"))
 		{
@@ -130,7 +135,8 @@ public class PlayerInteraction : MonoBehaviour
 			RoundManager.Instance.chairGroupManager.EnableInteracSignal(other.transform, item, true);
 		}
 	}
-	void OnTriggerStay2D(Collider2D trigger)
+
+	private void OnTriggerStay2D(Collider2D trigger)
 	{
 		if (trigger.CompareTag("Chair"))
 		{
@@ -138,7 +144,8 @@ public class PlayerInteraction : MonoBehaviour
 				currentChairTriggers.Add(trigger);
 		}
 	}
-	void OnTriggerExit2D(Collider2D trigger)
+
+	private void OnTriggerExit2D(Collider2D trigger)
 	{
 		if (trigger.CompareTag("Chair"))
 		{
@@ -160,6 +167,35 @@ public class PlayerInteraction : MonoBehaviour
 		if (collision.collider.CompareTag("Dessert"))
 		{
 			isEnableUseDessert = false;
+		}
+	}
+
+	/// <summary>
+	/// 依照「由上到下」把手上物件排列：
+	/// 以 handItemRoot 的上方為起點，等距往下排。child index 小的在上面。
+	/// </summary>
+	private void ArrangeHandItemsTopToBottom()
+	{
+		if (handItemRoot == null) return;
+
+		int childCount = handItemRoot.childCount;
+		if (childCount == 0) return;
+
+		const float verticalStep = 1f;
+
+		// 最上方位置 = root 往上 (childCount - 1) * step
+		Vector3 topPos = handItemRoot.position + new Vector3(0f, (childCount - 1) * verticalStep, 0f);
+
+		for (int i = 0; i < childCount; i++)
+		{
+			Transform child = handItemRoot.GetChild(i);
+
+			// 依序往下排，最後一個剛好落在 root
+			Vector3 targetPos = topPos + new Vector3(0f, -i * verticalStep, 0f);
+			child.position = targetPos;
+
+			// 保持 Hierarchy 中 index 與排列一致
+			child.SetSiblingIndex(i);
 		}
 	}
 }

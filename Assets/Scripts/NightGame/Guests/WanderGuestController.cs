@@ -5,23 +5,23 @@ using UnityEngine.AI;
 public class WanderGuestController : MonoBehaviour
 {
 	[Header("------------ Settings ------------")]
-	public float waitTime = 3f;             // ¨ì¹F¥Ø¼Ð«áµ¥«Ýªº®É¶¡
-	public float moveSpeed = 2f;            // «È¤H²¾°Ê³t«×
+	public float waitTime = 3f;             // ï¿½ï¿½Fï¿½Ø¼Ð«áµ¥ï¿½Ýªï¿½ï¿½É¶ï¿½
+	public float moveSpeed = 2f;            // ï¿½È¤Hï¿½ï¿½ï¿½Ê³tï¿½ï¿½
 
 	[Header("Obstacle")]
-	public float obstacleCooldown = 10f;    // »ÙÃªª«¥Í¦¨§N«o®É¶¡¡]¬í¡^
+	public float obstacleCooldown = 10f;    // ï¿½ï¿½Ãªï¿½ï¿½ï¿½Í¦ï¿½ï¿½Nï¿½oï¿½É¶ï¿½ï¿½]ï¿½ï¿½^
 
 	[Header("Stuck Retry Settings")]
-	[SerializeField] private float stuckCheckInterval = 1.5f;  // ´X¬í¤º¨S°Ê§@µø¬°¥d¦í
-	[SerializeField] private float stuckThreshold = 0.05f;     // ¦hªñªº¶ZÂ÷µø¬°¨S²¾°Ê
-	[SerializeField] private float retryDelay = 2f;            // ¥d¦í«áµ¥«Ý¦h¤[¦A­«·s´M¸ô
+	[SerializeField] private float stuckCheckInterval = 1.5f;  // ï¿½Xï¿½ï¿½ï¿½Sï¿½Ê§@ï¿½ï¿½ï¿½ï¿½ï¿½dï¿½ï¿½
+	[SerializeField] private float stuckThreshold = 0.05f;     // ï¿½hï¿½ñªº¶Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½
+	[SerializeField] private float retryDelay = 2f;            // ï¿½dï¿½ï¿½áµ¥ï¿½Ý¦hï¿½[ï¿½Aï¿½ï¿½ï¿½sï¿½Mï¿½ï¿½
 
 	[Header("Leave Settings")]
-	[SerializeField] private float minStayDuration = 15f;  // ³Ìµu°±¯d¬í¼Æ
-	[SerializeField] private float maxStayDuration = 30f;  // ³Ìªø°±¯d¬í¼Æ
+	[SerializeField] private float minStayDuration = 15f;  // ï¿½Ìµuï¿½ï¿½ï¿½dï¿½ï¿½ï¿½
+	[SerializeField] private float maxStayDuration = 30f;  // ï¿½Ìªï¿½ï¿½ï¿½ï¿½dï¿½ï¿½ï¿½
 
 	[Header("------------ Reference ------------")]
-	[SerializeField] GameObject[] obstacles;  // ¥i¥Í¦¨ªº»ÙÃªª« Prefab
+	[SerializeField] GameObject[] obstacles;  // ï¿½iï¿½Í¦ï¿½ï¿½ï¿½ï¿½ï¿½Ãªï¿½ï¿½ Prefab
 
 	private NavMeshAgent agent;
 	private bool isWaiting = false;
@@ -32,7 +32,7 @@ public class WanderGuestController : MonoBehaviour
 	private float stuckTimer = 0f;
 	private bool isRetrying = false;
 
-	// ª«¥ó¦À³B²z¾¹
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Bï¿½zï¿½ï¿½
 	private GuestPoolHandler poolHandler;
 
 	private void Awake()
@@ -47,27 +47,27 @@ public class WanderGuestController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		// ­«¸mª¬ºA
+		// ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½A
 		obstacleTimer = 0f;
 		isWaiting = false;
 		isInteracting = false;
 		stuckTimer = 0f;
 		isRetrying = false;
 
-		// ½T«O¤@¶}©l´N¦b NavMesh ¤W
+		// ï¿½Tï¿½Oï¿½@ï¿½}ï¿½lï¿½Nï¿½b NavMesh ï¿½W
 		TryEnsureOnNavMesh(2f);
 
 		lastPosition = transform.position;
-		MoveToNewDestination(); // ·|¦b¾ã±i NavMesh ¤W¨ú¤@­Ó¥i¨ì¹FÂI
+		MoveToNewDestination(); // ï¿½|ï¿½bï¿½ï¿½i NavMesh ï¿½Wï¿½ï¿½ï¿½@ï¿½Ó¥iï¿½ï¿½Fï¿½I
 
-		// ¦w±ÆÂ÷¶}­p®É¾¹
+		// ï¿½wï¿½ï¿½ï¿½ï¿½ï¿½}ï¿½pï¿½É¾ï¿½
 		float leaveTime = Random.Range(minStayDuration, maxStayDuration);
 		StartCoroutine(LeaveAfterDelay(leaveTime));
 	}
 
 	private void OnDisable()
 	{
-		// ª«¥ó¦^¦¬®ÉÁ×§K±¾µÛªº¨óµ{/InvokeÄ~Äò¶]
+		// ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½×§Kï¿½ï¿½ï¿½Ûªï¿½ï¿½ï¿½{/Invokeï¿½~ï¿½ï¿½]
 		StopAllCoroutines();
 	}
 
@@ -82,7 +82,7 @@ public class WanderGuestController : MonoBehaviour
 			StartCoroutine(WaitThenMove());
 		}
 
-		// ¥Øªº¦a¥¢®Ä´N­«·s§ä
+		// ï¿½Øªï¿½ï¿½aï¿½ï¿½ï¿½Ä´Nï¿½ï¿½ï¿½sï¿½ï¿½
 		if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
 		{
 			MoveToNewDestination();
@@ -109,11 +109,11 @@ public class WanderGuestController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¦b¾ã±i NavMesh ¤W¬D¤@­Ó¡u¥i¨ì¹F¡vªºÀH¾÷ÂI°µ¬°·s¥Øªº¦a
+	/// ï¿½bï¿½ï¿½i NavMesh ï¿½Wï¿½Dï¿½@ï¿½Ó¡uï¿½iï¿½ï¿½Fï¿½vï¿½ï¿½ï¿½Hï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½sï¿½Øªï¿½ï¿½a
 	/// </summary>
 	void MoveToNewDestination()
 	{
-		// ¥ý«OÀI¡G½T«O¦Û¤v¯¸¦b NavMesh ¤W
+		// ï¿½ï¿½ï¿½Oï¿½Iï¿½Gï¿½Tï¿½Oï¿½Û¤vï¿½ï¿½ï¿½b NavMesh ï¿½W
 		if (!TryEnsureOnNavMesh(2f)) return;
 
 		Vector3 p;
@@ -121,7 +121,7 @@ public class WanderGuestController : MonoBehaviour
 		{
 			agent.SetDestination(p);
 		}
-		// ­Y¨úÂI¥¢±Ñ´Nºû«ù­ì¦a¡A«Ý¤U¦¸¦A¸Õ
+		// ï¿½Yï¿½ï¿½ï¿½Iï¿½ï¿½ï¿½Ñ´Nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Aï¿½Ý¤Uï¿½ï¿½ï¿½Aï¿½ï¿½
 	}
 
 	public void StopMovementForInteraction()
@@ -187,17 +187,17 @@ public class WanderGuestController : MonoBehaviour
 	{
 		yield return new WaitForSeconds(delay);
 
-		// ¥Îª«¥ó¦À¦^¦¬
+		// ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½
 		if (poolHandler != null)
 			poolHandler.Release();
 		else
-			Destroy(gameObject);
+			gameObject.SetActive(false);
 	}
 
-	// ---------- NavMesh ¤u¨ã ----------
+	// ---------- NavMesh ï¿½uï¿½ï¿½ ----------
 
 	/// <summary>
-	/// ¹Á¸Õ§â¥N²z¤H©ñ¦^ NavMesh¡]­Y¥Ø«e¤£¦b NavMesh ¤W¡^
+	/// ï¿½ï¿½ï¿½Õ§ï¿½Nï¿½zï¿½Hï¿½ï¿½^ NavMeshï¿½]ï¿½Yï¿½Ø«eï¿½ï¿½ï¿½b NavMesh ï¿½Wï¿½^
 	/// </summary>
 	private bool TryEnsureOnNavMesh(float searchRadius)
 	{
@@ -213,8 +213,8 @@ public class WanderGuestController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ±q NavMesh ¤T¨¤ºô¥ô¿ï¤@­Ó¤T¨¤§Î¡AÀH¾÷¨úÂI¡A¨Ã½T»{¡u¥i¨ì¹F¡v
-	/// maxAttempts¡G³Ì¦h¹Á¸Õ¦¸¼Æ
+	/// ï¿½q NavMesh ï¿½Tï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½Ó¤Tï¿½ï¿½ï¿½Î¡Aï¿½Hï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½Aï¿½Ã½Tï¿½{ï¿½uï¿½iï¿½ï¿½Fï¿½v
+	/// maxAttemptsï¿½Gï¿½Ì¦hï¿½ï¿½ï¿½Õ¦ï¿½ï¿½ï¿½
 	/// </summary>
 	private bool TryGetRandomReachablePointOnNavMesh(out Vector3 point, int maxAttempts = 20)
 	{
@@ -226,22 +226,22 @@ public class WanderGuestController : MonoBehaviour
 
 		for (int i = 0; i < maxAttempts; i++)
 		{
-			// ÀH¾÷¬D¤@­Ó¤T¨¤§Î
+			// ï¿½Hï¿½ï¿½ï¿½Dï¿½@ï¿½Ó¤Tï¿½ï¿½ï¿½ï¿½
 			int triIndex = Random.Range(0, tri.indices.Length / 3);
 			Vector3 a = tri.vertices[tri.indices[triIndex * 3 + 0]];
 			Vector3 b = tri.vertices[tri.indices[triIndex * 3 + 1]];
 			Vector3 c = tri.vertices[tri.indices[triIndex * 3 + 2]];
 
-			// ¥H§¡¤Ã¶Ã¼Æ¨ú¤T¨¤§Î¤ºÂI¡]Barycentric¡^
+			// ï¿½Hï¿½ï¿½ï¿½Ã¶Ã¼Æ¨ï¿½ï¿½Tï¿½ï¿½ï¿½Î¤ï¿½ï¿½Iï¿½]Barycentricï¿½^
 			float r1 = Random.value;
 			float r2 = Random.value;
 			if (r1 + r2 > 1f) { r1 = 1f - r1; r2 = 1f - r2; }
 			Vector3 p = a + (b - a) * r1 + (c - a) * r2;
 
-			// 2D ±M®×±`¥Î XY ¥­­±¡A«O«ù­ì¥» z¡]Á×§K¸õ°ª«×¡^
+			// 2D ï¿½Mï¿½×±`ï¿½ï¿½ XY ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Oï¿½ï¿½ï¿½ì¥» zï¿½]ï¿½×§Kï¿½ï¿½ï¿½ï¿½ï¿½×¡^
 			p.z = transform.position.z;
 
-			// §lªþ¨ì NavMesh¡A¨ÃÀË¬d¬O§_¥i¨«¨ì
+			// ï¿½lï¿½ï¿½ï¿½ï¿½ NavMeshï¿½Aï¿½ï¿½ï¿½Ë¬dï¿½Oï¿½_ï¿½iï¿½ï¿½ï¿½ï¿½
 			NavMeshHit hit;
 			if (NavMesh.SamplePosition(p, out hit, 1.0f, NavMesh.AllAreas))
 			{
