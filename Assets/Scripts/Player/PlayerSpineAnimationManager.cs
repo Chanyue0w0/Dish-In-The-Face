@@ -103,7 +103,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		// 取得 PlayerMovement 的輸入與狀態
 		Vector2 move = playerMovement.GetMoveInput();
 
-		bool isMoving = (move != Vector2.zero);
+		bool isMoving = playerMovement.IsMoving();
 
 		if (move.x != 0)
 		{

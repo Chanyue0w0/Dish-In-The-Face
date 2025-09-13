@@ -159,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
 
 	#region ===== 角色移動/旋轉 =====
 	private void HandleMovementInput(float moveX, float moveY)
-	{
+	{	
 		moveInput = new Vector2(moveX, moveY);
 		if (moveInput.sqrMagnitude > 1f) moveInput.Normalize();
 
@@ -466,6 +466,11 @@ public class PlayerMovement : MonoBehaviour
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 
+	public bool IsMoving()
+	{
+		if (!isEnableMoveControl) return false;
+		return moveInput != Vector2.zero;
+	}
 	/// <summary> 當下是否可以中斷滑行 </summary>
 	public bool IsSlideInterruptibleNow()
 	{
