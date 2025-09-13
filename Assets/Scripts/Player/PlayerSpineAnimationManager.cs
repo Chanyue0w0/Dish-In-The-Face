@@ -282,11 +282,12 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	public void CanNextAttack()
 	{
 		canNextAttack = true;
+		OpenInputMove();
 	}
 	public void ResetAttackCombo()
 	{
 		// Debug.Log("reset combo");
-		// onAttack = false;
+		onAttack = false;
 		canNextAttack = true;
 		OpenInputMove();
 	}
