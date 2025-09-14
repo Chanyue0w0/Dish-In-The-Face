@@ -501,6 +501,15 @@ public class NormalGuestController : MonoBehaviour
 	{
 		return orderFoodStatus;
 	}
+
+	// ===== 新增的狀態判斷 function =====
+	public bool IsThinking()     => state == GuestState.Thinking;
+	public bool IsEating()       => state == GuestState.Eating;
+	public bool IsOrdering()     => state == GuestState.WaitingOrder;
+	public bool IsWaitingDish()  => state == GuestState.WaitingDish;
+	public bool IsMoving()       => state == GuestState.WalkingToChair;
+	public bool IsLeaving()      => state == GuestState.Leaving;
+
 	#endregion
 
 }
