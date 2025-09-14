@@ -17,8 +17,8 @@ public class TroubleGuestController : MonoBehaviour
     [SerializeField] private Transform attackOrigin;    // 供 attackRangeBox 參考的原點
     [SerializeField] private string attackTriggerTag = "AttackStun";
 
-    [Header("-------- Appearance --------")]
-    [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
+    // [Header("-------- Appearance --------")]
+    // [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
 
     [Header("----- Reference -----")]
     [SerializeField] private Rigidbody2D rb;
@@ -235,12 +235,12 @@ public class TroubleGuestController : MonoBehaviour
             return;
         }
 
-        if (guestAppearanceList is { Count: > 0 })
-        {
-            int idx = Random.Range(0, guestAppearanceList.Count);
-            guestSpriteRenderer.sprite = guestAppearanceList[idx];
-            return;
-        }
+        // if (guestAppearanceList is { Count: > 0 })
+        // {
+        //     int idx = Random.Range(0, guestAppearanceList.Count);
+        //     guestSpriteRenderer.sprite = guestAppearanceList[idx];
+        //     return;
+        // }
 
         Debug.LogWarning("Not Get Enemy Guest Sprite!!!!");
     }

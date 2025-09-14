@@ -11,23 +11,15 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f;
 
 	[Header("-------- Patience / Timing --------")]
-	[Tooltip("階段1：思考點餐時間（秒）")]
 	[SerializeField] private float thinkOrderTime = 10f;
-
-	[Tooltip("階段2：等待玩家來點餐的耐心時間（秒）")]
 	[SerializeField] private float maxOrderPatience = 20f;
-
-	[Tooltip("階段3：等待餐點送達的耐心時間（秒）")]
 	[SerializeField] private float maxDishPatience = 25f;
 
 	[Header("-------- Flow Setting --------")]
 	[SerializeField] private float stateTransitionDelay = 0.3f; // 狀態切換延遲（秒）
 
 	[Header("-------- Eat / Reorder --------")]
-	[Tooltip("進食時間（秒）")]
 	[SerializeField] private float eatTime = 10f;
-
-	[Tooltip("吃完後，再點餐的機率（0~1）")]
 	[SerializeField, Range(0f, 1f)] private float reorderProbability = 0.3f;
 
 	[Header("-------- Stuck Retry Setting --------")]
@@ -35,9 +27,12 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float stuckThreshold = 0.05f;
 	[SerializeField] private float retryDelay = 2f;
 
-	[Header("-------- Appearance --------")]
-	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
+	// [Header("-------- Appearance --------")]
+	// [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
 
+	[Header("-------- Appearance --------")]
+	[SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
+	
 	[Header("-------- Reference --------")]
 	[SerializeField] private Transform startPosition;
 	[SerializeField] private Transform endPosition;
@@ -47,7 +42,7 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private GameObject rawBtnIconObj;
 	[SerializeField] private GameObject questionIconObj;
 	[SerializeField] private SpriteRenderer foodSpriteRenderer;
-	[SerializeField] private SpriteRenderer guestSpriteRenderer;
+	// [SerializeField] private SpriteRenderer guestSpriteRenderer;
 
 	#endregion
 
@@ -117,7 +112,9 @@ public class NormalGuestController : MonoBehaviour
 		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
 		{
 			int idx = Random.Range(0, guestAppearanceList.Count);
-			guestSpriteRenderer.sprite = guestAppearanceList[idx];
+			GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
+			if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
+			Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
 		}
 
 		// 狀態初始化
@@ -478,9 +475,9 @@ public class NormalGuestController : MonoBehaviour
 
 		// 在當前位置生成 TroubleGuest
 		Vector3 pos = transform.position;
-		Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
+		// Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
 
-		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, face);
+		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, null);
 
 		// 回收自身
 		if (poolHandler != null) poolHandler.Release();
