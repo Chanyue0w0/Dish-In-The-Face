@@ -31,7 +31,7 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
 	
 	[Header("-------- Reference --------")]
-	[SerializeField] private Transform startPosition;
+	// [SerializeField] private Transform startPosition;
 	[SerializeField] private Transform endPosition;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject patienceBar;
@@ -72,7 +72,8 @@ public class NormalGuestController : MonoBehaviour
 	
 	private FoodStatus orderFoodStatus;
 	private NavMeshAgent agent;
-
+	private GameObject appearanceObject;
+	
 	private Vector3 lastPosition;
 	private float stuckTimer;
 
@@ -98,7 +99,7 @@ public class NormalGuestController : MonoBehaviour
 		// 初始化入口與出口
 		if (RoundManager.Instance)
 		{
-			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			// startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 		}
 	}
@@ -111,9 +112,14 @@ public class NormalGuestController : MonoBehaviour
 			int idx = Random.Range(0, guestAppearanceList.Count);
 			GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
 			if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
-			Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
+			appearanceObject = Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
 		}
 
+		if (appearanceObject == null)
+		{
+			Debug.LogWarning("not found animation: " + transform.name);
+		}
+		
 		// 狀態初始化
 		isSeated = false;
 		isLeaving = false;
@@ -138,7 +144,7 @@ public class NormalGuestController : MonoBehaviour
 		// 找椅子
 		if (RoundManager.Instance)
 		{
-			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			// startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
 		}
@@ -474,7 +480,7 @@ public class NormalGuestController : MonoBehaviour
 		Vector3 pos = transform.position;
 		// Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
 
-		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, null);
+		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, appearanceObject);
 
 		// 回收自身
 		if (poolHandler != null) poolHandler.Release();

@@ -407,7 +407,6 @@ MonoBehaviour:
   - {fileID: 5713110558433871794, guid: cc18e833a9c3f774882d5b71e66fd91f, type: 3}
   - {fileID: 8252563090691895457, guid: d68282e6a7cc0644a9f75b25fa0735b0, type: 3}
   - {fileID: 3351210635382726857, guid: c609ca0a6bba36549bdc211104eaf362, type: 3}
-  startPosition: {fileID: 0}
   endPosition: {fileID: 0}
   barFill: {fileID: 4277738623042404089}
   patienceBar: {fileID: 7522641640969498497}

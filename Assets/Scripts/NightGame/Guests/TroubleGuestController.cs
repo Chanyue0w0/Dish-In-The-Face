@@ -65,7 +65,7 @@ public class TroubleGuestController : MonoBehaviour
 
     private void OnEnable()
     {
-        SetSprite();
+        SetAppearance();
         
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
@@ -227,12 +227,14 @@ public class TroubleGuestController : MonoBehaviour
         return false;
     }
 
-    public void SetSprite(Sprite sprite = null)
+    public void SetAppearance(GameObject appearance = null)
     {
-        guestSpriteRenderer.color = Color.white;
-        if (sprite != null)
+        GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
+        if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
+        
+        if (appearance != null)
         {
-            guestSpriteRenderer.sprite = sprite;
+            Instantiate(appearance, transform.position, transform.rotation, transform);
             return;
         }
 
@@ -240,9 +242,8 @@ public class TroubleGuestController : MonoBehaviour
         if (guestAppearanceList != null && guestAppearanceList.Count > 0)
         {
             int idx = Random.Range(0, guestAppearanceList.Count);
-            GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
-            if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
             Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
+            return;
         }
 
         Debug.LogWarning("Not Get Enemy Guest Sprite!!!!");
