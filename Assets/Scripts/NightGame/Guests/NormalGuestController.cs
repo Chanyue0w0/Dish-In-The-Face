@@ -27,9 +27,6 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float stuckThreshold = 0.05f;
 	[SerializeField] private float retryDelay = 2f;
 
-	// [Header("-------- Appearance --------")]
-	// [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
-
 	[Header("-------- Appearance --------")]
 	[SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
 	

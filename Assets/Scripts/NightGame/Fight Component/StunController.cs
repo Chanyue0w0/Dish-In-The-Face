@@ -91,47 +91,93 @@ public class StunController : MonoBehaviour
     }
 
     /// <summary> 增加暈眩值（顯示為「距離下一次升星」的累積進度；第三顆星例外） </summary>
+    /// <summary>
+    /// 非貫穿：一次攻擊最多只升一顆星，多餘量不結轉。
+    /// 例：下一星門檻 3，若 amount=10 → 只升 1 星，進度歸 0（第 3 星特例保持滿格）
+    /// </summary>
     public void AddStun(int amount)
     {
-        if (isInvincible) return; // 無敵時不累積
+        if (isInvincible) return;
         if (amount <= 0) return;
 
         lastIncreaseTime = Time.time;
+        if (showBarUI && stunBar != null) stunBar.SetActive(true);
 
-        if (showBarUI && stunBar != null)
-            stunBar.SetActive(true);
+        int threshold = GetThresholdForNextStar(starCount);
 
-        // 在任何狀態下都累積條
+        // 加到條上（以「下一顆星門檻」為分母）
         currentStun += amount;
 
-        // 檢查是否升星（一次可能跨越多段）
-        bool gainedStar = false;
-        while (currentStun >= maxStunPerStage && starCount < 3)
+        if (currentStun >= threshold && starCount < 3)
         {
-            // 👉 這次升星之後 starCount 將變成 newStarCount
-            int newStarCount = starCount + 1;
+            // 升 1 星（非貫穿 → 一次只升一顆）
+            starCount += 1;
+            EnterOrRefreshStunForCurrentStars();
 
-            if (newStarCount == 3)
+            // UI 星星更新、事件
+            UpdateStars();
+            onStunFull?.Invoke();
+
+            if (starCount == 3)
             {
-                // 規則（第三顆星例外）：不把暈眩值歸零，僅夾到滿格上限，維持滿格顯示
-                starCount = 3;
-                currentStun = Mathf.Min(currentStun, maxStunPerStage);
+                // 第三顆星：條保持滿格
+                currentStun = GetThresholdForNextStar(2); // 等於 max*3
             }
             else
             {
-                // 第一、第二顆星 → 以條作為「下一次升星」累積，因此扣掉一段容量
-                starCount = newStarCount;
-                currentStun -= maxStunPerStage; // 條歸零（或保留餘量）
+                // 第 1 or 第 2 星：條歸 0（不保留餘量）
+                currentStun = 0;
             }
-
-            EnterOrRefreshStunForCurrentStars();
-            gainedStar = true;
         }
 
-        if (gainedStar)
+        UpdateUI();
+    }
+
+    public void AddStunPiercing(int amount)
+    {
+        if (isInvincible) return;
+        if (amount <= 0) return;
+
+        lastIncreaseTime = Time.time;
+        if (showBarUI && stunBar != null) stunBar.SetActive(true);
+
+        int remaining = amount;
+        bool gainedStar = false;
+
+        while (remaining > 0 && starCount < 3)
         {
-            UpdateStars();
-            onStunFull?.Invoke();
+            int threshold = GetThresholdForNextStar(starCount);
+            int need = threshold - currentStun;
+
+            if (remaining >= need)
+            {
+                // 填滿當前門檻 → 升星
+                currentStun += need;
+                remaining   -= need;
+
+                starCount += 1;
+                EnterOrRefreshStunForCurrentStars();
+                UpdateStars();
+                onStunFull?.Invoke();
+                gainedStar = true;
+
+                if (starCount == 3)
+                {
+                    // 第三顆星：條滿格，結束迴圈（不再結轉）
+                    currentStun = GetThresholdForNextStar(2); // = max*3
+                    remaining = 0;
+                    break;
+                }
+
+                // 進入下一星，條進度從 0 開始
+                currentStun = 0;
+            }
+            else
+            {
+                // 還沒達門檻，直接累加後結束
+                currentStun += remaining;
+                remaining = 0;
+            }
         }
 
         UpdateUI();
@@ -249,6 +295,11 @@ public class StunController : MonoBehaviour
         }
     }
 
+    // 取得「下一顆星」所需的總門檻值
+    private int GetThresholdForNextStar(int currentStar) {
+        int nextStarIndex = currentStar + 1;                // 1、2、3 ...
+        return Mathf.Max(1, maxStunPerStage * nextStarIndex);
+    }
     // 可供外部暫停/繼續暈眩倒數（例如被抓起來時暫停）
     public void StunTimePause() { countdownPaused = true; }
     public void StunTimeContinue() { if (isStunned) countdownPaused = false; }

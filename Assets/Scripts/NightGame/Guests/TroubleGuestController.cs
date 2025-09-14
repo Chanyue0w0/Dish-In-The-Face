@@ -17,8 +17,8 @@ public class TroubleGuestController : MonoBehaviour
     [SerializeField] private Transform attackOrigin;    // 供 attackRangeBox 參考的原點
     [SerializeField] private string attackTriggerTag = "AttackStun";
 
-    // [Header("-------- Appearance --------")]
-    // [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
+    [Header("-------- Appearance --------")]
+    [SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
 
     [Header("----- Reference -----")]
     [SerializeField] private Rigidbody2D rb;
@@ -66,9 +66,10 @@ public class TroubleGuestController : MonoBehaviour
     private void OnEnable()
     {
         SetSprite();
-
+        
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
+        if (stun != null) stun.FullReset(); // 啟用時重置暈眩條與星星
         if (attackHitBox != null) attackHitBox.SetActive(false);
         if (attackRangeBox != null) attackRangeBox.SetActive(false);
 
@@ -235,12 +236,14 @@ public class TroubleGuestController : MonoBehaviour
             return;
         }
 
-        // if (guestAppearanceList is { Count: > 0 })
-        // {
-        //     int idx = Random.Range(0, guestAppearanceList.Count);
-        //     guestSpriteRenderer.sprite = guestAppearanceList[idx];
-        //     return;
-        // }
+        // 隨機外觀
+        if (guestAppearanceList != null && guestAppearanceList.Count > 0)
+        {
+            int idx = Random.Range(0, guestAppearanceList.Count);
+            GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
+            if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
+            Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
+        }
 
         Debug.LogWarning("Not Get Enemy Guest Sprite!!!!");
     }
