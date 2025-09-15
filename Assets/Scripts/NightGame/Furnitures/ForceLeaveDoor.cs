@@ -2,33 +2,26 @@ using UnityEngine;
 
 public class ForceLeaveDoor : MonoBehaviour
 {
+    private static readonly int IsOpen = Animator.StringToHash("isOpen");
+    [SerializeField] private Vector2 outDirection;
     [SerializeField] private Animator animator;
-    private Transform player;
-    // Start is called before the first frame update
-    void Start()
-    {
-        player = RoundManager.Instance.player;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player" || other.tag == "Enemy")
+        BeForceOut otherOut = other.GetComponent<BeForceOut>();
+        if (other.CompareTag("Player") || otherOut != null)
         {
-            animator.SetBool("isOpen", true);
+            if (otherOut != null) otherOut.SetDirection(outDirection);
+            animator.SetBool(IsOpen, true);
         }
     }
     
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag == "Player" || other.tag == "Enemy")
+        BeForceOut otherOut = other.GetComponent<BeForceOut>();
+        if (other.CompareTag("Player") || otherOut != null)
         {
-            animator.SetBool("isOpen", false);
+            animator.SetBool(IsOpen, false);
         }
     }
 }
