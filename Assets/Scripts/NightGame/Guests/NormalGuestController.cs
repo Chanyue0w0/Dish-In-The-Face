@@ -31,8 +31,6 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
 	
 	[Header("-------- Reference --------")]
-	// [SerializeField] private Transform startPosition;
-	[SerializeField] private Transform endPosition;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject patienceBar;
 	[SerializeField] private GameObject chatBoxIconObj;
@@ -74,6 +72,7 @@ public class NormalGuestController : MonoBehaviour
 	private NavMeshAgent agent;
 	private GameObject appearanceObject;
 	
+	private Transform endPosition;
 	private Vector3 lastPosition;
 	private float stuckTimer;
 
