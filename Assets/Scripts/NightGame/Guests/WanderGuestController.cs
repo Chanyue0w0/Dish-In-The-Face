@@ -290,4 +290,8 @@ public class WanderGuestController : MonoBehaviour
             TryEnsureOnNavMesh();
         }
     }
+    
+    public bool IsMoving() {
+        return AgentReady() && agent.velocity.sqrMagnitude > 0.01f && !isWaiting && !isInteracting;
+    }
 }

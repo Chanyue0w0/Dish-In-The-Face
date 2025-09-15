@@ -5,19 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Force Out Door Component.prefab" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Force Out Door Component.prefab.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/BeForceOut.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/BeForceOut.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Normal guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Normal guest.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/BlueSlime/BlueSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/BlueSlime/BlueSlime_Animation.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/GreenSlime/GreenSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/GreenSlime/GreenSlime_Animation.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/PinkSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/PinkSlime_Animation.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/YellowSlime/YellowSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/YellowSlime/YellowSlime_Animation.controller" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_BlueSlime_Animation.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_BlueSlime_Animation.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_GreenSlime_Animation.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_GreenSlime_Animation.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_PinkSlime_Animation.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_PinkSlime_Animation.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_YellowSlime_Animation.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Guest Animation Prefabs/SlimeGuest_YellowSlime_Animation.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Trouble guest.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Wander guest.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Guests/Wander guest.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/ForceLeaveDoor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/ForceLeaveDoor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/GuestAnimationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/GuestAnimationController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/WanderGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/WanderGuestController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +32,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/Animation/SpineAnimationController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Foods/FoodStatus.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/DessertController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/GuestPool.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/NormalGuestController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/FoodsGroupManager.cs" root0="FORCE_HIGHLIGHTING" />
@@ -185,6 +187,7 @@
       <workItem from="1757916567683" duration="67000" />
       <workItem from="1757920687304" duration="58000" />
       <workItem from="1757921846791" duration="751000" />
+      <workItem from="1757944714348" duration="164000" />
     </task>
     <servers />
   </component>

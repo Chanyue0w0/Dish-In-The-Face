@@ -105,6 +105,11 @@ public class NormalGuestController : MonoBehaviour
 
 	private void OnEnable()
 	{
+		var components = GetComponentsInChildren<GuestAnimationController>(true); // true = 包含未啟用物件
+		foreach (var comp in components)
+		{
+			DestroyImmediate(comp.gameObject); // 編輯器下立刻刪除
+		}
 		// 隨機外觀
 		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
 		{
@@ -506,7 +511,11 @@ public class NormalGuestController : MonoBehaviour
 	public bool IsEating()       => state == GuestState.Eating;
 	public bool IsOrdering()     => state == GuestState.WaitingOrder;
 	public bool IsWaitingDish()  => state == GuestState.WaitingDish;
-	public bool IsMoving()       => state == GuestState.WalkingToChair;
+	
+	public bool IsMoving() {
+		return agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.sqrMagnitude > 0.01f;
+	}
+
 	public bool IsLeaving()      => state == GuestState.Leaving;
 
 	#endregion

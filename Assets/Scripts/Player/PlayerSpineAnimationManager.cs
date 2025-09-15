@@ -55,20 +55,20 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	#endregion
 
 	#region ===== 狀態與快取 =====
-	private string currentAnimName;
-	private bool onAttack;     // 是否處於攻擊動畫期（由 Begin/EndAttack 控制）
-	private bool canNextAttack;
-	private bool isHurt;          // 是否處於受傷/硬直（由 SetHurt 控制）
-	private bool isSide;
-	private bool isBack;
+	private string _currentAnimName;
+	private bool _onAttack;     // 是否處於攻擊動畫期（由 Begin/EndAttack 控制）
+	private bool _canNextAttack;
+	private bool _isHurt;          // 是否處於受傷/硬直（由 SetHurt 控制）
+	private bool _isSide;
+	private bool _isBack;
 	
-	private int baseLayerIndex;
-	private int specialMoveLayerIndex;
-	private int attackLayerIndex;
-	private int reactLayerIndex;
+	private int _baseLayerIndex;
+	private int _specialMoveLayerIndex;
+	private int _attackLayerIndex;
+	private int _reactLayerIndex;
 
 	// 記錄目前啟用中的 Layer（用來偵測是否切換）
-	private int activeLayerIndex = -1;
+	private int _activeLayerIndex = -1;
 
 	#endregion
 
@@ -79,16 +79,16 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		if (skeletonAnim && skeletonAnim.AnimationState is { Data: not null })
 			skeletonAnim.AnimationState.Data.DefaultMix = 0f; // 關閉自動混合，保證瞬切
 
-		isSide = false;
-		isBack = false;
-		onAttack = false;
-		canNextAttack = true;
+		_isSide = false;
+		_isBack = false;
+		_onAttack = false;
+		_canNextAttack = true;
 		
 		// 取得各 Layer Index（若名稱不正確，Index 會是 -1）
-		baseLayerIndex        = SafeGetLayerIndex(animator, baseLayerName);
-		specialMoveLayerIndex = SafeGetLayerIndex(animator, specialMoveLayerName);
-		attackLayerIndex      = SafeGetLayerIndex(animator, attackLayerName);
-		reactLayerIndex       = SafeGetLayerIndex(animator, reactLayerName);
+		_baseLayerIndex        = SafeGetLayerIndex(animator, baseLayerName);
+		_specialMoveLayerIndex = SafeGetLayerIndex(animator, specialMoveLayerName);
+		_attackLayerIndex      = SafeGetLayerIndex(animator, attackLayerName);
+		_reactLayerIndex       = SafeGetLayerIndex(animator, reactLayerName);
 	}
 
 	private void Update()
@@ -107,53 +107,53 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 		if (move.x != 0)
 		{
-			isSide = true;
-			isBack = false;
+			_isSide = true;
+			_isBack = false;
 		}
 		else
 		{
-			isSide = false;
-			if (move.y > 0) isBack = true;
-			else if (move.y < 0) isBack = false;
+			_isSide = false;
+			if (move.y > 0) _isBack = true;
+			else if (move.y < 0) _isBack = false;
 		}
 
 		// 寫入 Animator 參數
-		animator.SetBool(AnimIsSide, isSide);
-		animator.SetBool(AnimIsBack, isBack);
+		animator.SetBool(AnimIsSide, _isSide);
+		animator.SetBool(AnimIsBack, _isBack);
 		animator.SetBool(AnimIsMove, isMoving);
 		animator.SetBool(AnimIsSlide,  playerMovement.IsPlayerSlide());
 		animator.SetBool(AnimIsDash, playerMovement.IsPlayerDash());
 		// animator.SetInteger(AnimAttackCombo, comboIndex);
 		
 		// 更新 Layer
-		if (onAttack)
+		if (_onAttack)
 		{
-			ChangeLayerWeights(attackLayerIndex);
+			ChangeLayerWeights(_attackLayerIndex);
 			return;
 		}
 		
 		if (animator.GetBool(AnimIsSlide) || animator.GetBool(AnimIsDash))
 		{
-			ChangeLayerWeights(specialMoveLayerIndex);
+			ChangeLayerWeights(_specialMoveLayerIndex);
 			return;
 		}
 		
-		ChangeLayerWeights(baseLayerIndex);
+		ChangeLayerWeights(_baseLayerIndex);
 	}
 
 	private void ChangeLayerWeights(int targetLayer)
 	{
-		if (activeLayerIndex == targetLayer) return;
+		if (_activeLayerIndex == targetLayer) return;
 		
 		// 先全部歸 0，再依狀態開啟需要的 Layer
-		SetLayerWeightSafe(baseLayerIndex,        0f);
-		SetLayerWeightSafe(specialMoveLayerIndex, 0f);
-		SetLayerWeightSafe(attackLayerIndex,      0f);
-		SetLayerWeightSafe(reactLayerIndex,       0f);
+		SetLayerWeightSafe(_baseLayerIndex,        0f);
+		SetLayerWeightSafe(_specialMoveLayerIndex, 0f);
+		SetLayerWeightSafe(_attackLayerIndex,      0f);
+		SetLayerWeightSafe(_reactLayerIndex,       0f);
 
 		SetLayerWeightSafe(targetLayer, 1f);
 		
-		if (activeLayerIndex != targetLayer)
+		if (_activeLayerIndex != targetLayer)
 		{
 			// 先 Update(0) 讓 Animator 取得正確的當前 StateInfo
 			animator.Update(0f);
@@ -163,7 +163,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 			if (info.fullPathHash != 0)
 				animator.Play(info.fullPathHash, targetLayer, 0f);
 
-			activeLayerIndex = targetLayer;
+			_activeLayerIndex = targetLayer;
 		}
 	}
 
@@ -185,9 +185,9 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	private TrackEntry SetAnimIfChanged(string animName, bool loop, bool snap)
 	{
 		if (!skeletonAnim || string.IsNullOrEmpty(animName)) return null;
-		if (currentAnimName == animName) return null;
+		if (_currentAnimName == animName) return null;
 
-		currentAnimName = animName;
+		_currentAnimName = animName;
 		var entry = skeletonAnim.AnimationState.SetAnimation(BaseTrack, animName, loop);
 		if (entry != null && snap) entry.MixDuration = 0f;
 
@@ -244,8 +244,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	{
 		StopInputMove();
 		handItemsGroup.SetActive(false);
-		onAttack = true;
-		canNextAttack = false;
+		_onAttack = true;
+		_canNextAttack = false;
 		animator.SetTrigger(AnimOnAttack);
 		animator.Play(animationClip.name);
 
@@ -272,23 +272,23 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 	/// <summary>設定受傷/硬直狀態；true=進入 React Layer，false=離開</summary>
 	public void SetHurt(bool value)
 	{
-		isHurt = value;
-		if (animator) animator.SetBool(AnimIsHurt, isHurt);
+		_isHurt = value;
+		if (animator) animator.SetBool(AnimIsHurt, _isHurt);
 	}
 
-	public bool IsAnimationOnAttack() => onAttack;
-	public bool IsCanNextAttack() => canNextAttack;
+	public bool IsAnimationOnAttack() => _onAttack;
+	public bool IsCanNextAttack() => _canNextAttack;
 
 	public void CanNextAttack()
 	{
-		canNextAttack = true;
+		_canNextAttack = true;
 		OpenInputMove();
 	}
 	public void ResetAttackCombo()
 	{
 		// Debug.Log("reset combo");
-		onAttack = false;
-		canNextAttack = true;
+		_onAttack = false;
+		_canNextAttack = true;
 		OpenInputMove();
 	}
 

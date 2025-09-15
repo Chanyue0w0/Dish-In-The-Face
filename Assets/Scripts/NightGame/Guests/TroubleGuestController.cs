@@ -228,8 +228,11 @@ public class TroubleGuestController : MonoBehaviour
 
     public void SetAppearance(GameObject appearance = null)
     {
-        GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
-        if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
+        var components = GetComponentsInChildren<GuestAnimationController>(true); // true = 包含未啟用物件
+        foreach (var comp in components)
+        {
+            DestroyImmediate(comp.gameObject); // 編輯器下立刻刪除
+        }
         
         if (appearance != null)
         {
@@ -404,4 +407,13 @@ public class TroubleGuestController : MonoBehaviour
         if (poolHandler != null) poolHandler.Release();
         else gameObject.SetActive(false);
     }
+    
+    public bool IsMoving() {
+        return agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.sqrMagnitude > 0.01f;
+    }
+
+    public bool IsAttacking() {
+        return isCharging || (attackHitBox != null && attackHitBox.activeSelf);
+    }
+
 }
