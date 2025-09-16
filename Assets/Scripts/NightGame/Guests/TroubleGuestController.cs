@@ -401,9 +401,9 @@ public class TroubleGuestController : MonoBehaviour
         {
             var pos = (attackOrigin != null ? attackOrigin.position : transform.position);
             VFXPool.Instance.SpawnVFX("CoinFountain", pos, Quaternion.identity, 2f);
-            RoundManager.Instance.DefeatEnemySuccess();
         }
 
+        RoundManager.Instance.DefeatEnemySuccess();
         if (poolHandler != null) poolHandler.Release();
         else gameObject.SetActive(false);
     }

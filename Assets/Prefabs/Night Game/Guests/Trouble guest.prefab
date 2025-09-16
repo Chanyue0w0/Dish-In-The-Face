@@ -779,6 +779,54 @@ PrefabInstance:
       value: 0.46139765
       objectReference: {fileID: 0}
     - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: starObjects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunStarTimes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: starObjects.Array.data[0]
+      value: 
+      objectReference: {fileID: 2744210946794941638, guid: 0b98791797be9f74aaa638020a43b1de, type: 3}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: starObjects.Array.data[1]
+      value: 
+      objectReference: {fileID: 2751804397660617875, guid: 2501b7215685c00419683c62d847086c, type: 3}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: starObjects.Array.data[2]
+      value: 
+      objectReference: {fileID: 6200393407276893790, guid: dc91533740f9e8f428f393d390ad8086, type: 3}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelValues.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunStarTimes.Array.data[0]
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunStarTimes.Array.data[1]
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunStarTimes.Array.data[2]
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelValues.Array.data[0]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelValues.Array.data[1]
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelValues.Array.data[2]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
       propertyPath: onStunFull.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 6917935344721835403}

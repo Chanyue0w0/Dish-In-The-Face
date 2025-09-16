@@ -22,9 +22,10 @@ public class FoodStatus : MonoBehaviour
     public class AttackCombo
     {
         public AnimationClip animationClip;
+        public bool isPiercing;
         public int stunDamage;
-        public EventReference sfx;
         public float knockbackForce;
+        public EventReference sfx;
         public GameObject vfxGameObject;
     }
 }

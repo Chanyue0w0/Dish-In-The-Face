@@ -167,35 +167,38 @@ MonoBehaviour:
   grabWiggle: Glove/Glove_grabing_wiggle
   attackList:
   - animationClip: {fileID: 7400000, guid: ec30cdbb9de61f84296e320aa0f3525f, type: 2}
-    stunDamage: 0
+    isPiercing: 0
+    stunDamage: 1
     sfx:
       Guid:
-        Data1: 0
-        Data2: 0
-        Data3: 0
-        Data4: 0
-      Path: 
-    knockbackForce: 0
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
+    knockbackForce: 5
     vfxGameObject: {fileID: 0}
   - animationClip: {fileID: 7400000, guid: 77e526f62c3987448bd87d0d9e6f4700, type: 2}
-    stunDamage: 0
+    isPiercing: 0
+    stunDamage: 1
     sfx:
       Guid:
-        Data1: 0
-        Data2: 0
-        Data3: 0
-        Data4: 0
-      Path: 
-    knockbackForce: 0
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
+    knockbackForce: 5
     vfxGameObject: {fileID: 0}
   - animationClip: {fileID: 7400000, guid: 2e179dd4bb6211948965234d08cce870, type: 2}
-    stunDamage: 0
+    isPiercing: 0
+    stunDamage: 1
     sfx:
       Guid:
-        Data1: 0
-        Data2: 0
-        Data3: 0
-        Data4: 0
-      Path: 
-    knockbackForce: 0
+        Data1: 1641033783
+        Data2: 1225441542
+        Data3: 192947610
+        Data4: 472483547
+      Path: event:/SFX/swing1
+    knockbackForce: 5
     vfxGameObject: {fileID: 0}
