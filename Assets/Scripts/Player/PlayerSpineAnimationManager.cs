@@ -12,6 +12,7 @@ using Spine.Unity;
 public class PlayerSpineAnimationManager : MonoBehaviour
 {
 	#region ===== Animator Hash =====
+	private static readonly int AnimIsDancing    = Animator.StringToHash("isDancing");
 	private static readonly int AnimIsSide       = Animator.StringToHash("isSide");
 	private static readonly int AnimIsBack       = Animator.StringToHash("isBack");
 	private static readonly int AnimIsMove       = Animator.StringToHash("isMove");
@@ -105,6 +106,8 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 
 		bool isMoving = playerMovement.IsMoving();
 
+		bool isDancing = playerMovement.IsDancing();
+		
 		if (move.x != 0)
 		{
 			_isSide = true;
@@ -118,6 +121,7 @@ public class PlayerSpineAnimationManager : MonoBehaviour
 		}
 
 		// 寫入 Animator 參數
+		animator.SetBool(AnimIsDancing, isDancing);
 		animator.SetBool(AnimIsSide, _isSide);
 		animator.SetBool(AnimIsBack, _isBack);
 		animator.SetBool(AnimIsMove, isMoving);

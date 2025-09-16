@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 	private int slideDir;
 	private bool slideCancelRequested = false;
 	private float slideStartTime;
-
+	
 	// 動畫方向緩存（Idle 時維持最後方向）
 	private Vector2 lastNonZeroDir = Vector2.right;
 	
@@ -66,6 +66,9 @@ public class PlayerMovement : MonoBehaviour
 	private Vector2 forcedMoveDir;                    // 鎖定後的移動方向（單位向量）
 	private float forcedMoveSpeed = 0f;               // 強制直行用速度
 	private float forcedMoveEndTime = Mathf.Infinity; // 結束時間（Infinity 表示手動停止）
+	
+	// dance
+	private bool isDancing;
 	#endregion
 
 	#region ===== Unity 生命週期 =====
@@ -80,6 +83,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		moveSpeed = defaultMoveSpeed;
 		isDashing = false;
+		isDancing = false;
 		dashDuration = dashDistance / dashSpeed;
 
 		if (handItemUI) handItemUI.ChangeHandItemUI();
@@ -93,6 +97,8 @@ public class PlayerMovement : MonoBehaviour
 	#region ===== 新輸入系統：輸入處理 =====
 	public void InputMovement(InputAction.CallbackContext context)
 	{
+		isDancing = false;
+		
 		Vector2 move = context.ReadValue<Vector2>();
 		
 		// 若正在等待「第一下輸入」來鎖定方向，偵測到非零就記錄並不再等待
@@ -114,6 +120,7 @@ public class PlayerMovement : MonoBehaviour
 	/// <summary> 攻擊鍵：按下→BeginCharge；放開→ReleaseChargeAndAttack（邏輯已搬到 AttackController） </summary>
 	public void InputBasicAttack(InputAction.CallbackContext context)
 	{
+		isDancing = false;
 		if (context.started)
 		{
 			attackController.BeginCharge(AttackMode.Basic);
@@ -126,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
 
 	public void InputSpecialAttack(InputAction.CallbackContext context)
 	{
+		isDancing = false;
 		if (context.started)
 		{
 			attackController.BeginCharge(AttackMode.Food);
@@ -138,16 +146,19 @@ public class PlayerMovement : MonoBehaviour
 
 	public void InputDash(InputAction.CallbackContext context)
 	{
+		isDancing = false;
 		if (context.performed) StartDash();
 	}
 
 	public void InputInteract(InputAction.CallbackContext context)
 	{
+		isDancing = false;
 		if (context.performed) playerInteraction.Interact();
 	}
 
 	public void InputUseItem(InputAction.CallbackContext context)
 	{
+		isDancing = false;
 		if (context.performed) UseItem();
 	}
 
@@ -155,6 +166,11 @@ public class PlayerMovement : MonoBehaviour
 	// {
 	// 	if (context.performed) SwitchWeapon();
 	// }
+
+	public void InputDance(InputAction.CallbackContext context)
+	{
+		if (context.performed) isDancing = true;
+	}
 	#endregion
 
 	#region ===== 角色移動/旋轉 =====
@@ -402,10 +418,6 @@ public class PlayerMovement : MonoBehaviour
 		return false;
 	}
 
-	public float GetMoveSpeed() => moveSpeed;
-	public void ResetMoveSpeed() => moveSpeed = defaultMoveSpeed;
-	public Vector2 GetMoveInput() => moveInput;
-
 	/// <summary> 取得滑行切線方向（y 軸） </summary>
 	public int GetSlideDirection()
 	{
@@ -459,10 +471,14 @@ public class PlayerMovement : MonoBehaviour
 		forcedMoveEndTime = Mathf.Infinity;
 		rb.velocity = Vector2.zero;
 	}
+	
+	public float GetMoveSpeed() => moveSpeed;
+	public void ResetMoveSpeed() => moveSpeed = defaultMoveSpeed;
+	public Vector2 GetMoveInput() => moveInput;
 
 	/// <summary>（可選）供外部查詢目前是否在強制直行</summary>
 	public bool IsForcedInputMoveActive() => forcedMoveActive;
-	
+	public bool IsDancing () => isDancing;
 	public bool IsPlayerSlide() => isSlide;
 	public bool IsPlayerDash() => isDashing;
 

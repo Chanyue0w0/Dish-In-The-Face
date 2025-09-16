@@ -98,6 +98,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dance"",
+                    ""type"": ""Button"",
+                    ""id"": ""e1be2f4a-8711-4f91-8275-479fc53dbb46"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -105,17 +114,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""90190eed-c548-4ee9-aeb9-e3735f351303"",
                     ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard Mouse"",
-                    ""action"": ""Dash"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""efa8e1dc-f9aa-412f-a81c-97d75a5132f2"",
-                    ""path"": ""<Keyboard>/l"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard Mouse"",
@@ -364,6 +362,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""SpecialAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f9e329b-4b66-4263-85cb-30a964cdc342"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Dance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac0c1b6d-fc00-4fec-a545-f4aee8abeab2"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard Mouse"",
+                    ""action"": ""Dance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -408,6 +428,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_ESC = m_Player.FindAction("ESC", throwIfNotFound: true);
         m_Player_SwitchWeapon = m_Player.FindAction("SwitchWeapon", throwIfNotFound: true);
         m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
+        m_Player_Dance = m_Player.FindAction("Dance", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -477,6 +498,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ESC;
     private readonly InputAction m_Player_SwitchWeapon;
     private readonly InputAction m_Player_UseItem;
+    private readonly InputAction m_Player_Dance;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -489,6 +511,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @ESC => m_Wrapper.m_Player_ESC;
         public InputAction @SwitchWeapon => m_Wrapper.m_Player_SwitchWeapon;
         public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
+        public InputAction @Dance => m_Wrapper.m_Player_Dance;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -522,6 +545,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UseItem.started += instance.OnUseItem;
             @UseItem.performed += instance.OnUseItem;
             @UseItem.canceled += instance.OnUseItem;
+            @Dance.started += instance.OnDance;
+            @Dance.performed += instance.OnDance;
+            @Dance.canceled += instance.OnDance;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -550,6 +576,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UseItem.started -= instance.OnUseItem;
             @UseItem.performed -= instance.OnUseItem;
             @UseItem.canceled -= instance.OnUseItem;
+            @Dance.started -= instance.OnDance;
+            @Dance.performed -= instance.OnDance;
+            @Dance.canceled -= instance.OnDance;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -595,5 +624,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnESC(InputAction.CallbackContext context);
         void OnSwitchWeapon(InputAction.CallbackContext context);
         void OnUseItem(InputAction.CallbackContext context);
+        void OnDance(InputAction.CallbackContext context);
     }
 }

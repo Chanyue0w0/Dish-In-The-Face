@@ -76,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Dance",
+                    "type": "Button",
+                    "id": "e1be2f4a-8711-4f91-8275-479fc53dbb46",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -83,17 +92,6 @@
                     "name": "",
                     "id": "90190eed-c548-4ee9-aeb9-e3735f351303",
                     "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "efa8e1dc-f9aa-412f-a81c-97d75a5132f2",
-                    "path": "<Keyboard>/l",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
@@ -340,6 +338,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "SpecialAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1f9e329b-4b66-4263-85cb-30a964cdc342",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Dance",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac0c1b6d-fc00-4fec-a545-f4aee8abeab2",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard Mouse",
+                    "action": "Dance",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

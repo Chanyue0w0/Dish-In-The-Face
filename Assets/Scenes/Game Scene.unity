@@ -101093,6 +101093,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2392651692123239054, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_SceneBindings.Array.data[0].value
+      value: 
+      objectReference: {fileID: 7346023857972560986}
+    - target: {fileID: 2392651692123239054, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_SceneBindings.Array.data[1].value
+      value: 
+      objectReference: {fileID: 7346023857972560986}
     - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: handItemUI
       value: 
@@ -101102,18 +101110,84 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1040384623}
     - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_ActionId
+      value: e1be2f4a-8711-4f91-8275-479fc53dbb46
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_ActionName
+      value: Player/Dance[/XInputControllerWindows/dpad/up,/Keyboard/l]
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_ActionEvents.Array.data[4].m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 593562954}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7346023857972560987}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: InputDance
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: PlayerMovement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078598792363276920, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_ActionEvents.Array.data[8].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 9049758845201159332, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 9149532744535502175, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+--- !u!114 &7346023857972560986 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 437532159490968452, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+  m_PrefabInstance: {fileID: 7346023857972560985}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7346023857972560987 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+  m_PrefabInstance: {fileID: 7346023857972560985}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6611222884156134455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9331e650fc46340408c41a7ce0453a3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7686587157188333207
 PrefabInstance:
   m_ObjectHideFlags: 0
