@@ -9,7 +9,7 @@ public class GloveController : MonoBehaviour
     [SerializeField] private SkeletonAnimation skeletonAnim;
     [SerializeField] private SpineAnimationController animationController;
 
-    [Header("Animation Names")]
+    [Header("Spine Animation Names")]
     [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string grabStrat;  // ※ 檔名沿用你目前的欄位命名
     [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string grabEnd;
     [SpineAnimation(dataField: "skeletonAnim", fallbackToTextField: true)] public string grabbing;
@@ -22,6 +22,7 @@ public class GloveController : MonoBehaviour
     public class AttackCombo
     {
         public AnimationClip animationClip;
+        public bool isPiercing;
         public int stunDamage;
         public EventReference sfx;
         public float knockbackForce;

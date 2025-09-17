@@ -37,42 +37,41 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== Inspector：參考物件 =====
 	[Header("--------- Reference -----------")]
 	[SerializeField] private Transform handItemGroup;           // 手上物件群組
+	[SerializeField] private GameObject attackHitObject;
 	[SerializeField] private Collider2D grabOverHeadItem;       // 頭上「抓取區域」碰撞器（建議 Trigger）
 	[SerializeField] private PlayerMovement playerMovement;
 	[SerializeField] private Animator weaponUIAnimator;
-	[SerializeField] private AnimationClip[] gloveAnimations;
-
-	// ★ 新增：手套控制器（會驅動 SpineAnimationController）
 	[SerializeField] private GloveController gloveController;
 	#endregion
 
 	#region ===== 私有狀態 =====
-	private PlayerSpineAnimationManager animationManager;
+	private PlayerSpineAnimationManager _animationManager;
 
 	// 連段（Food/Basic 各自依序播放）
-	private int comboIndex;
+	private int _comboIndex;
 
-	private bool isSwitchWeaponFinish = true;
+	private bool _isSwitchWeaponFinish = true;
 
 	// 蓄力/按住狀態（在 Basic 模式下當作「正在嘗試抓取」）
-	private bool isCharging;
-	private float currentChargeTime;
+	private bool _isCharging;
+	private float _currentChargeTime;
 
 	// 抓取狀態
-	private float grabHoldTimer = 0f;
+	private float _grabHoldTimer;
 	// 上次成功出招時間（如需做連段重置可用）
-	private float lastAttackTime = -999f;
+	private float _lastAttackTime;
 	#endregion
 
 	#region ===== Unity =====
 	private void Start()
 	{
-		animationManager   = GetComponent<PlayerSpineAnimationManager>();
-		comboIndex         = 0;
-		isSwitchWeaponFinish = true;
-		isCharging         = false;
-		currentChargeTime  = 0f;
-		lastAttackTime     = -999f;
+		_animationManager      = GetComponent<PlayerSpineAnimationManager>();
+		_comboIndex           = 0;
+		_isSwitchWeaponFinish = true;
+		_isCharging           = false;
+		_currentChargeTime    = 0f;
+		_grabHoldTimer        = 0f;
+		_lastAttackTime       = -999f;
 
 		SetPowerBarVisible(false);
 		UpdatePowerBarFill(0f);
@@ -81,18 +80,18 @@ public class PlayerAttackController : MonoBehaviour
 	private void Update()
 	{
 		// Food 模式：正常蓄力並顯示 UI
-		if (isCharging && attackMode == AttackMode.Food)
+		if (_isCharging && attackMode == AttackMode.Food)
 		{
-			currentChargeTime += Time.deltaTime;
-			if (currentChargeTime > maxChargeTime) currentChargeTime = maxChargeTime;
-			UpdatePowerBarFill(currentChargeTime / maxChargeTime);
+			_currentChargeTime += Time.deltaTime;
+			if (_currentChargeTime > maxChargeTime) _currentChargeTime = maxChargeTime;
+			UpdatePowerBarFill(_currentChargeTime / maxChargeTime);
 		}
 
 		// Basic 模式：按住期間，經過 grabHoldThreshold 後才嘗試抓取
-		if (isCharging && attackMode == AttackMode.Basic && !IsCarryingSomething())
+		if (_isCharging && attackMode == AttackMode.Basic && !IsCarryingSomething())
 		{
-			grabHoldTimer += Time.deltaTime;
-			if (grabHoldTimer >= grabHoldThreshold)
+			_grabHoldTimer += Time.deltaTime;
+			if (_grabHoldTimer >= grabHoldThreshold)
 			{
 				TryGrabEnemyOverHead();
 			}
@@ -112,12 +111,12 @@ public class PlayerAttackController : MonoBehaviour
 		if (playerMovement == null) return;
 		if (playerMovement.IsPlayerDash() || playerMovement.IsPlayerSlide()) return;
 
-		isCharging = true;
-		currentChargeTime = 0f;
+		_isCharging = true;
+		_currentChargeTime = 0f;
 
 		if (attackMode == AttackMode.Basic)
 		{
-			grabHoldTimer = 0f;  // 重置抓取計時器
+			_grabHoldTimer = 0f;  // 重置抓取計時器
 			SetPowerBarVisible(false);
 		}
 		else
@@ -143,7 +142,7 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		if (playerMovement == null) return;
 
-		if (!isCharging)
+		if (!_isCharging)
 		{
 			// 安全處理：若未在按住狀態，就當作一般攻擊請求
 			playerMovement.PerformAttack(false);
@@ -151,7 +150,7 @@ public class PlayerAttackController : MonoBehaviour
 		}
 
 		// 結束按住
-		isCharging = false;
+		_isCharging = false;
 		SetPowerBarVisible(false);
 
 		if (attackMode == AttackMode.Basic)
@@ -175,18 +174,18 @@ public class PlayerAttackController : MonoBehaviour
 
 		// Food 模式：依蓄力時間決定是否為重攻
 		bool isPower =
-			(currentChargeTime >= maxChargeTime) ||
-			(currentChargeTime >= heavyAttackThreshold);
+			(_currentChargeTime >= maxChargeTime) ||
+			(_currentChargeTime >= heavyAttackThreshold);
 
-		currentChargeTime = 0f;
+		_currentChargeTime = 0f;
 		playerMovement.PerformAttack(isPower);
 	}
 
 	public void CancelChargeIfAny()
 	{
-		if (!isCharging) return;
-		isCharging = false;
-		currentChargeTime = 0f;
+		if (!_isCharging) return;
+		_isCharging = false;
+		_currentChargeTime = 0f;
 		SetPowerBarVisible(false);
 		UpdatePowerBarFill(0f);
 	}
@@ -225,32 +224,50 @@ public class PlayerAttackController : MonoBehaviour
 
 	private bool PlayGloveAttack()
 	{
-		if (!animationManager.IsCanNextAttack())
+		if (!_animationManager.IsCanNextAttack())
 			return false;
 
-		int comboCount = gloveAnimations.Length;
+		if (gloveController.attackList == null)
+		{
+			Debug.LogWarning("gloveController attackList is null");
+			return false;
+		}
+		
+		int comboCount = gloveController.attackList.Count;
 		if (comboCount <= 0)
 		{
 			Debug.LogWarning("No glove animations configured.");
 			return false;
 		}
 		float comboLimitTime = Mathf.Max(0f, defaultComboLimitTime);
-		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= comboCount)
+		if (Time.time - _lastAttackTime > comboLimitTime || _comboIndex >= comboCount)
 		{
 			// 超過容許時間，從第一段重來
-			comboIndex = 0;
+			_comboIndex = 0;
 		}
 
-		AnimationClip attackAnimation = gloveAnimations[comboIndex];
+		AnimationClip attackAnimation = gloveController.attackList[_comboIndex].animationClip;
 		if (attackAnimation == null)
 		{
-			Debug.LogWarning($"Glove animation at index {comboIndex} is null. Abort.");
+			Debug.LogWarning($"Glove animation at index {_comboIndex} is null. Abort.");
 			return false;
 		}
 		
-		lastAttackTime = Time.time;
-		animationManager.PlayAttackAnimationClip(attackAnimation);
-		comboIndex++;
+		
+		AttackDataInfo attackData = attackHitObject.GetComponent<AttackDataInfo>();
+		if (attackData == null)
+		{
+			Debug.Log("not found attack object box collider and attack data");
+			return false;
+		}
+		// attack success
+		attackData.isPiercing = gloveController.attackList[_comboIndex].isPiercing;
+		attackData.attackValue = gloveController.attackList[_comboIndex].stunDamage;
+		
+		AudioManager.Instance.PlayOneShot(gloveController.attackList[_comboIndex].sfx, transform.position);
+		_lastAttackTime = Time.time;
+		_animationManager.PlayAttackAnimationClip(attackAnimation);
+		_comboIndex++;
 		return true;
 	}
 	#endregion
@@ -265,24 +282,24 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
-		if (!animationManager.IsCanNextAttack())
+		if (!_animationManager.IsCanNextAttack())
 			return false;
 
 		// 這裡加入「依據 FoodStatus.comboAttackTime 重置 comboIndex」的判定
 		float comboLimitTime = (status.comboAttackTime <= 0f) ? defaultComboLimitTime : status.comboAttackTime;
 
 		var attackList = status.attackList;
-		int attacklistCount = attackList?.Count ?? 0;
-		if (attacklistCount <= 0)
+		int attackListCount = attackList?.Count ?? 0;
+		if (attackListCount <= 0)
 		{
 			Debug.Log("This food has no attackList, cannot perform food attack.");
 			return false;
 		}
 
-		if (Time.time - lastAttackTime > comboLimitTime || comboIndex >= attacklistCount)
+		if (Time.time - _lastAttackTime > comboLimitTime || _comboIndex >= attackListCount)
 		{
 			// 超過容許時間，從第一段重來
-			comboIndex = 0;
+			_comboIndex = 0;
 		}
 		
 		if (attackList == null)
@@ -291,22 +308,32 @@ public class PlayerAttackController : MonoBehaviour
 			return false;
 		}
 
-		AnimationClip attackAnimation = attackList[comboIndex].animationClip;
+		AnimationClip attackAnimation = attackList[_comboIndex].animationClip;
 		if (attackAnimation == null)
 		{
-			Debug.Log($"Food attack animation at index {comboIndex} is null/empty. Abort.");
+			Debug.Log($"Food attack animation at index {_comboIndex} is null/empty. Abort.");
 			return false;
 		}
 
+		AttackDataInfo attackData = attackHitObject.GetComponent<AttackDataInfo>();
+		if (attackData == null)
+		{
+			Debug.Log("not found attack object box collider and attack data");
+			return false;
+		}
+		
 		// attack success
-		EventReference sfx = !attackList[comboIndex].sfx.IsNull ? attackList[comboIndex].sfx : status.defaultSfx;
+		attackData.isPiercing = attackList[_comboIndex].isPiercing;
+		attackData.attackValue = attackList[_comboIndex].stunDamage;
+		
+		EventReference sfx = !attackList[_comboIndex].sfx.IsNull ? attackList[_comboIndex].sfx : status.defaultSfx;
 		AudioManager.Instance.PlayOneShot(sfx, transform.position);
-		lastAttackTime = Time.time;
-		animationManager.PlayAttackAnimationClip(attackAnimation);
-		comboIndex++;
+		_lastAttackTime = Time.time;
+		_animationManager.PlayAttackAnimationClip(attackAnimation);
+		_comboIndex++;
 
 		// 最後一段後消耗食物（維持原本行為）
-		// if (comboIndex > attacklistCount - 1)
+		// if (comboIndex > attackListCount - 1)
 		playerMovement.DestroyFirstItem(); // 消耗食物
 
 		return true;
@@ -316,11 +343,10 @@ public class PlayerAttackController : MonoBehaviour
 	#region ===== UI / 武器切換 =====
 	public void SetAttackModeUI(AttackMode mode)
 	{
-		if (!isSwitchWeaponFinish) return;
+		if (!_isSwitchWeaponFinish) return;
 		attackMode = mode;
 
-		if (mode == AttackMode.Basic) handItemGroup.gameObject.SetActive(false);
-		else handItemGroup.gameObject.SetActive(true);
+		handItemGroup.gameObject.SetActive(mode != AttackMode.Basic);
 
 		if (weaponUIAnimator == null) return;
 		switch (attackMode)
@@ -332,7 +358,7 @@ public class PlayerAttackController : MonoBehaviour
 	}
 
 	public AttackMode GetAttackMode() => attackMode;
-	public void SetIsSwitchWeaponFinish(bool isFinish) => isSwitchWeaponFinish = isFinish;
+	public void SetIsSwitchWeaponFinish(bool isFinish) => _isSwitchWeaponFinish = isFinish;
 	#endregion
 
 	#region ===== 私有工具 =====
@@ -348,12 +374,6 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		return grabOverHeadItem != null && grabOverHeadItem.transform.childCount > 0;
 	}
-
-	private void SafeSetActive(GameObject go, bool active)
-	{
-		if (go != null && go.activeSelf != active) go.SetActive(active);
-	}
-
 	private void SetPowerBarVisible(bool visible)
 	{
 		if (powerAttackBar) powerAttackBar.SetActive(visible);

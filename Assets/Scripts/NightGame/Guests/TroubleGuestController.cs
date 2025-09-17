@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using PrimeTween;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,7 +17,7 @@ public class TroubleGuestController : MonoBehaviour
     [SerializeField] private string attackTriggerTag = "AttackStun";
 
     [Header("-------- Appearance --------")]
-    [SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
+    [SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
 
     [Header("----- Reference -----")]
     [SerializeField] private Rigidbody2D rb;
@@ -65,10 +64,11 @@ public class TroubleGuestController : MonoBehaviour
 
     private void OnEnable()
     {
-        SetSprite();
-
+        SetAppearance();
+        
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
+        if (stun != null) stun.FullReset(); // 啟用時重置暈眩條與星星
         if (attackHitBox != null) attackHitBox.SetActive(false);
         if (attackRangeBox != null) attackRangeBox.SetActive(false);
 
@@ -226,19 +226,25 @@ public class TroubleGuestController : MonoBehaviour
         return false;
     }
 
-    public void SetSprite(Sprite sprite = null)
+    public void SetAppearance(GameObject appearance = null)
     {
-        guestSpriteRenderer.color = Color.white;
-        if (sprite != null)
+        var components = GetComponentsInChildren<GuestAnimationController>(true); // true = 包含未啟用物件
+        foreach (var comp in components)
         {
-            guestSpriteRenderer.sprite = sprite;
+            DestroyImmediate(comp.gameObject); // 編輯器下立刻刪除
+        }
+        
+        if (appearance != null)
+        {
+            Instantiate(appearance, transform.position, transform.rotation, transform);
             return;
         }
 
-        if (guestAppearanceList is { Count: > 0 })
+        // 隨機外觀
+        if (guestAppearanceList != null && guestAppearanceList.Count > 0)
         {
             int idx = Random.Range(0, guestAppearanceList.Count);
-            guestSpriteRenderer.sprite = guestAppearanceList[idx];
+            Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
             return;
         }
 
@@ -290,34 +296,28 @@ public class TroubleGuestController : MonoBehaviour
             Vector2 knockDir = (transform.position - other.transform.position).normalized;
             StartCoroutine(ApplyKnockback(knockDir));
         }
-
-        // 「BasicAttack」造成暈眩的部分改由 StunController 處理
-
-        if (other.CompareTag("ExitDoor"))
-        {
-            BeForceOut();
-        }
+        
     }
 
-    private void BeForceOut()
-    {
-        // 取得原本的移動方向
-        Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
-        if (moveDir == Vector2.zero && agent != null)
-        {
-            moveDir = agent.velocity.normalized;
-        }
-        if (moveDir == Vector2.zero)
-        {
-            moveDir = Vector2.right; // 預設一個方向
-        }
+    // public void BeForceOut()
+    // {
+        // // 取得原本的移動方向
+        // Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
+        // if (moveDir == Vector2.zero && agent != null)
+        // {
+        //     moveDir = agent.velocity.normalized;
+        // }
+        // if (moveDir == Vector2.zero)
+        // {
+        //     moveDir = Vector2.right; // 預設一個方向
+        // }
+        //
+        // float forwardDistance = 10f;
+        // Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
 
-        float forwardDistance = 10f;
-        Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
-
-        Tween.Position(transform, targetPos, 0.5f)
-            .OnComplete(() => Dead(false));
-    }
+        // Tween.Position(transform, targetPos, 0.5f)
+        //     .OnComplete(() => Dead(false));
+    // }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
@@ -401,10 +401,19 @@ public class TroubleGuestController : MonoBehaviour
         {
             var pos = (attackOrigin != null ? attackOrigin.position : transform.position);
             VFXPool.Instance.SpawnVFX("CoinFountain", pos, Quaternion.identity, 2f);
-            RoundManager.Instance.DefeatEnemySuccess();
         }
 
+        RoundManager.Instance.DefeatEnemySuccess();
         if (poolHandler != null) poolHandler.Release();
         else gameObject.SetActive(false);
     }
+    
+    public bool IsMoving() {
+        return agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.sqrMagnitude > 0.01f;
+    }
+
+    public bool IsAttacking() {
+        return isCharging || (attackHitBox != null && attackHitBox.activeSelf);
+    }
+
 }

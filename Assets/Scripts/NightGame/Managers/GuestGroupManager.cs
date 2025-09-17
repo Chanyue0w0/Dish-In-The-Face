@@ -109,7 +109,7 @@ public class GuestGroupManager : MonoBehaviour
 	/// <summary>
 	/// Spawn TroubleGuest at specified position (can copy sprite for duplication)
 	/// </summary>
-	public GameObject SpawnTroubleGuestAt(Vector3 pos, Sprite copySprite = null)
+	public GameObject SpawnTroubleGuestAt(Vector3 pos, GameObject guestAppearance = null)
 	{
 		if (GuestPool.Instance == null)
 		{
@@ -125,9 +125,9 @@ public class GuestGroupManager : MonoBehaviour
 
 		// If TroubleGusetController has SetSprite(Sprite) method, can add sprite copying here
 		var ctrl = guest.GetComponent<TroubleGuestController>();
-		if (ctrl != null && copySprite != null)
+		if (ctrl != null && guestAppearance != null)
 		{
-			ctrl.SetSprite(copySprite);
+			ctrl.SetAppearance(guestAppearance);
 		}
 
 		return guest;

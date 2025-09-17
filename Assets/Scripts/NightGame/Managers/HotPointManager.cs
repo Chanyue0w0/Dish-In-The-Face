@@ -28,9 +28,9 @@ public class HotPointManager : MonoBehaviour
     #region ===== Inspector: Base / Thresholds / S-Lock / Combo / Penalties / UI =====
 
     [Header("-------- Base --------")]
-    [SerializeField] private float HEAT_MIN = 0f;
-    [SerializeField] private float HEAT_MAX = 100f;
-    [SerializeField] private float HEAT_INIT = 30f;
+    [SerializeField] private float heatMin = 0f;
+    [SerializeField] private float heatMax = 100f;
+    [SerializeField] private float heatInit = 30f;
 
     [Header("-------- Level Thresholds --------")]
     [Tooltip("C:[0,25), B:[25,50), A:[50,90), S:[90,100]")]
@@ -84,7 +84,7 @@ public class HotPointManager : MonoBehaviour
     private void Awake()
     {
         // 初始化
-        heat = Mathf.Clamp(HEAT_INIT, HEAT_MIN, HEAT_MAX);
+        heat = Mathf.Clamp(heatInit, heatMin, heatMax);
         currentLevel = ComputeLevel(heat);
         UpdateUI();
     }
@@ -153,26 +153,26 @@ public class HotPointManager : MonoBehaviour
         comboStack = 0;
         drains.Clear();
         sLockUntil = -1f;
-        SetHeat(HEAT_INIT);
+        SetHeat(heatInit);
     }
 
     public void DeliverDish()
     {
         if (IsSLocked) return;
 
-        // 判定是否仍在連擊窗
-        bool inWindow = (Time.time - lastDeliverTime) <= comboWindowSeconds;
-        if (!inWindow) comboStack = 0;
-
-        comboStack = Mathf.Min(comboStack + 1, comboMaxStack);
-        lastDeliverTime = Time.time;
-
+        // // 判定是否仍在連擊窗
+        // bool inWindow = (Time.time - lastDeliverTime) <= comboWindowSeconds;
+        // if (!inWindow) comboStack = 0;
+        //
+        // comboStack = Mathf.Min(comboStack + 1, comboMaxStack);
+        // lastDeliverTime = Time.time;
+        //
         int gain = comboPoints[Mathf.Clamp(comboStack - 1, 0, comboPoints.Length - 1)];
         AddHeat(gain);
 
         // 回報
-        float windowRemain = Mathf.Max(0f, comboWindowSeconds - (Time.time - lastDeliverTime));
-        OnComboChanged?.Invoke(comboStack, windowRemain);
+        // float windowRemain = Mathf.Max(0f, comboWindowSeconds - (Time.time - lastDeliverTime));
+        // OnComboChanged?.Invoke(comboStack, windowRemain);
     }
 
     public void DefeatEnemy(float amount = 1f)
@@ -202,7 +202,7 @@ public class HotPointManager : MonoBehaviour
     /// 可調試：直接進入 S 並鎖定
     public void ForceEnterSAndLock(float duration = 30f)
     {
-        SetHeat(Mathf.Max(thresholdS, HEAT_MIN));
+        SetHeat(Mathf.Max(thresholdS, heatMin));
         StartSLock(duration);
     }
 
@@ -231,7 +231,7 @@ public class HotPointManager : MonoBehaviour
         if (IsSLocked) return;
 
         float before = heat;
-        heat = Mathf.Clamp(heat + amount, HEAT_MIN, HEAT_MAX);
+        heat = Mathf.Clamp(heat + amount, heatMin, heatMax);
 
         // 進 S：立即鎖定
         if (before < thresholdS && heat >= thresholdS)
@@ -247,14 +247,14 @@ public class HotPointManager : MonoBehaviour
         if (IsSLocked) return;
 
         float before = heat;
-        heat = Mathf.Clamp(heat + delta, HEAT_MIN, HEAT_MAX);
+        heat = Mathf.Clamp(heat + delta, heatMin, heatMax);
         AfterHeatChanged(before, heat);
     }
 
     private void SetHeat(float value)
     {
         float before = heat;
-        heat = Mathf.Clamp(value, HEAT_MIN, HEAT_MAX);
+        heat = Mathf.Clamp(value, heatMin, heatMax);
         AfterHeatChanged(before, heat);
     }
 
@@ -301,7 +301,7 @@ public class HotPointManager : MonoBehaviour
         // Slider：0~1 = 低→高
         if (hotPointSlider)
         {
-            hotPointSlider.value = Mathf.InverseLerp(HEAT_MIN, HEAT_MAX, heat);
+            hotPointSlider.value = Mathf.InverseLerp(heatMin, heatMax, heat);
         }
     }
 

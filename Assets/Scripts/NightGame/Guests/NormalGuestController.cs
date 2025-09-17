@@ -11,23 +11,15 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float moveSpeed = 2f;
 
 	[Header("-------- Patience / Timing --------")]
-	[Tooltip("階段1：思考點餐時間（秒）")]
 	[SerializeField] private float thinkOrderTime = 10f;
-
-	[Tooltip("階段2：等待玩家來點餐的耐心時間（秒）")]
 	[SerializeField] private float maxOrderPatience = 20f;
-
-	[Tooltip("階段3：等待餐點送達的耐心時間（秒）")]
 	[SerializeField] private float maxDishPatience = 25f;
 
 	[Header("-------- Flow Setting --------")]
 	[SerializeField] private float stateTransitionDelay = 0.3f; // 狀態切換延遲（秒）
 
 	[Header("-------- Eat / Reorder --------")]
-	[Tooltip("進食時間（秒）")]
 	[SerializeField] private float eatTime = 10f;
-
-	[Tooltip("吃完後，再點餐的機率（0~1）")]
 	[SerializeField, Range(0f, 1f)] private float reorderProbability = 0.3f;
 
 	[Header("-------- Stuck Retry Setting --------")]
@@ -36,18 +28,16 @@ public class NormalGuestController : MonoBehaviour
 	[SerializeField] private float retryDelay = 2f;
 
 	[Header("-------- Appearance --------")]
-	[SerializeField] private List<Sprite> guestAppearanceList = new List<Sprite>();
-
+	[SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
+	
 	[Header("-------- Reference --------")]
-	[SerializeField] private Transform startPosition;
-	[SerializeField] private Transform endPosition;
 	[SerializeField] private Transform barFill;
 	[SerializeField] private GameObject patienceBar;
 	[SerializeField] private GameObject chatBoxIconObj;
 	[SerializeField] private GameObject rawBtnIconObj;
 	[SerializeField] private GameObject questionIconObj;
 	[SerializeField] private SpriteRenderer foodSpriteRenderer;
-	[SerializeField] private SpriteRenderer guestSpriteRenderer;
+	// [SerializeField] private SpriteRenderer guestSpriteRenderer;
 
 	#endregion
 
@@ -80,7 +70,9 @@ public class NormalGuestController : MonoBehaviour
 	
 	private FoodStatus orderFoodStatus;
 	private NavMeshAgent agent;
-
+	private GameObject appearanceObject;
+	
+	private Transform endPosition;
 	private Vector3 lastPosition;
 	private float stuckTimer;
 
@@ -106,20 +98,32 @@ public class NormalGuestController : MonoBehaviour
 		// 初始化入口與出口
 		if (RoundManager.Instance)
 		{
-			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			// startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 		}
 	}
 
 	private void OnEnable()
 	{
+		var components = GetComponentsInChildren<GuestAnimationController>(true); // true = 包含未啟用物件
+		foreach (var comp in components)
+		{
+			DestroyImmediate(comp.gameObject); // 編輯器下立刻刪除
+		}
 		// 隨機外觀
 		if (guestAppearanceList != null && guestAppearanceList.Count > 0)
 		{
 			int idx = Random.Range(0, guestAppearanceList.Count);
-			guestSpriteRenderer.sprite = guestAppearanceList[idx];
+			GuestAnimationController previous = GetComponentInChildren<GuestAnimationController>();
+			if (previous != null) Destroy(previous.gameObject); // 如果已經有造型，從新選擇
+			appearanceObject = Instantiate(guestAppearanceList[idx], transform.position, transform.rotation, transform);
 		}
 
+		if (appearanceObject == null)
+		{
+			Debug.LogWarning("not found animation: " + transform.name);
+		}
+		
 		// 狀態初始化
 		isSeated = false;
 		isLeaving = false;
@@ -144,7 +148,7 @@ public class NormalGuestController : MonoBehaviour
 		// 找椅子
 		if (RoundManager.Instance)
 		{
-			startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
+			// startPosition = RoundManager.Instance.guestGroupManager.enterPoistion;
 			endPosition = RoundManager.Instance.guestGroupManager.exitPoistion;
 			targetChair = RoundManager.Instance.chairGroupManager.FindEmptyChair(this);
 		}
@@ -478,9 +482,9 @@ public class NormalGuestController : MonoBehaviour
 
 		// 在當前位置生成 TroubleGuest
 		Vector3 pos = transform.position;
-		Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
+		// Sprite face = guestSpriteRenderer != null ? guestSpriteRenderer.sprite : null;
 
-		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, face);
+		RoundManager.Instance.guestGroupManager.SpawnTroubleGuestAt(pos, appearanceObject);
 
 		// 回收自身
 		if (poolHandler != null) poolHandler.Release();
@@ -501,6 +505,19 @@ public class NormalGuestController : MonoBehaviour
 	{
 		return orderFoodStatus;
 	}
+
+	// ===== 新增的狀態判斷 function =====
+	public bool IsThinking()     => state == GuestState.Thinking;
+	public bool IsEating()       => state == GuestState.Eating;
+	public bool IsOrdering()     => state == GuestState.WaitingOrder;
+	public bool IsWaitingDish()  => state == GuestState.WaitingDish;
+	
+	public bool IsMoving() {
+		return agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.sqrMagnitude > 0.01f;
+	}
+
+	public bool IsLeaving()      => state == GuestState.Leaving;
+
 	#endregion
 
 }

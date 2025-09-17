@@ -295,18 +295,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00f7cc82d017c94498c49ed4fdf13f89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStunPerStage: 6
+  currentStunValue: 0
+  stunLevelValues: 03000000060000000a000000
+  stunTimes:
+  - 7
+  - 14
+  - 21
   noDamageResetTime: 10
+  isInvincible: 0
   stunTriggerTag: AttackStun
-  stunTime1Star: 3
-  stunTime2Star: 7
-  stunTime3Star: 12
   showBarUI: 1
   showStarsUI: 1
-  stars:
-  - {fileID: 8686545433782177049}
-  - {fileID: 309257068759146214}
-  - {fileID: 546443884236467145}
+  starObjects:
+  - {fileID: 2744210946794941638, guid: 0b98791797be9f74aaa638020a43b1de, type: 3}
+  - {fileID: 2751804397660617875, guid: 2501b7215685c00419683c62d847086c, type: 3}
+  - {fileID: 6200393407276893790, guid: dc91533740f9e8f428f393d390ad8086, type: 3}
   stunBar: {fileID: 240186906782926139}
   stunBarFill: {fileID: 2726281687071153939}
   onStunFull:
@@ -400,11 +403,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2501b7215685c00419683c62d847086c, type: 3}
---- !u!1 &309257068759146214 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2751804397660617875, guid: 2501b7215685c00419683c62d847086c, type: 3}
-  m_PrefabInstance: {fileID: 2484557832167481973}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9004430630264422917 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6813037885588971632, guid: 2501b7215685c00419683c62d847086c, type: 3}
@@ -471,11 +469,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dc91533740f9e8f428f393d390ad8086, type: 3}
---- !u!1 &546443884236467145 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6200393407276893790, guid: dc91533740f9e8f428f393d390ad8086, type: 3}
-  m_PrefabInstance: {fileID: 5879839788972944791}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3643926832621391134 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7136154852276117641, guid: dc91533740f9e8f428f393d390ad8086, type: 3}
@@ -545,10 +538,5 @@ PrefabInstance:
 --- !u!4 &6489619775386151488 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 330566591260281759, guid: 0b98791797be9f74aaa638020a43b1de, type: 3}
-  m_PrefabInstance: {fileID: 6816666829181919711}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8686545433782177049 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2744210946794941638, guid: 0b98791797be9f74aaa638020a43b1de, type: 3}
   m_PrefabInstance: {fileID: 6816666829181919711}
   m_PrefabAsset: {fileID: 0}
