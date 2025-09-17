@@ -2,20 +2,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// 多段門檻暈眩（可升級並「續秒」的暈眩系統）
-/// 規則：
-/// 1) 使用自訂門檻陣列 stunLevelGates（例：{3,6,10}），對應各級暈眩秒數 stunTimes（例：{3,7,12}）。
-/// 2) 受擊時累積暈眩值 currentStunValue；當「首次跨過」某門檻 i（value >= stunLevelGates[i]）即進入暈眩，持續 stunTimes[i] 秒並觸發 onStunFull。
-/// 3) 暈眩期間仍可繼續累積：若又跨過下一門檻 i+1，則「重新計時」改用 stunTimes[i+1] 秒（再次觸發 onStunFull）。只有最後一次倒數跑完，才會觸發 onStunRecovered。
-/// 4) 恢復邏輯：若當前暈眩等級為 i，恢復時 current 退回到上一門檻值：i>0 → gate[i-1]；i==0 → 0。
-///    但若期間暈眩值曾「超過」最後門檻（> lastGate），恢復時一律退回 0。
-/// 5) UI條顯示：以「區段百分比」顯示：ratio = (current - prevGate) / (nextGate - prevGate)
-///    其中 prevGate 是前一門檻（第一段用 0），nextGate 是下一門檻；若 current > 最後門檻則條為滿格。
-/// 6) 暈眩特效：未暈眩→全部關閉；暈眩/升級→僅顯示對應等級的特效（index 對應等級 0-based）。 
-/// 
-/// ※ 本版用的是 2D 觸發（OnTriggerEnter2D）；若用 3D，請改用 OnTriggerEnter。 
-/// </summary>
 public class StunController : MonoBehaviour
 {
     [Header("----- Runtime Values -----")]
@@ -36,7 +22,6 @@ public class StunController : MonoBehaviour
 
     [Header("----- Input / Trigger -----")]
     [SerializeField] private string stunTriggerTag = "AttackStun"; // 造成暈眩的攻擊 Trigger Tag
-    [SerializeField] private int defaultStunIncrement = 1;         // 每次受擊增加量
 
     // 狀態
     private bool isStunned = false;               // 是否處於暈眩倒數中
@@ -67,20 +52,48 @@ public class StunController : MonoBehaviour
         if (!other || string.IsNullOrEmpty(stunTriggerTag)) return;
         if (!other.CompareTag(stunTriggerTag)) return;
 
+        // 從攻擊身上讀取傷害與是否貫穿（若沒有元件就忽略）
+        AttackDataInfo aktInfo = other.GetComponent<AttackDataInfo>();
+        if (!aktInfo) return;
+
         // 受擊 → 顯示 UI 並累積
         SetBarActive(true);
-        AddStun(defaultStunIncrement);
+        AddStun(aktInfo.attackValue, aktInfo.isPiercing);
     }
     #endregion
 
     #region Public API
-    /// <summary>手動增加暈眩值（暈眩中也可累積）。</summary>
-    public void AddStun(int amount)
+    /// <summary>
+    /// 手動增加暈眩值（暈眩中也可累積）。
+    /// isPiercing=true：直接加到 newValue=current+amount（可跨越多個門檻）；
+    /// isPiercing=false：只加到「目前區段上限」（下一個門檻值），不會超過該門檻。
+    /// </summary>
+    public void AddStun(int amount, bool isPiercing)
     {
         if (!ConfigUsable()) return;
+        if (amount == 0) return;
 
         int before = currentStunValue;
-        currentStunValue = Mathf.Max(0, before + amount);
+        int after;
+
+        if (isPiercing)
+        {
+            // 直接加總，可超過最後門檻
+            after = Mathf.Max(0, before + amount);
+        }
+        else
+        {
+            // 非貫穿：只加到目前區段上限（下一個門檻）
+            int nextGate = GetNextGateValue(before); // 若已在最後段，回傳最後門檻值
+            // 只能往 nextGate 靠近，但不可超過
+            long tentative = (long)before + amount; // 用 long 避免極端大數溢位
+            if (amount > 0)
+                after = (int)Mathf.Min(nextGate, Mathf.Max(0, (int)tentative));
+            else
+                after = Mathf.Max(0, (int)tentative); // 負值時正常遞減
+        }
+
+        currentStunValue = after;
 
         // UI 立即更新（以區段百分比顯示）
         SetBarActive(true);
@@ -292,6 +305,22 @@ public class StunController : MonoBehaviour
             else break;
         }
         return idx;
+    }
+
+    /// <summary>
+    /// 回傳「下一個門檻值」。若 current 已在或超過最後門檻，回傳最後門檻值本身。
+    /// 用於非貫穿攻擊的「區段上限」計算。
+    /// </summary>
+    private int GetNextGateValue(int current)
+    {
+        if (!ConfigUsable()) return current;
+        int lastIdx = stunLevelGates.Length - 1;
+        for (int i = 0; i <= lastIdx; i++)
+        {
+            if (current < stunLevelGates[i])
+                return stunLevelGates[i];
+        }
+        return stunLevelGates[lastIdx];
     }
 
     private bool ConfigUsable()
