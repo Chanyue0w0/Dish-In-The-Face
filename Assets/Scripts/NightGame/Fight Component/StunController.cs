@@ -1,293 +1,328 @@
-using System;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// StunController（獨立門檻版）
-/// 規則摘要：
-/// 1) 累積方式：每次受到攻擊便會累積暈眩值（暈眩期間也可持續累積）
-/// 2) 暈眩判定：暈眩值跨過門檻（可一次跨多星）就立刻進入對應等級暈眩
-/// 3) 恢復：非暈眩狀態下，若超過 noDamageResetTime 秒未受擊，暈眩值清零
-/// 4) 超出累積：超過當前階段門檻會溢位到下一階段（可連跨）
-/// 5) 星星顯示：一開始全部關；暈眩時只顯示對應等級那一顆；暈眩結束關閉
-/// 6) Event：跨門檻進入暈眩時呼叫 onStunFull；暈眩時間結束時呼叫 onStunRecovered
+/// 多段門檻暈眩（可升級並「續秒」的暈眩系統）
+/// 規則：
+/// 1) 使用自訂門檻陣列 stunLevelGates（例：{3,6,10}），對應各級暈眩秒數 stunTimes（例：{3,7,12}）。
+/// 2) 受擊時累積暈眩值 currentStunValue；當「首次跨過」某門檻 i（value >= stunLevelGates[i]）即進入暈眩，持續 stunTimes[i] 秒並觸發 onStunFull。
+/// 3) 暈眩期間仍可繼續累積：若又跨過下一門檻 i+1，則「重新計時」改用 stunTimes[i+1] 秒（再次觸發 onStunFull）。只有最後一次倒數跑完，才會觸發 onStunRecovered。
+/// 4) 恢復邏輯：若當前暈眩等級為 i，恢復時 current 退回到上一門檻值：i>0 → gate[i-1]；i==0 → 0。
+///    但若期間暈眩值曾「超過」最後門檻（> lastGate），恢復時一律退回 0。
+/// 5) UI條顯示：以「區段百分比」顯示：ratio = (current - prevGate) / (nextGate - prevGate)
+///    其中 prevGate 是前一門檻（第一段用 0），nextGate 是下一門檻；若 current > 最後門檻則條為滿格。
+/// 6) 暈眩特效：未暈眩→全部關閉；暈眩/升級→僅顯示對應等級的特效（index 對應等級 0-based）。 
+/// 
+/// ※ 本版用的是 2D 觸發（OnTriggerEnter2D）；若用 3D，請改用 OnTriggerEnter。 
 /// </summary>
 public class StunController : MonoBehaviour
 {
-    [SerializeField] private int currentStunValue;   // 目前暈眩值（0 ~ 總門檻）
-    
-    [Header("----- Stun Setting (Independent thresholds) -----")]
-    [Tooltip("每一星所需新增量（獨立）。例如 [3,6,10] 代表 T1=3, T2=6, T3=10。")]
-    [SerializeField, Min(1)] private int[] stunLevelValues = { 3, 6, 10 };
-    
-    [Tooltip("各星暈眩秒數（索引 = 星數-1）。長度不足會自動補齊為最後一個值。")]
-    [SerializeField] private float[] stunTimes = { 3f, 7f, 12f };
-    
-    [Tooltip("非暈眩狀態下，若超過該秒數未受擊 → 暈眩值清零。")]
-    [SerializeField] private float noDamageResetTime = 10f;
-    
-    [SerializeField] private bool isInvincible = false;       // 無敵不累積
-    [SerializeField] private string stunTriggerTag = "AttackStun"; // 造成暈眩的攻擊 Trigger Tag
-    
-    [Header("UI Setting")]
-    [SerializeField] private bool showBarUI = true;           // 是否顯示暈眩條
-    [SerializeField] private bool showStarsUI = true;         // 是否顯示星星
+    [Header("----- Runtime Values -----")]
+    [SerializeField] private int currentStunValue = 0;        // 目前暈眩值
+    [Tooltip("各級暈眩持續秒數，長度須與 stunLevelGates 一致")]
+    [SerializeField] private float[] stunTimes;               // 各級暈眩秒數（對應門檻索引）
+    [Tooltip("暈眩門檻（嚴格遞增）。例如：{3, 6, 10}")]
+    [SerializeField] private int[] stunLevelGates;            // 暈眩門檻
 
-    [Header("----- Reference -----")]
-    [Tooltip("依序 1,2,3,... 星的圖示（本版暈眩時只亮當前那一顆）。")]
-    [SerializeField] private GameObject[] starObjects;        // 可為空（不顯示）
+    [Header("----- UI (Optional) -----")]
     [SerializeField] private GameObject stunBar;              // 暈眩條 parent（可為空）
-    [SerializeField] private Transform stunBarFill;           // 暈眩條填充（localScale.x 0~1，可為空）
+    [SerializeField] private Transform stunBarFill;           // 暈眩條填充（localScale.x：0~1，可為空）
+    [SerializeField] private GameObject[] stunStarVFXs;       // 依等級對應的暈眩特效（0->Lv1, 1->Lv2, ...）
 
     [Header("----- Events -----")]
-    public UnityEvent onStunFull;       // 升星（跨門檻進入新的星等暈眩）時觸發
-    public UnityEvent onStunRecovered;  // 暈眩倒數結束時觸發
+    public UnityEvent onStunFull;                             // 進入/升級暈眩時觸發
+    public UnityEvent onStunRecovered;                        // （最終）暈眩結束時觸發
 
-    // ===== Runtime 狀態 =====
-    private readonly List<int> levelGateSum = new List<int>(); // 前綴和門檻（T1, T1+T2, T1+T2+T3, …）
-    private bool _isStunned;         // 是否暈眩中
-    private float _stunRemaining;    // 暈眩剩餘秒數
-    private bool _countdownPaused;   // 是否暫停倒數
-    private float _lastIncreaseTime; // 最近一次增加的時間（用於 noDamageResetTime）
-    private bool _isBeAttack;        // 觸發器防抖（同幀/同次碰撞）
+    [Header("----- Input / Trigger -----")]
+    [SerializeField] private string stunTriggerTag = "AttackStun"; // 造成暈眩的攻擊 Trigger Tag
+    [SerializeField] private int defaultStunIncrement = 1;         // 每次受擊增加量
 
-    private int MaxTotalNeeded => levelGateSum.Count > 0 ? levelGateSum[levelGateSum.Count - 1] : 0;
+    // 狀態
+    private bool isStunned = false;               // 是否處於暈眩倒數中
+    private int activeStunLevelIndex = -1;        // 目前暈眩等級（-1 = 不在暈眩）
+    private Coroutine stunRoutine = null;
 
+    #region Unity Life Cycle
     private void Awake()
     {
-        FullReset();
+        ValidateConfig();
+        SetBarActive(false);
+        UpdateBarInstant();
+        HideAllStunVFX();
     }
 
     private void OnEnable()
     {
-        FullReset();
+        SetBarActive(false);
+        UpdateBarInstant();
+        HideAllStunVFX();
     }
 
-    private void Update()
-    {
-        // 非暈眩狀態 + 長時間未受擊 → 清空
-        if (!_isStunned && noDamageResetTime > 0f && _lastIncreaseTime > 0f)
-        {
-            if (Time.time - _lastIncreaseTime >= noDamageResetTime && currentStunValue > 0)
-            {
-                currentStunValue = 0;
-                if (stunBar != null) stunBar.SetActive(showBarUI && currentStunValue > 0);
-                HideAllStars();
-                UpdateUI();
-            }
-        }
-
-        // 暈眩倒數（暈眩中仍可被 AddStun 疊加，若跨下一坎會刷新暈眩時間）
-        if (_isStunned && !_countdownPaused)
-        {
-            _stunRemaining -= Time.deltaTime;
-            if (_stunRemaining <= 0f)
-            {
-                RecoverFromStun();
-            }
-        }
-    }
-
-    // ======== 碰撞吸收攻擊（確保每次被打都會累積） ========
+    /// <summary>
+    /// 2D 觸發：當有攜帶 stunTriggerTag 的 Trigger 進入時，增加暈眩值
+    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other || !other.CompareTag(stunTriggerTag)) return;
-        if (!_isBeAttack)
+        if (!other || string.IsNullOrEmpty(stunTriggerTag)) return;
+        if (!other.CompareTag(stunTriggerTag)) return;
+
+        // 受擊 → 顯示 UI 並累積
+        SetBarActive(true);
+        AddStun(defaultStunIncrement);
+    }
+    #endregion
+
+    #region Public API
+    /// <summary>手動增加暈眩值（暈眩中也可累積）。</summary>
+    public void AddStun(int amount)
+    {
+        if (!ConfigUsable()) return;
+
+        int before = currentStunValue;
+        currentStunValue = Mathf.Max(0, before + amount);
+
+        // UI 立即更新（以區段百分比顯示）
+        SetBarActive(true);
+        UpdateBarInstant();
+
+        // 檢查是否跨過新門檻
+        int achievedLevel = GetAchievedLevelIndex(currentStunValue); // 最大 i 使得 current >= gate[i]，若沒有則 -1
+
+        if (!isStunned)
         {
-            var atkInfo = other.GetComponent<AttackDataInfo>();
-            if (atkInfo == null)
-            {
-                Debug.LogWarning("[StunController] Attack collider has no AttackDataInfo.");
-                return;
-            }
-            AddStun(atkInfo.attackValue, atkInfo.isPiercing);
-            _isBeAttack = true;
+            // 未暈眩 → 若已跨過任一門檻則進入該等級暈眩
+            if (achievedLevel >= 0)
+                EnterOrEscalateStun(achievedLevel);
+        }
+        else
+        {
+            // 已在暈眩 → 若達到更高門檻則升級並重置計時
+            if (achievedLevel > activeStunLevelIndex)
+                EnterOrEscalateStun(achievedLevel);
+            // 若沒有升級，維持原本倒數繼續跑
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    /// <summary>重置暈眩系統（清除暈眩、值歸零、關閉 UI 與特效）。</summary>
+    public void ResetStun()
     {
-        if (!other || !other.CompareTag(stunTriggerTag)) return;
-        _isBeAttack = false;
-    }
-
-    // ======== 對外 API ========
-    /// <summary>
-    /// 增加暈眩值。
-    /// 本版不再區分貫穿/不貫穿：永遠可跨越多個門檻（超出累積帶到下一階段）。
-    /// 暈眩期間也可持續累積；若跨更高門檻，立即刷新為更高星的暈眩時間。
-    /// </summary>
-    public void AddStun(int damage, bool _isPiercingUnused)
-    {
-        if (isInvincible || damage <= 0)
-            return;
-
-        // 保障門檻初始化
-        if (MaxTotalNeeded <= 0)
-            RebuildGates();
-
-        _lastIncreaseTime = Time.time;
-        if (showBarUI && stunBar != null) stunBar.SetActive(true);
-
-        int prevStars = GetStarCount(currentStunValue);
-
-        // 超出累積自動溢位（可一次跨多坎）
-        currentStunValue = Mathf.Clamp(currentStunValue + damage, 0, MaxTotalNeeded);
-
-        int postStars = GetStarCount(currentStunValue);
-        if (postStars > prevStars)
+        if (stunRoutine != null)
         {
-            // 進入/提升暈眩等級：依最終星等給暈眩時間，顯示對應星
-            EnterStunForStars(postStars);
-            onStunFull?.Invoke();
+            StopCoroutine(stunRoutine);
+            stunRoutine = null;
         }
-        else if (_isStunned && postStars > 0)
+        isStunned = false;
+        activeStunLevelIndex = -1;
+
+        currentStunValue = 0;
+        UpdateBarInstant();
+        SetBarActive(false);
+        HideAllStunVFX();
+    }
+
+    public int GetCurrentStun() => currentStunValue;
+    public bool IsStunned() => isStunned;
+    #endregion
+
+    #region Core Flow
+    /// <summary>進入或升級暈眩：以指定等級重置倒數並觸發 onStunFull；切換對應等級特效。</summary>
+    private void EnterOrEscalateStun(int newLevelIndex)
+    {
+        newLevelIndex = Mathf.Clamp(newLevelIndex, 0, stunLevelGates.Length - 1);
+
+        activeStunLevelIndex = newLevelIndex;
+        isStunned = true;
+
+        // 條顯示保持對應區段比例（或已超最後門檻則滿條）
+        UpdateBarInstant();
+
+        // 顯示對應等級特效
+        UpdateStunVFX(activeStunLevelIndex);
+
+        onStunFull?.Invoke();
+
+        if (stunRoutine != null) StopCoroutine(stunRoutine);
+        stunRoutine = StartCoroutine(StunCountdown(stunTimes[newLevelIndex]));
+    }
+
+    /// <summary>暈眩倒數；若期間又升級，會被 Stop 並以新時間重啟。</summary>
+    private IEnumerator StunCountdown(float seconds)
+    {
+        float t = Mathf.Max(0f, seconds);
+        if (t > 0f) yield return new WaitForSeconds(t);
+
+        // 暈眩結束（若期間沒升級到更高等級）
+        isStunned = false;
+
+        // 恢復邏輯：
+        // - 若 current 曾「超過」最後門檻 → 直接歸 0
+        // - 否則退回到「上一門檻」：i>0 → gate[i-1]；i==0 → 0
+        int lastGateIndex = stunLevelGates.Length - 1;
+        bool beyondLast = currentStunValue > stunLevelGates[lastGateIndex];
+
+        if (beyondLast)
         {
-            // 已在暈眩中但沒有跨過新門檻：可選擇不刷新時間
-            // 若你想在暈眩中被持續攻擊就延長當前星級的暈眩時間，取消下兩行註解：
-            // int idx = Mathf.Clamp(postStars - 1, 0, stunTimes.Length - 1);
-            // _stunRemaining = Mathf.Max(_stunRemaining, stunTimes[idx]); // 僅延長，不縮短
+            currentStunValue = 0;
         }
-
-        UpdateUI();
-    }
-
-    /// <summary>手動完全重置（外部重置用）。</summary>
-    public void FullReset()
-    {
-        RebuildGates();
-
-        // 調整 stunTimes 長度
-        if (stunTimes == null || stunTimes.Length < levelGateSum.Count)
+        else
         {
-            var list = new List<float>();
-            if (stunTimes != null) list.AddRange(stunTimes);
-            while (list.Count < levelGateSum.Count)
-            {
-                list.Add(list.Count > 0 ? list[list.Count - 1] : 3f);
-            }
-            stunTimes = list.ToArray();
+            int i = Mathf.Clamp(activeStunLevelIndex, 0, lastGateIndex);
+            currentStunValue = (i > 0) ? stunLevelGates[i - 1] : 0;
         }
 
-        if (stunBar != null) stunBar.SetActive(showBarUI && currentStunValue > 0);
-
-        _isStunned = false;
-        _stunRemaining = 0f;
-        _countdownPaused = false;
-        _lastIncreaseTime = -999f;
-        _isBeAttack = false;
-
-        // ⭐ 一開始關掉全部星星
-        HideAllStars();
-
-        UpdateUI();
-    }
-
-    /// <summary>暫停/繼續暈眩倒數。</summary>
-    public void StunTimePause()    { _countdownPaused = true; }
-    public void StunTimeContinue() { if (_isStunned) _countdownPaused = false; }
-
-    public void SetInvincible(bool value) => isInvincible = value;
-    public bool IsInvincible() => isInvincible;
-    public bool IsStunned() => _isStunned;
-
-    // ======== 內部 ========
-    private void RebuildGates()
-    {
-        levelGateSum.Clear();
-
-        if (stunLevelValues == null || stunLevelValues.Length == 0)
-            stunLevelValues = new[] { 3, 6, 10 };
-
-        int runSum = 0;
-        for (int i = 0; i < stunLevelValues.Length; i++)
-        {
-            int v = Mathf.Max(1, stunLevelValues[i]);
-            runSum += v;
-            levelGateSum.Add(runSum);
-        }
-    }
-
-    private void EnterStunForStars(int stars)
-    {
-        if (stars <= 0) return;
-
-        int idx = Mathf.Clamp(stars - 1, 0, stunTimes.Length - 1);
-        _isStunned = true;
-        _countdownPaused = false;
-        _stunRemaining = Mathf.Max(0f, stunTimes[idx]);
-
-        if (showBarUI && stunBar != null) stunBar.SetActive(true);
-
-        // ⭐ 暈眩時只亮對應等級星星
-        ShowOnlyStarIndex(idx);
-    }
-
-    private void RecoverFromStun()
-    {
-        _isStunned = false;
-        _stunRemaining = 0f;
-        _countdownPaused = false;
-
-        // 暈眩結束不強制清零暈眩值（保留 10 秒未受擊清零規則）
-        if (stunBar != null && showBarUI) stunBar.SetActive(false);
-
-        // ⭐ 暈眩結束關閉所有星星
-        HideAllStars();
-
-        UpdateUI();
         onStunRecovered?.Invoke();
+
+        activeStunLevelIndex = -1;
+        UpdateBarInstant();
+
+        // 若恢復後沒有任何值可顯示，則關閉條
+        if (currentStunValue <= 0) SetBarActive(false);
+
+        // 暈眩結束 → 關閉全部特效
+        HideAllStunVFX();
+
+        stunRoutine = null;
+    }
+    #endregion
+
+    #region UI Helpers
+    private void SetBarActive(bool active)
+    {
+        if (stunBar && stunBar.activeSelf != active)
+            stunBar.SetActive(active);
     }
 
-    // ======== UI ========
-    private void UpdateUI()
+    /// <summary>
+    /// 以「區段百分比」更新條：
+    /// ratio = (current - prevGate) / (nextGate - prevGate)
+    /// 若 current > 最後門檻 → ratio = 1。
+    /// </summary>
+    private void UpdateBarInstant()
     {
-        if (!showBarUI || stunBarFill == null || MaxTotalNeeded <= 0) return;
-
-        float t = Mathf.Clamp01((float)currentStunValue / MaxTotalNeeded);
-        var s = stunBarFill.localScale;
-        stunBarFill.localScale = new Vector3(t, s.y, s.z);
-    }
-
-    private void HideAllStars()
-    {
-        if (!showStarsUI || starObjects == null || starObjects.Length == 0) return;
-        foreach (var star in starObjects)
-            if (star) star.SetActive(false);
-    }
-
-    private void ShowOnlyStarIndex(int idx)
-    {
-        if (!showStarsUI || starObjects == null || starObjects.Length == 0) return;
-
-        for (int i = 0; i < starObjects.Length; i++)
+        if (!stunBarFill || !ConfigUsable())
         {
-            if (starObjects[i]) starObjects[i].SetActive(i == idx);
+            // 沒有填充物件或組態不完整 → 嘗試最小化顯示
+            SetFill01(0f);
+            return;
+        }
+
+        if (stunLevelGates.Length == 0)
+        {
+            SetFill01(0f);
+            return;
+        }
+
+        int lastIndex = stunLevelGates.Length - 1;
+
+        // 超過最後門檻 → 滿條
+        if (currentStunValue > stunLevelGates[lastIndex])
+        {
+            SetFill01(1f);
+            return;
+        }
+
+        // 找到「目前所在區段」：以 nextGate 為第一個 >= current 的門檻
+        int nextIdx = 0;
+        while (nextIdx < stunLevelGates.Length && currentStunValue > stunLevelGates[nextIdx])
+            nextIdx++;
+
+        if (nextIdx == 0)
+        {
+            // 第一段：prev = 0, next = gate[0]
+            float prev = 0f;
+            float next = Mathf.Max(1, stunLevelGates[0]);
+            float ratio = Mathf.Clamp01((currentStunValue - prev) / (next - prev));
+            SetFill01(ratio);
+        }
+        else
+        {
+            // 一般段：prev = gate[nextIdx-1], next = (nextIdx 在範圍內 ? gate[nextIdx] : gate[last])
+            float prev = stunLevelGates[nextIdx - 1];
+            float next = (nextIdx < stunLevelGates.Length) ? stunLevelGates[nextIdx] : stunLevelGates[lastIndex];
+            float denom = Mathf.Max(1f, next - prev);
+            float ratio = Mathf.Clamp01((currentStunValue - prev) / denom);
+            SetFill01(ratio);
         }
     }
 
-    // ======== Helper ========
-    /// <summary>目前暈眩值對應的星數（>=門檻的數量）。</summary>
-    private int GetStarCount(int stunValue)
+    private void SetFill01(float x01)
     {
-        if (levelGateSum.Count == 0) return 0;
-        int stars = 0;
-        for (int i = 0; i < levelGateSum.Count; i++)
+        if (!stunBarFill) return;
+        var s = stunBarFill.localScale;
+        s.x = x01;
+        stunBarFill.localScale = s;
+    }
+
+    /// <summary>關閉所有暈眩特效。</summary>
+    private void HideAllStunVFX()
+    {
+        if (stunStarVFXs == null) return;
+        for (int i = 0; i < stunStarVFXs.Length; i++)
         {
-            if (stunValue >= levelGateSum[i]) stars++;
+            if (stunStarVFXs[i])
+                stunStarVFXs[i].SetActive(false);
+        }
+    }
+
+    /// <summary>只開啟指定等級的特效（其餘關閉）。levelIndex：0 -> Lv1, 1 -> Lv2 ...</summary>
+    private void UpdateStunVFX(int levelIndex)
+    {
+        if (stunStarVFXs == null || stunStarVFXs.Length == 0) return;
+
+        int idx = Mathf.Clamp(levelIndex, 0, stunStarVFXs.Length - 1);
+
+        for (int i = 0; i < stunStarVFXs.Length; i++)
+        {
+            if (!stunStarVFXs[i]) continue;
+            stunStarVFXs[i].SetActive(i == idx);
+        }
+    }
+    #endregion
+
+    #region Helpers & Validation
+    /// <summary>回傳「已達成的最高門檻索引」。若尚未達任何門檻則回傳 -1。</summary>
+    private int GetAchievedLevelIndex(int value)
+    {
+        if (!ConfigUsable()) return -1;
+        int idx = -1;
+        for (int i = 0; i < stunLevelGates.Length; i++)
+        {
+            if (value >= stunLevelGates[i]) idx = i;
             else break;
         }
-        return stars;
+        return idx;
     }
 
-    /// <summary>取得「下一個」門檻值；若已滿最後門檻則回傳目前值。</summary>
-    private int GetNextGate(int current)
+    private bool ConfigUsable()
     {
-        for (int i = 0; i < levelGateSum.Count; i++)
-        {
-            if (current < levelGateSum[i]) return levelGateSum[i];
-        }
-        return current; // 已經 >= 最後門檻
+        return stunLevelGates != null && stunTimes != null &&
+               stunLevelGates.Length > 0 &&
+               stunTimes.Length == stunLevelGates.Length;
     }
+
+    private void ValidateConfig()
+    {
+        // 陣列長度檢查
+        if (stunLevelGates == null || stunTimes == null || stunLevelGates.Length == 0 || stunTimes.Length == 0)
+        {
+            Debug.LogWarning("[StunController] stunLevelGates / stunTimes 未設定或為空。");
+            return;
+        }
+        if (stunTimes.Length != stunLevelGates.Length)
+        {
+            Debug.LogWarning("[StunController] stunTimes 長度須與 stunLevelGates 相同。");
+        }
+
+        // 遞增性檢查與修正提示
+        for (int i = 1; i < stunLevelGates.Length; i++)
+        {
+            if (stunLevelGates[i] <= stunLevelGates[i - 1])
+            {
+                Debug.LogWarning("[StunController] 建議將 stunLevelGates 設為嚴格遞增。例如：3, 6, 10。");
+                break;
+            }
+        }
+    }
+    #endregion
 }

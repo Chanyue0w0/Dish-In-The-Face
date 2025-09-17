@@ -6,16 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Player.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/player_spine_timeline/testTimeline.playable" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.atlas.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/spouu_animation/Spine_.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.inputactions" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/InputSystem/PlayerInputActions.inputactions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerMovement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerSpineAnimationManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -190,6 +184,8 @@
       <workItem from="1758019991831" duration="205000" />
       <workItem from="1758020377364" duration="91000" />
       <workItem from="1758020618888" duration="90000" />
+      <workItem from="1758094283046" duration="2044000" />
+      <workItem from="1758096445503" duration="116000" />
     </task>
     <servers />
   </component>

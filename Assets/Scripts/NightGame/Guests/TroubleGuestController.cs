@@ -22,7 +22,6 @@ public class TroubleGuestController : MonoBehaviour
     [Header("----- Reference -----")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer guestSpriteRenderer;
-    [SerializeField] private Animator animator;
     [SerializeField] private GameObject attackHitBox;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private GameObject attackRangeBox;
@@ -68,7 +67,7 @@ public class TroubleGuestController : MonoBehaviour
         
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
-        if (stun != null) stun.FullReset(); // 啟用時重置暈眩條與星星
+        // if (stun != null) stun.FullReset(); // 啟用時重置暈眩條與星星
         if (attackHitBox != null) attackHitBox.SetActive(false);
         if (attackRangeBox != null) attackRangeBox.SetActive(false);
 
