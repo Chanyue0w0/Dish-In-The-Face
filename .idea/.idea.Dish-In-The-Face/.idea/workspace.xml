@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Night Game/Fight Component/Stun Component.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/HotPointManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/HotPointManager.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +36,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -185,7 +183,9 @@
       <workItem from="1758020377364" duration="91000" />
       <workItem from="1758020618888" duration="90000" />
       <workItem from="1758094283046" duration="2044000" />
-      <workItem from="1758096445503" duration="116000" />
+      <workItem from="1758096447465" duration="5557000" />
+      <workItem from="1758116446501" duration="327000" />
+      <workItem from="1758117267359" duration="334000" />
     </task>
     <servers />
   </component>
