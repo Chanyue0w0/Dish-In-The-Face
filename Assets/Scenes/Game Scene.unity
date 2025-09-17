@@ -101792,6 +101792,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 16.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalPosition.x
       value: 10.7
       objectReference: {fileID: 0}
@@ -101840,9 +101852,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7346023857972560986}
     - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: moveSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: handItemUI
       value: 
       objectReference: {fileID: 1603619951}
+    - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: defaultMoveSpeed
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4604219698510330333, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: healthPointUIControl
       value: 
