@@ -24,7 +24,8 @@ public class CoinManager : MonoBehaviour
 		if (subtractCoinUI != null)
 			subtractCoinUI.SetActive(false);
 		
-		endCoinText.gameObject.SetActive(true);
+        if (endCoinText)
+		    endCoinText.gameObject.SetActive(true);
 	}
 
 	private void Update()

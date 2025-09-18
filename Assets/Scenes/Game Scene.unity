@@ -2800,6 +2800,7 @@ MonoBehaviour:
   animator: {fileID: 54559100}
   stunTriggerTag: AttackStun
   playerTag: Player
+  openDuration: 3
 --- !u!61 &54559102
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9647,7 +9648,6 @@ MonoBehaviour:
   timeLimitCounter: {fileID: 328136578}
   player: {fileID: 4806143410877125031}
   obstaclesGroup: {fileID: 1100314838}
-  endPane: {fileID: 1256561644}
   stopPanel: {fileID: 1535621857}
 --- !u!1 &185839326
 GameObject:
@@ -41522,79 +41522,6 @@ Transform:
   - {fileID: 1686046948}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &806984598
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 67485935019242347, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_Name
-      value: Trouble guest
-      objectReference: {fileID: 0}
-    - target: {fileID: 5055763528607415678, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: FourceOut.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5055763528607415678, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: FourceOut.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5055763528607415678, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: FourceOut.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5055763528607415678, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: FourceOut.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: TroubleGuestController, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 4.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6767597481548093256, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 75495d226f3467b45b5a18fffdcddb28, type: 3}
 --- !u!1 &808587656
 GameObject:
   m_ObjectHideFlags: 0
@@ -55884,6 +55811,7 @@ MonoBehaviour:
   animator: {fileID: 1161186576}
   stunTriggerTag: AttackStun
   playerTag: Player
+  openDuration: 3
 --- !u!61 &1161186578
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -65564,6 +65492,7 @@ MonoBehaviour:
   animator: {fileID: 1374324939}
   stunTriggerTag: AttackStun
   playerTag: Player
+  openDuration: 3
 --- !u!61 &1374324941
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -67667,6 +67596,7 @@ MonoBehaviour:
   currentCoin: 0
   massageShowTime: 1.5
   coinText: {fileID: 1116122014}
+  endCoinText: {fileID: 0}
   addCoinUI: {fileID: 1687865662}
   subtractCoinUI: {fileID: 125455937}
 --- !u!1 &1414523894
@@ -74071,7 +74001,7 @@ MonoBehaviour:
   m_BuildHeightMesh: 0
   m_MinRegionArea: 0
   m_HideEditorLogs: 0
-  m_NavMeshData: {fileID: 23800000, guid: 26ea38cd38045df4592429df71e7d593, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: ed35399e630861b449e79f43c3f00772, type: 2}
 --- !u!4 &1559606738
 Transform:
   m_ObjectHideFlags: 0
@@ -98152,6 +98082,7 @@ MonoBehaviour:
   animator: {fileID: 2092921968}
   stunTriggerTag: AttackStun
   playerTag: Player
+  openDuration: 3
 --- !u!61 &2092921970
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -101805,4 +101736,3 @@ SceneRoots:
   - {fileID: 2063143629}
   - {fileID: 1814491289}
   - {fileID: 309499588}
-  - {fileID: 806984598}
