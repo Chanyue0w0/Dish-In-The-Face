@@ -1,26 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class TroubleGuestController : MonoBehaviour
 {
-    [Header("----- Status -----")]
-    [SerializeField] private int atk = 1;
+    [Header("----- Status -----")] [SerializeField]
+    private int atk = 1;
+
     [SerializeField] private float moveSpeed = 2f;
 
-    [Header("----- Attack Setting -----")]
-    [SerializeField] private float attackCooldown = 2f; // 冷卻(秒)
-    [SerializeField] private float chargeTime = 1f;     // 蓄力時間(秒)
-    [SerializeField] private LayerMask playerLayer;     // 玩家圖層
-    [SerializeField] private Transform attackOrigin;    // 供 attackRangeBox 參考的原點
+    [Header("----- Attack Setting -----")] [SerializeField]
+    private float attackCooldown = 2f; // 冷卻(秒)
+
+    [SerializeField] private float chargeTime = 1f; // 蓄力時間(秒)
+    [SerializeField] private LayerMask playerLayer; // 玩家圖層
+    [SerializeField] private Transform attackOrigin; // 供 attackRangeBox 參考的原點
     [SerializeField] private string attackTriggerTag = "AttackStun";
 
-    [Header("-------- Appearance --------")]
-    [SerializeField] private List<GameObject> guestAppearanceList = new List<GameObject>();
+    [Header("-------- Appearance --------")] [SerializeField]
+    private List<GameObject> guestAppearanceList = new List<GameObject>();
 
-    [Header("----- Reference -----")]
-    [SerializeField] private Rigidbody2D rb;
+    [Header("----- Reference -----")] [SerializeField]
+    private Rigidbody2D rb;
+
     [SerializeField] private SpriteRenderer guestSpriteRenderer;
     [SerializeField] private GameObject attackHitBox;
     [SerializeField] private NavMeshAgent agent;
@@ -29,14 +34,16 @@ public class TroubleGuestController : MonoBehaviour
     [SerializeField] private GameObject attackVFX;
     [SerializeField] private BeGrabByPlayer beGrabByPlayer;
 
-    [Header("----- Reference (Select) -----")]
-    [SerializeField] private StunController stun;
+    [Header("----- Reference (Select) -----")] [SerializeField]
+    private StunController stun;
+
     [SerializeField] private EnemyHpController hpController;
-    
+
     private Transform player;
     private float lastAttackTime;
     private bool isCharging;
     private float chargeStartTime;
+    private bool isBeAttacked;
 
     private GuestPoolHandler poolHandler;
 
@@ -64,7 +71,7 @@ public class TroubleGuestController : MonoBehaviour
     private void OnEnable()
     {
         SetAppearance();
-        
+
         if (RoundManager.Instance) player = RoundManager.Instance.player;
 
         // if (stun != null) stun.FullReset(); // 啟用時重置暈眩條與星星
@@ -152,6 +159,7 @@ public class TroubleGuestController : MonoBehaviour
                 return (ext.x + ext.y) * 0.5f;
             }
         }
+
         return 2f;
     }
 
@@ -222,6 +230,7 @@ public class TroubleGuestController : MonoBehaviour
         {
             return agent.Warp(hit.position);
         }
+
         return false;
     }
 
@@ -232,7 +241,7 @@ public class TroubleGuestController : MonoBehaviour
         {
             DestroyImmediate(comp.gameObject); // 編輯器下立刻刪除
         }
-        
+
         if (appearance != null)
         {
             Instantiate(appearance, transform.position, transform.rotation, transform);
@@ -280,7 +289,7 @@ public class TroubleGuestController : MonoBehaviour
             TryEnsureOnNavMesh();
             agent.isStopped = false;
         }
-        
+
         if (hpController) hpController.TakeDamage(1);
     }
 
@@ -289,33 +298,40 @@ public class TroubleGuestController : MonoBehaviour
         // 被攻擊
         if (other.CompareTag(attackTriggerTag))
         {
+            isBeAttacked = true;
             VFXPool.Instance.SpawnVFX("BasicAttack", transform.position, Quaternion.identity, 1f);
             AudioManager.Instance.PlayOneShot(FMODEvents.Instance.pieAttack, transform.position);
             // 擊退
             Vector2 knockDir = (transform.position - other.transform.position).normalized;
             StartCoroutine(ApplyKnockback(knockDir));
         }
-        
+
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(attackTriggerTag))
+            isBeAttacked = false;
     }
 
     // public void BeForceOut()
     // {
-        // // 取得原本的移動方向
-        // Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
-        // if (moveDir == Vector2.zero && agent != null)
-        // {
-        //     moveDir = agent.velocity.normalized;
-        // }
-        // if (moveDir == Vector2.zero)
-        // {
-        //     moveDir = Vector2.right; // 預設一個方向
-        // }
-        //
-        // float forwardDistance = 10f;
-        // Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
+    // // 取得原本的移動方向
+    // Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
+    // if (moveDir == Vector2.zero && agent != null)
+    // {
+    //     moveDir = agent.velocity.normalized;
+    // }
+    // if (moveDir == Vector2.zero)
+    // {
+    //     moveDir = Vector2.right; // 預設一個方向
+    // }
+    //
+    // float forwardDistance = 10f;
+    // Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
 
-        // Tween.Position(transform, targetPos, 0.5f)
-        //     .OnComplete(() => Dead(false));
+    // Tween.Position(transform, targetPos, 0.5f)
+    //     .OnComplete(() => Dead(false));
     // }
 
 #if UNITY_EDITOR
@@ -361,6 +377,7 @@ public class TroubleGuestController : MonoBehaviour
                 agent.enabled = true;
                 TryEnsureOnNavMesh();
             }
+
             agent.isStopped = false;
         }
 
@@ -406,13 +423,24 @@ public class TroubleGuestController : MonoBehaviour
         if (poolHandler != null) poolHandler.Release();
         else gameObject.SetActive(false);
     }
-    
-    public bool IsMoving() {
+
+    public bool IsMoving()
+    {
         return agent != null && agent.enabled && agent.isOnNavMesh && agent.velocity.sqrMagnitude > 0.01f;
     }
 
-    public bool IsAttacking() {
+    public bool IsAttacking()
+    {
         return isCharging || (attackHitBox != null && attackHitBox.activeSelf);
     }
 
+    public bool IsLeft()
+    {
+        return transform.rotation.y == 0;
+    }
+
+    public bool IsBeAttacked()
+    {
+        return isBeAttacked;
+    }
 }

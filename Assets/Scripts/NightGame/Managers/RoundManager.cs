@@ -48,7 +48,8 @@ public class RoundManager : MonoBehaviour
 	// Successfully placed dish
 	public void PullDownDishSuccess()
 	{
-		hotPointManager.DeliverDish();
+		// hotPointManager.DeliverDish();
+		hotPointManager.AddHotPoint(1);
 	}
 
 	// Dish finished and eaten by guest
@@ -59,7 +60,8 @@ public class RoundManager : MonoBehaviour
 
 	public void DefeatEnemySuccess()
 	{
-		hotPointManager.DefeatEnemy();
+		// hotPointManager.DefeatEnemy();
+		hotPointManager.AddHotPoint(1);
 		GetCoin(enemyReward);
 	}
 
