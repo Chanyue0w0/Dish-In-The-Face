@@ -84,7 +84,7 @@ public class BeForceOut : MonoBehaviour
         if (isMoveOuting) return;
         if (other.CompareTag("ExitDoor"))
         {
-            ForceLeaveDoor door = other.GetComponent<ForceLeaveDoor>();
+            ForceLeaveDoor door = other.GetComponentInParent<ForceLeaveDoor>();
             if  (!door) return;
 
             if (door.IsDoorOpen())
