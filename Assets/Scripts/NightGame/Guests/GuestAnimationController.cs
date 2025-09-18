@@ -8,7 +8,6 @@ public class GuestAnimationController : MonoBehaviour
 
     // === Bools ===
     private static readonly int IsMoving              = Animator.StringToHash("isMoving");
-    private static readonly int IsLeft                = Animator.StringToHash("isLeft");
     private static readonly int IsWaitingOrThinking   = Animator.StringToHash("isWaitingOrThinking");
     private static readonly int IsOrderingOrEating    = Animator.StringToHash("isOrderingOrEating");
 
@@ -65,7 +64,6 @@ public class GuestAnimationController : MonoBehaviour
         bool isMoving = false;
         bool isWaitingOrThinking = false;
         bool isOrderingOrEating = false;
-        bool isLeft = false;
 
         if (_normal != null) {
             isMoving = _normal.IsMoving();
@@ -89,7 +87,6 @@ public class GuestAnimationController : MonoBehaviour
             _prevBeAttacked = beAttackedNow;
 
             isMoving = _trouble.IsMoving();
-            isLeft   = _trouble.IsLeft();
             SetLayerWeights(baseOn: false);
         }
         else if (_wander != null) {
@@ -101,7 +98,6 @@ public class GuestAnimationController : MonoBehaviour
         animator.SetBool(IsMoving, isMoving);
         animator.SetBool(IsWaitingOrThinking, isWaitingOrThinking);
         animator.SetBool(IsOrderingOrEating, isOrderingOrEating);
-        animator.SetBool(IsLeft, isLeft);
     }
 
     /// <summary>切換 Animator Layer 權重</summary>

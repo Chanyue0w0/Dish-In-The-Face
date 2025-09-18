@@ -314,26 +314,6 @@ public class TroubleGuestController : MonoBehaviour
             isBeAttacked = false;
     }
 
-    // public void BeForceOut()
-    // {
-    // // 取得原本的移動方向
-    // Vector2 moveDir = rb != null ? rb.velocity.normalized : Vector2.zero;
-    // if (moveDir == Vector2.zero && agent != null)
-    // {
-    //     moveDir = agent.velocity.normalized;
-    // }
-    // if (moveDir == Vector2.zero)
-    // {
-    //     moveDir = Vector2.right; // 預設一個方向
-    // }
-    //
-    // float forwardDistance = 10f;
-    // Vector3 targetPos = transform.position + (Vector3)(moveDir * forwardDistance);
-
-    // Tween.Position(transform, targetPos, 0.5f)
-    //     .OnComplete(() => Dead(false));
-    // }
-
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
