@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class CoinManager : MonoBehaviour
 	[SerializeField] private float massageShowTime = 1.5f;
 	[Header("---------- Reference ----------")]
 	[SerializeField] private TextMeshProUGUI coinText;
+	[SerializeField] private TextMeshProUGUI endCoinText;
 	[SerializeField] private GameObject addCoinUI;
 	[SerializeField] private GameObject subtractCoinUI;
 
@@ -21,6 +23,14 @@ public class CoinManager : MonoBehaviour
 
 		if (subtractCoinUI != null)
 			subtractCoinUI.SetActive(false);
+		
+		endCoinText.gameObject.SetActive(true);
+	}
+
+	private void Update()
+	{
+		if (endCoinText != null)
+			endCoinText.text = coinText.text;
 	}
 
 	private void UpdateCoinText()

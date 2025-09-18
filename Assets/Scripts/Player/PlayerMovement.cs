@@ -234,17 +234,17 @@ public class PlayerMovement : MonoBehaviour
 	#endregion
 
 	#region ===== 切換武器 / 使用物品 =====
-	private void SwitchWeapon()
-	{
-		var mode = attackController.GetAttackMode();
-		if (mode == AttackMode.Basic)
-			attackController.SetAttackModeUI(AttackMode.Food);
-		else if (mode == AttackMode.Food)
-			attackController.SetAttackModeUI(AttackMode.Basic);
-		else
-			attackController.SetAttackModeUI(AttackMode.Basic);
-	}
-
+	// private void SwitchWeapon()
+	// {
+	// 	var mode = attackController.GetAttackMode();
+	// 	if (mode == AttackMode.Basic)
+	// 		attackController.SetAttackModeUI(AttackMode.Food);
+	// 	else if (mode == AttackMode.Food)
+	// 		attackController.SetAttackModeUI(AttackMode.Basic);
+	// 	else
+	// 		attackController.SetAttackModeUI(AttackMode.Basic);
+	// }
+	//
 	private void UseItem()
 	{
 		if (attackController.GetAttackMode() == AttackMode.Food)

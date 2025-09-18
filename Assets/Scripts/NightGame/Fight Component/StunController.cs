@@ -12,6 +12,7 @@ public class StunController : MonoBehaviour
     [SerializeField] private int[] stunLevelGates;            // 暈眩門檻
 
     [Header("----- UI (Optional) -----")]
+    [SerializeField] private bool showBarUI = true;   // 是否顯示暈眩條
     [SerializeField] private GameObject stunBar;              // 暈眩條 parent（可為空）
     [SerializeField] private Transform stunBarFill;           // 暈眩條填充（localScale.x：0~1，可為空）
     [SerializeField] private GameObject[] stunStarVFXs;       // 依等級對應的暈眩特效（0->Lv1, 1->Lv2, ...）
@@ -53,7 +54,7 @@ public class StunController : MonoBehaviour
         if (!other.CompareTag(stunTriggerTag)) return;
 
         // 從攻擊身上讀取傷害與是否貫穿（若沒有元件就忽略）
-        AttackDataInfo aktInfo = other.GetComponent<AttackDataInfo>();
+        AttackDataInfo aktInfo = other.GetComponentInParent<AttackDataInfo>();
         if (!aktInfo) return;
 
         // 受擊 → 顯示 UI 並累積
@@ -202,6 +203,12 @@ public class StunController : MonoBehaviour
     #region UI Helpers
     private void SetBarActive(bool active)
     {
+        if (!showBarUI) 
+        {
+            if (stunBar && stunBar.activeSelf) stunBar.SetActive(false);
+            return;
+        }
+
         if (stunBar && stunBar.activeSelf != active)
             stunBar.SetActive(active);
     }
@@ -213,14 +220,13 @@ public class StunController : MonoBehaviour
     /// </summary>
     private void UpdateBarInstant()
     {
-        if (!stunBarFill || !ConfigUsable())
+        if (!showBarUI)
         {
-            // 沒有填充物件或組態不完整 → 嘗試最小化顯示
             SetFill01(0f);
             return;
         }
 
-        if (stunLevelGates.Length == 0)
+        if (!stunBarFill || !ConfigUsable())
         {
             SetFill01(0f);
             return;

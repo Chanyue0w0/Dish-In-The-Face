@@ -72,7 +72,6 @@ MonoBehaviour:
   - {fileID: 8252563090691895457, guid: d68282e6a7cc0644a9f75b25fa0735b0, type: 3}
   rb: {fileID: 0}
   guestSpriteRenderer: {fileID: 0}
-  animator: {fileID: 3421789461206804512}
   attackHitBox: {fileID: 5616195474572127821}
   agent: {fileID: 277484580418444971}
   attackRangeBox: {fileID: 8455754925905358039}
@@ -353,7 +352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1997249250552442052
 Transform:
   m_ObjectHideFlags: 0

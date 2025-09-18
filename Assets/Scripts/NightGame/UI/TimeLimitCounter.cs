@@ -4,14 +4,14 @@ using TMPro; // TextMeshPro
 public class TimeLimitCounter : MonoBehaviour
 {
 	[Header("Setting")]
-	[SerializeField] private float roundTime = 60f;          // ¹w³]¦^¦X®É¶¡ (¬í)
-	[SerializeField] private float maxRoundTime = 300f;      // ³Ì¤j¥i³]©w®É¶¡ (¹w³] 5 ¤ÀÄÁ)
-	[SerializeField] private GameObject gameOverPanel;       // Game Over ­±ªO
-	[SerializeField] private TextMeshProUGUI timerText;      // Åã¥Ü³Ñ¾l®É¶¡ "m:ss"
+	[SerializeField] private float roundTime = 60f;          // ï¿½wï¿½]ï¿½^ï¿½Xï¿½É¶ï¿½ (ï¿½ï¿½)
+	[SerializeField] private float maxRoundTime = 300f;      // ï¿½Ì¤jï¿½iï¿½]ï¿½wï¿½É¶ï¿½ (ï¿½wï¿½] 5 ï¿½ï¿½ï¿½ï¿½)
+	[SerializeField] private GameObject gameOverPanel;       // Game Over ï¿½ï¿½ï¿½O
+	[SerializeField] private TextMeshProUGUI timerText;      // ï¿½ï¿½Ü³Ñ¾lï¿½É¶ï¿½ "m:ss"
 
-	private float remainingTime; // ³Ñ¾l®É¶¡
-	private bool isCounting = false; // ¬O§_¦b­p®É
-	private bool isPaused = false;   // ¬O§_¼È°±¤¤
+	private float remainingTime; // ï¿½Ñ¾lï¿½É¶ï¿½
+	private bool isCounting = false; // ï¿½Oï¿½_ï¿½bï¿½pï¿½ï¿½
+	private bool isPaused = false;   // ï¿½Oï¿½_ï¿½È°ï¿½ï¿½ï¿½
 
 	private void Start()
 	{
@@ -39,7 +39,7 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¶}©l­Ë¼Æ
+	/// ï¿½}ï¿½lï¿½Ë¼ï¿½
 	/// </summary>
 	public void StartCountdown()
 	{
@@ -53,7 +53,7 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¼È°±­Ë¼Æ
+	/// ï¿½È°ï¿½ï¿½Ë¼ï¿½
 	/// </summary>
 	public void PauseCountdown()
 	{
@@ -62,7 +62,7 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Ä~Äò­Ë¼Æ
+	/// ï¿½~ï¿½ï¿½Ë¼ï¿½
 	/// </summary>
 	public void ResumeCountdown()
 	{
@@ -71,7 +71,7 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ¨ú±o³Ñ¤U®É¶¡¡]¬í¡^
+	/// ï¿½ï¿½ï¿½oï¿½Ñ¤Uï¿½É¶ï¿½ï¿½]ï¿½ï¿½^
 	/// </summary>
 	public float GetRemainingTime()
 	{
@@ -79,29 +79,29 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ³]©w¦^¦X®É¶¡¡]¬í¡^
+	/// ï¿½]ï¿½wï¿½^ï¿½Xï¿½É¶ï¿½ï¿½]ï¿½ï¿½^
 	/// </summary>
 	public void SetRoundTime(float time)
 	{
-		roundTime = Mathf.Clamp(time, 1f, maxRoundTime); // ¤¶©ó 1 ¬í ~ ³Ì¤j®É¶¡
+		roundTime = Mathf.Clamp(time, 1f, maxRoundTime); // ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ï¿½ ~ ï¿½Ì¤jï¿½É¶ï¿½
 		remainingTime = roundTime;
 		UpdateTimerText();
 	}
 
 	/// <summary>
-	/// ³]©w³Ì¤j®É¶¡¡]¬í¡^
+	/// ï¿½]ï¿½wï¿½Ì¤jï¿½É¶ï¿½ï¿½]ï¿½ï¿½^
 	/// </summary>
 	public void SetMaxRoundTime(float time)
 	{
 		maxRoundTime = Mathf.Max(1f, time);
-		// ¦pªG roundTime ¶W¹L·sªº¤W­­¡A´N¦Û°Ê½Õ¾ã
+		// ï¿½pï¿½G roundTime ï¿½Wï¿½Lï¿½sï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Aï¿½Nï¿½Û°Ê½Õ¾ï¿½
 		roundTime = Mathf.Min(roundTime, maxRoundTime);
 		remainingTime = roundTime;
 		UpdateTimerText();
 	}
 
 	/// <summary>
-	/// §ó·s UI Åã¥Ü "m:ss"
+	/// ï¿½ï¿½s UI ï¿½ï¿½ï¿½ "m:ss"
 	/// </summary>
 	private void UpdateTimerText()
 	{
@@ -114,12 +114,13 @@ public class TimeLimitCounter : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ­Ë¼Æµ²§ôÄ²µo Game Over
+	/// ï¿½Ë¼Æµï¿½ï¿½ï¿½Ä²ï¿½o Game Over
 	/// </summary>
 	private void TriggerGameOver()
 	{
 		Debug.Log("Time is up! Game Over!");
 		if (gameOverPanel != null)
 			gameOverPanel.SetActive(true);
+		RoundManager.Instance.GameOver();
 	}
 }

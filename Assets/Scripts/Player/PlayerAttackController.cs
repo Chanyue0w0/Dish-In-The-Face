@@ -8,8 +8,6 @@ public enum AttackMode { Food, Basic }
 
 public class PlayerAttackController : MonoBehaviour
 {
-	private static readonly int WeaponType = Animator.StringToHash("WeaponType");
-
 	#region ===== Inspector：一般設定 =====
 	[Header("--------- Setting -----------")]
 	[SerializeField] private AttackMode attackMode = AttackMode.Food;
@@ -50,7 +48,7 @@ public class PlayerAttackController : MonoBehaviour
 	// 連段（Food/Basic 各自依序播放）
 	private int _comboIndex;
 
-	private bool _isSwitchWeaponFinish = true;
+	// private bool _isSwitchWeaponFinish = true;
 
 	// 蓄力/按住狀態（在 Basic 模式下當作「正在嘗試抓取」）
 	private bool _isCharging;
@@ -67,7 +65,7 @@ public class PlayerAttackController : MonoBehaviour
 	{
 		_animationManager      = GetComponent<PlayerSpineAnimationManager>();
 		_comboIndex           = 0;
-		_isSwitchWeaponFinish = true;
+		// _isSwitchWeaponFinish = true;
 		_isCharging           = false;
 		_currentChargeTime    = 0f;
 		_grabHoldTimer        = 0f;
@@ -341,24 +339,23 @@ public class PlayerAttackController : MonoBehaviour
 	#endregion
 
 	#region ===== UI / 武器切換 =====
-	public void SetAttackModeUI(AttackMode mode)
-	{
-		if (!_isSwitchWeaponFinish) return;
-		attackMode = mode;
-
-		handItemGroup.gameObject.SetActive(mode != AttackMode.Basic);
-
-		if (weaponUIAnimator == null) return;
-		switch (attackMode)
-		{
-			case AttackMode.Basic: weaponUIAnimator.SetInteger(WeaponType, 1); break;
-			case AttackMode.Food:  weaponUIAnimator.SetInteger(WeaponType, 2); break;
-			default:               weaponUIAnimator.SetInteger(WeaponType, 1); break;
-		}
-	}
-
-	public AttackMode GetAttackMode() => attackMode;
-	public void SetIsSwitchWeaponFinish(bool isFinish) => _isSwitchWeaponFinish = isFinish;
+	// public void SetAttackModeUI(AttackMode mode)
+	// {
+	// 	if (!_isSwitchWeaponFinish) return;
+	// 	attackMode = mode;
+	//
+	// 	handItemGroup.gameObject.SetActive(mode != AttackMode.Basic);
+	//
+	// 	if (weaponUIAnimator == null) return;
+	// 	switch (attackMode)
+	// 	{
+	// 		case AttackMode.Basic: weaponUIAnimator.SetInteger(WeaponType, 1); break;
+	// 		case AttackMode.Food:  weaponUIAnimator.SetInteger(WeaponType, 2); break;
+	// 		default:               weaponUIAnimator.SetInteger(WeaponType, 1); break;
+	// 	}
+	// }
+	//
+	// public void SetIsSwitchWeaponFinish(bool isFinish) => _isSwitchWeaponFinish = isFinish;
 	#endregion
 
 	#region ===== 私有工具 =====
@@ -530,7 +527,7 @@ public class PlayerAttackController : MonoBehaviour
 	}
 	#endregion
 
-	#region ===== 給被抓物件／其他系統呼叫的事件 =====
+	#region ===== public function =====
 	/// <summary>被抓物件真的掙脫了 → 關閉手套顯示。</summary>
 	public void OnGrabbedObjectEscaped()
 	{
@@ -544,6 +541,9 @@ public class PlayerAttackController : MonoBehaviour
 		if (gloveController != null)
 			gloveController.OnGrabbedObjectTryEscape();
 	}
+	
+	public AttackMode GetAttackMode() => attackMode;
+	
 	#endregion
 
 }

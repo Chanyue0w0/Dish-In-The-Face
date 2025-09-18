@@ -5,25 +5,47 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations1.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations3.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/air lock.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/air lock.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/background.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/background.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/delivery counter.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/delivery counter.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table1.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table2.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table3.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table4.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table5.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table6.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table6.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/obstacle.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/obstacle.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/starting point.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/starting point.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/track.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/track.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/map1 Scene.unity" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/map1 Scene.unity.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/BlueSlime/BlueSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/BlueSlime/BlueSlime_Animation.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/GreenSlime/GreenSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/GreenSlime/GreenSlime_Animation.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_attacked.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_attacked.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_huntdown_L.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_huntdown_L.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_huntdown_R.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_huntdown_R.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_turntodark_2.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/P_turntodark_2.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/PinkSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/PinkSlime/PinkSlime_Animation.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/YellowSlime/YellowSlime_Animation.controller" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Guest Animation/slime/YellowSlime/YellowSlime_Animation.controller" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Trouble Guest.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Trouble Guest/BeAttack.anim" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Trouble Guest/BeAttack.anim.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Trouble Guest/Trouble guest.controller" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Trouble Guest/Trouble guest.controller.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/GuestAnimationController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/GuestAnimationController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Guests/TroubleGuestController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/HotPointManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/HotPointManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene/NavMesh-Navgation Mask (Map).asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene/NavMesh-Navgation Mask (Map).asset.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/RoundManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/RoundManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/CoinManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/CoinManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/TimeLimitCounter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/TimeLimitCounter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/Noto_Sans_TC/static/NotoSansTC-Regular SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/Noto_Sans_TC/static/NotoSansTC-Regular SDF.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,24 +84,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Rider.SolutionAnalysis.ShowPreview": "false",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "WoodToo",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Rider.SolutionAnalysis.ShowPreview&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;WoodToo&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="$PROJECT_DIR$/../gameBuild/Dish-In-The-Face.exe" />
@@ -203,7 +225,10 @@
       <workItem from="1758116446501" duration="327000" />
       <workItem from="1758117267359" duration="2559000" />
       <workItem from="1758181858213" duration="75000" />
-      <workItem from="1758182630052" duration="1786000" />
+      <workItem from="1758182630052" duration="3163000" />
+      <workItem from="1758186059935" duration="451000" />
+      <workItem from="1758189183103" duration="419000" />
+      <workItem from="1758196028027" duration="7717000" />
     </task>
     <servers />
   </component>

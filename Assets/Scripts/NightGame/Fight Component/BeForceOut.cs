@@ -16,7 +16,7 @@ public class BeForceOut : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
 
     private Tween moveOut;
-
+    private bool isMoveOuting = false;
     private Vector2 direction;
 
     
@@ -79,11 +79,19 @@ public class BeForceOut : MonoBehaviour
         return false;
     }
     
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
+        if (isMoveOuting) return;
         if (other.CompareTag("ExitDoor"))
         {
-            MoveOut();
+            ForceLeaveDoor door = other.GetComponentInParent<ForceLeaveDoor>();
+            if  (!door) return;
+
+            if (door.IsDoorOpen())
+            {
+                MoveOut();
+                isMoveOuting = true;
+            }
         }
     }
 
