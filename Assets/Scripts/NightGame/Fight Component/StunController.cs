@@ -54,7 +54,7 @@ public class StunController : MonoBehaviour
         if (!other.CompareTag(stunTriggerTag)) return;
 
         // 從攻擊身上讀取傷害與是否貫穿（若沒有元件就忽略）
-        AttackDataInfo aktInfo = other.GetComponent<AttackDataInfo>();
+        AttackDataInfo aktInfo = other.GetComponentInParent<AttackDataInfo>();
         if (!aktInfo) return;
 
         // 受擊 → 顯示 UI 並累積
