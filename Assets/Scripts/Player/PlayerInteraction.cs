@@ -17,14 +17,14 @@ public class PlayerInteraction : MonoBehaviour
 	[SerializeField] private HandItemUI handItemUI;   // Updates hand item UI
 	[SerializeField] private Transform handItemRoot; // Parent for held items
 
-	private List<Collider2D> currentChairTriggers;
+	private List<Collider2D> _currentChairTriggers;
 
-	private bool isEnableUseDessert ;
+	private bool _isEnableUseDessert ;
 
 	private void Start()
 	{
-		isEnableUseDessert = true;
-		currentChairTriggers = new List<Collider2D>();
+		_isEnableUseDessert = true;
+		_currentChairTriggers = new List<Collider2D>();
 
 		// 開始時依照「由上到下」把手上物品排好
 		ArrangeHandItemsTopToBottom();
@@ -88,7 +88,7 @@ public class PlayerInteraction : MonoBehaviour
 		// 重新依「由上到下」排一次
 		ArrangeHandItemsTopToBottom();
 
-		if (handItemUI) handItemUI.ChangeHandItemUI();
+		// if (handItemUI) handItemUI.ChangeHandItemUI();
 		return true;
 	}
 
@@ -97,7 +97,7 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		//Debug.Log("TryConfirmOrderForNearbyGuests");
 		// Check current chair triggers for guests
-		foreach (var chair in currentChairTriggers)
+		foreach (var chair in _currentChairTriggers)
 			if (RoundManager.Instance.chairGroupManager.ConfirmOrderChair(chair.transform))
 				return true;
 
@@ -108,10 +108,10 @@ public class PlayerInteraction : MonoBehaviour
 	public bool TryPullDownDish()
 	{
 		//Debug.Log("TryPullDownDish");
-		if (currentChairTriggers.Count <= 0 || handItemRoot.childCount <= 0) return false;
+		if (_currentChairTriggers.Count <= 0 || handItemRoot.childCount <= 0) return false;
 		
 		GameObject item = handItemRoot.GetChild(0).gameObject;
-		foreach (var chair in currentChairTriggers)
+		foreach (var chair in _currentChairTriggers)
 			if (RoundManager.Instance.chairGroupManager.PullDownChairItem(chair.transform, item))
 				return true;
 
@@ -120,7 +120,7 @@ public class PlayerInteraction : MonoBehaviour
 
 	private bool TryUseDessert()
 	{
-		if (!isEnableUseDessert) return false;
+		if (!_isEnableUseDessert) return false;
 		return RoundManager.Instance.foodsGroupManager.dessertController.UseDessert();
 	}
 
@@ -140,8 +140,8 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		if (trigger.CompareTag("Chair"))
 		{
-			if (!currentChairTriggers.Contains(trigger))
-				currentChairTriggers.Add(trigger);
+			if (!_currentChairTriggers.Contains(trigger))
+				_currentChairTriggers.Add(trigger);
 		}
 	}
 
@@ -150,8 +150,8 @@ public class PlayerInteraction : MonoBehaviour
 		if (trigger.CompareTag("Chair"))
 		{
 			RoundManager.Instance.chairGroupManager.EnableInteracSignal(trigger.transform, null, false);
-			if (currentChairTriggers.Contains(trigger))
-				currentChairTriggers.Remove(trigger);
+			if (_currentChairTriggers.Contains(trigger))
+				_currentChairTriggers.Remove(trigger);
 		}
 	}
 
@@ -159,14 +159,14 @@ public class PlayerInteraction : MonoBehaviour
 	{
 		if (collision.collider.CompareTag("Dessert"))
 		{
-			isEnableUseDessert = true;
+			_isEnableUseDessert = true;
 		}
 	}
 	private void OnCollisionExit2D(Collision2D collision)
 	{
 		if (collision.collider.CompareTag("Dessert"))
 		{
-			isEnableUseDessert = false;
+			_isEnableUseDessert = false;
 		}
 	}
 
