@@ -105690,6 +105690,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 300579308055694644, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1204464878125904106, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: handItemUI
       value: 
@@ -105844,19 +105848,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5610158069118679573, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Size.x
-      value: 3.6406252
+      value: 4.821377
       objectReference: {fileID: 0}
     - target: {fileID: 5610158069118679573, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Size.y
-      value: 1.7675937
+      value: 2.1031947
       objectReference: {fileID: 0}
     - target: {fileID: 5610158069118679573, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Offset.x
-      value: 0.2155608
+      value: -0.37481487
       objectReference: {fileID: 0}
     - target: {fileID: 5610158069118679573, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Offset.y
-      value: -0.1331541
+      value: 0.034646273
       objectReference: {fileID: 0}
     - target: {fileID: 9049758845201159332, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_Name
