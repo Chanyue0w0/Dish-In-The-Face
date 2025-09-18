@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_1.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_1.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_2.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Animation/Player/animator/Attack/DrumstickAttack_2.anim" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Player/Player.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Player/Player.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Scene.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/StunController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/BeForceOut.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Fight Component/BeForceOut.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/ForceLeaveDoor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Furnitures/ForceLeaveDoor.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,7 +191,7 @@
       <workItem from="1758182630052" duration="3163000" />
       <workItem from="1758186059935" duration="451000" />
       <workItem from="1758189183103" duration="419000" />
-      <workItem from="1758196028027" duration="3246000" />
+      <workItem from="1758196028027" duration="4579000" />
     </task>
     <servers />
   </component>

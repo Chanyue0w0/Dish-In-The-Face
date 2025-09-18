@@ -2795,8 +2795,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94a381d197c5f94bb71d033fd059514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackToOpen: 0
   outDirection: {x: 1, y: 0}
   animator: {fileID: 54559100}
+  stunTriggerTag: AttackStun
+  playerTag: Player
 --- !u!61 &54559102
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -55876,8 +55879,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94a381d197c5f94bb71d033fd059514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackToOpen: 0
   outDirection: {x: 0, y: -1}
   animator: {fileID: 1161186576}
+  stunTriggerTag: AttackStun
+  playerTag: Player
 --- !u!61 &1161186578
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -65553,8 +65559,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94a381d197c5f94bb71d033fd059514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackToOpen: 0
   outDirection: {x: -1, y: 0}
   animator: {fileID: 1374324939}
+  stunTriggerTag: AttackStun
+  playerTag: Player
 --- !u!61 &1374324941
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -98138,8 +98147,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d94a381d197c5f94bb71d033fd059514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackToOpen: 1
   outDirection: {x: 0, y: 0}
   animator: {fileID: 2092921968}
+  stunTriggerTag: AttackStun
+  playerTag: Player
 --- !u!61 &2092921970
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -101682,7 +101694,8 @@ PrefabInstance:
       propertyPath: m_Materials.Array.size
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 469063522717717429, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4907369628256541410, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
