@@ -156,7 +156,9 @@ MonoBehaviour:
     Path: event:/SFX/swing1
   attackList:
   - animationClip: {fileID: 7400000, guid: d9949b75f7aa0b4408567969e6336649, type: 2}
+    isPiercing: 1
     stunDamage: 10
+    knockbackForce: 5
     sfx:
       Guid:
         Data1: 1641033783
@@ -164,10 +166,11 @@ MonoBehaviour:
         Data3: 192947610
         Data4: 472483547
       Path: event:/SFX/swing1
-    knockbackForce: 5
     vfxGameObject: {fileID: 0}
   - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
+    isPiercing: 1
     stunDamage: 10
+    knockbackForce: 10
     sfx:
       Guid:
         Data1: 1641033783
@@ -175,7 +178,6 @@ MonoBehaviour:
         Data3: 192947610
         Data4: 472483547
       Path: event:/SFX/swing1
-    knockbackForce: 10
     vfxGameObject: {fileID: 0}
 --- !u!1 &3857453713245092508
 GameObject:
