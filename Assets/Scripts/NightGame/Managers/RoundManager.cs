@@ -47,7 +47,7 @@ public class RoundManager : MonoBehaviour
 	public void PullDownDishSuccess()
 	{
 		// hotPointManager.DeliverDish();
-		hotPointManager.AddHotPoint(1);
+		hotPointManager.AddHotPoint(2);
 	}
 
 	// Dish finished and eaten by guest
