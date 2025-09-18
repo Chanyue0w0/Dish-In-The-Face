@@ -5,47 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de2c8413-8e26-4067-8973-a7baa259af57" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations1.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations2.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/Decorations3.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/air lock.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/air lock.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/background.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/background.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/delivery counter.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/delivery counter.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table1.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table2.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table3.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table4.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table5.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table5.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table6.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/dining table6.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/obstacle.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/obstacle.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/starting point.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/starting point.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/track.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/ArtWork/map_1/track.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/map1 Scene.unity" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/map1 Scene.unity.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Dish-In-The-Face/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene/NavMesh-Navgation Mask (Map).asset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Scene/NavMesh-Navgation Mask (Map).asset.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/GuestGroupManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/RoundManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/Managers/RoundManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/CoinManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/CoinManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/TimeLimitCounter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/NightGame/UI/TimeLimitCounter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/Noto_Sans_TC/static/NotoSansTC-Regular SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/Noto_Sans_TC/static/NotoSansTC-Regular SDF.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +35,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -228,7 +189,8 @@
       <workItem from="1758182630052" duration="3163000" />
       <workItem from="1758186059935" duration="451000" />
       <workItem from="1758189183103" duration="419000" />
-      <workItem from="1758196028027" duration="7717000" />
+      <workItem from="1758196028027" duration="7982000" />
+      <workItem from="1758211344728" duration="23000" />
     </task>
     <servers />
   </component>
@@ -238,7 +200,6 @@
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityProjectDiscoverer">
-    <option name="hasUnityReference" value="true" />
     <option name="unityProject" value="true" />
     <option name="unityProjectFolder" value="true" />
   </component>
