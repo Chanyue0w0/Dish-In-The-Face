@@ -3,10 +3,10 @@ using UnityEngine;
 public class GuestAnimationController : MonoBehaviour
 {
     // === Triggers ===
-    private static readonly int TrigIsAttacking   = Animator.StringToHash("isAttacking"); // 改為 Trigger
     private static readonly int TrigBeAttacked    = Animator.StringToHash("BeAttacked");  // 新增 Trigger
 
     // === Bools ===
+    private static readonly int BoolIsAttacking        = Animator.StringToHash("isAttacking"); 
     private static readonly int IsMoving              = Animator.StringToHash("isMoving");
     private static readonly int IsWaitingOrThinking   = Animator.StringToHash("isWaitingOrThinking");
     private static readonly int IsOrderingOrEating    = Animator.StringToHash("isOrderingOrEating");
@@ -25,7 +25,6 @@ public class GuestAnimationController : MonoBehaviour
     private int _attackLayerIndex = -1;
 
     // 邊緣偵測用：只在 false -> true 時送 Trigger
-    private bool _prevAttacking;
     private bool _prevBeAttacked;
 
     private void Awake() {
@@ -48,12 +47,10 @@ public class GuestAnimationController : MonoBehaviour
         else if (_trouble != null)
             SetLayerWeights(baseOn: false);
 
-        _prevAttacking  = false;
         _prevBeAttacked = false;
 
         if (animator) {
             // 確保觸發器是乾淨狀態
-            animator.ResetTrigger(TrigIsAttacking);
             animator.ResetTrigger(TrigBeAttacked);
         }
     }
@@ -72,15 +69,12 @@ public class GuestAnimationController : MonoBehaviour
             SetLayerWeights(baseOn: true);
         }
         else if (_trouble != null) {
-            // ---- Trigger：Attacking ----
+            // ---- Bool：Attacking ----
             bool attackingNow = _trouble.IsAttacking(); // 由 TroubleGuest 提供
-            if (attackingNow && !_prevAttacking) {
-                animator.SetTrigger(TrigIsAttacking);
-            }
-            _prevAttacking = attackingNow;
+            animator.SetBool(BoolIsAttacking, attackingNow);
 
             // ---- Trigger：BeAttacked ----
-            bool beAttackedNow = _trouble.IsBeAttacked(); // 由 TroubleGuest 提供
+            bool beAttackedNow = _trouble.IsBeAttacked();
             if (beAttackedNow && !_prevBeAttacked) {
                 animator.SetTrigger(TrigBeAttacked);
             }
