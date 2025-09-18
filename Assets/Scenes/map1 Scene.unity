@@ -27667,7 +27667,7 @@ Transform:
   m_GameObject: {fileID: 532069160}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.4499981, y: -20.220001, z: -10}
+  m_LocalPosition: {x: -3.429598, y: -20.332, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -61520,7 +61520,7 @@ Transform:
   m_GameObject: {fileID: 1243504092}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -22.88, y: 3.16, z: 0}
+  m_LocalPosition: {x: -22.88, y: 4.4, z: 0}
   m_LocalScale: {x: 5.7411966, y: 5.7411966, z: 5.7411966}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -105708,23 +105708,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalScale.x
-      value: 13
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalScale.y
-      value: 16.5
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2.4
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.45
+      value: -3.4296
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -20.22
+      value: -20.332
       objectReference: {fileID: 0}
     - target: {fileID: 2315162398822489790, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: m_LocalPosition.z
@@ -105766,6 +105766,10 @@ PrefabInstance:
       propertyPath: m_SceneBindings.Array.data[1].value
       value: 
       objectReference: {fileID: 7346023857972560986}
+    - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: dashSpeed
+      value: 80
+      objectReference: {fileID: 0}
     - target: {fileID: 2556891746504622472, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: moveSpeed
       value: 20
