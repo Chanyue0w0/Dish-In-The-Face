@@ -36,6 +36,7 @@ public class GuestGroupManager : MonoBehaviour
 
 	private void Start()
 	{
+		SpawnGuestWave();
 		SetNextSpawnTime();
 	}
 

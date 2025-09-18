@@ -22,7 +22,6 @@ public class RoundManager : MonoBehaviour
 	public Transform obstaclesGroup;
 
 	[Header("GameObject")]
-	[SerializeField] private GameObject endPane;
 	[SerializeField] private GameObject stopPanel;
 
 	private void Awake()
@@ -40,7 +39,6 @@ public class RoundManager : MonoBehaviour
 
 	private void Start()
 	{
-		endPane.SetActive(false);
 		stopPanel.SetActive(false);
 		GameContinue();
 	}
@@ -72,7 +70,7 @@ public class RoundManager : MonoBehaviour
 
 	public void GameOver()
 	{
-		endPane.SetActive(true);
+		timeLimitCounter.PauseCountdown();
 		Time.timeScale = 0f;
 	}
 
