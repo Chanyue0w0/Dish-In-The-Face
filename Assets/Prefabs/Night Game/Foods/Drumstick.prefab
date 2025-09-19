@@ -166,7 +166,7 @@ MonoBehaviour:
         Data3: 192947610
         Data4: 472483547
       Path: event:/SFX/swing1
-    vfxGameObject: {fileID: 0}
+    vfxGameObject: {fileID: 3820275065737676581, guid: 354b1d19c2805f248aba9c64d11e3ca6, type: 3}
   - animationClip: {fileID: 7400000, guid: 416f16c279cedda45a736c1a4161b5b9, type: 2}
     isPiercing: 1
     stunDamage: 10
@@ -178,7 +178,7 @@ MonoBehaviour:
         Data3: 192947610
         Data4: 472483547
       Path: event:/SFX/swing1
-    vfxGameObject: {fileID: 0}
+    vfxGameObject: {fileID: 9028555385303058240, guid: a30ecfb390f33e3409b1a6b1ef5b6d36, type: 3}
 --- !u!1 &3857453713245092508
 GameObject:
   m_ObjectHideFlags: 0
