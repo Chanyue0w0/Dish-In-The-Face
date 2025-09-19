@@ -325,6 +325,7 @@ public class PlayerAttackController : MonoBehaviour
 		attackData.attackValue = attackList[_comboIndex].stunDamage;
 		
 		EventReference sfx = !attackList[_comboIndex].sfx.IsNull ? attackList[_comboIndex].sfx : status.defaultSfx;
+		VFXPool.Instance.SpawnVFX(attackList[_comboIndex].vfxGameObject, handItemGroup.position, Quaternion.identity);
 		AudioManager.Instance.PlayOneShot(sfx, transform.position);
 		_lastAttackTime = Time.time;
 		_animationManager.PlayAttackAnimationClip(attackAnimation);
