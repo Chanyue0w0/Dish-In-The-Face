@@ -70,7 +70,7 @@ public class VFXPool : MonoBehaviour
             Debug.LogWarning($"VFXPool: 找不到 Key '{key}' 對應的物件池。");
             return null;
         }
-
+        
         var obj = pools[key].Get();
         obj.transform.position = position;
         obj.transform.rotation = rotation;
@@ -79,6 +79,31 @@ public class VFXPool : MonoBehaviour
             StartCoroutine(AutoReleaseCoroutine(key, obj, autoReleaseTime));
 
         return obj;
+    }
+
+    /// <summary>
+    /// 直接生成 VFX（不用物件池，單純 Instantiate）
+    /// </summary>
+    public GameObject SpawnVFX(GameObject vfxObject, Vector3 position, Quaternion rotation, float autoReleaseTime = 3f)
+    {
+        if (vfxObject == null)
+        {
+            Debug.LogWarning("VFXPool: 傳入的 vfxObject 為 null，無法生成。");
+            return null;
+        }
+
+        var obj = Instantiate(vfxObject, position, rotation, vfxGroupParent);
+
+        if (autoReleaseTime > 0)
+            StartCoroutine(AutoDestroyCoroutine(obj, autoReleaseTime));
+
+        return obj;
+    }
+
+    private System.Collections.IEnumerator AutoDestroyCoroutine(GameObject obj, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (obj != null) Destroy(obj);
     }
 
     /// <summary>
