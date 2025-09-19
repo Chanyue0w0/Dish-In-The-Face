@@ -105743,6 +105743,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 638587562765533091, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: attackList.Array.data[0].knockbackForce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 638587562765533091, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: attackList.Array.data[1].knockbackForce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 638587562765533091, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
+      propertyPath: attackList.Array.data[2].knockbackForce
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1204464878125904106, guid: 94ee6476dac7de84ea3f83ee057a1853, type: 3}
       propertyPath: handItemUI
       value: 
