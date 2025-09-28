@@ -395,8 +395,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   thinkOrderTime: 3
-  maxOrderPatience: 10
-  maxDishPatience: 10
+  maxOrderPatience: 20
+  maxDishPatience: 20
   stateTransitionDelay: 0.2
   eatTime: 10
   reorderProbability: 0

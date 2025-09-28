@@ -814,6 +814,18 @@ PrefabInstance:
       value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelGates.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelGates.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
+      propertyPath: stunLevelGates.Array.data[2]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5445154144449830262, guid: b59e73533b16f0e4bae9bb0f1c45000a, type: 3}
       propertyPath: stunLevelValues.Array.data[0]
       value: 3
       objectReference: {fileID: 0}

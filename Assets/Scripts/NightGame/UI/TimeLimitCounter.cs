@@ -116,7 +116,7 @@ public class TimeLimitCounter : MonoBehaviour
 	/// <summary>
 	/// �˼Ƶ���Ĳ�o Game Over
 	/// </summary>
-	private void TriggerGameOver()
+	public void TriggerGameOver()
 	{
 		Debug.Log("Time is up! Game Over!");
 		if (gameOverPanel != null)

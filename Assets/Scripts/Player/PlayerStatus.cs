@@ -51,7 +51,7 @@ public class PlayerStatus : MonoBehaviour
 	private void Die()
 	{
 		Debug.Log("Player has died.");
-		RoundManager.Instance.GameOver();
+		RoundManager.Instance.timeLimitCounter.TriggerGameOver();
 		// TODO: 加入死亡動畫、重新開始或結束畫面等
 	}
 }
